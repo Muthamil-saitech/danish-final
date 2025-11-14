@@ -299,6 +299,9 @@ Route::group(['middleware' => ['XSS']], function () {
 
         Route::get('/customer-order-download/{id}', [App\Http\Controllers\CustomerOrdersController::class, 'downloadInvoice'])->name('customer-order-download');
         Route::get('/customer-order-print/{id}', [App\Http\Controllers\CustomerOrdersController::class, 'print'])->name('customer-order-print');
+        Route::get('customer-orders/{id}/order_edit_logs', [App\Http\Controllers\CustomerOrdersController::class, 'order_edit_logs'])->name('order-edit-logs');
+        Route::get('/order-edit-log-download/{id}', [App\Http\Controllers\CustomerOrdersController::class, 'downloadEditLog'])->name('order-edit-log-download');
+        Route::get('/order-edit-log-print/{id}', [App\Http\Controllers\CustomerOrdersController::class, 'printEditLog'])->name('order-edit-log-print');
 
 
         //Attendance Module

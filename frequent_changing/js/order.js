@@ -6,13 +6,13 @@ $(document).ready(function () {
     if (selectedType === "same_po") {
       $("#finishProduct").removeClass("d-none");
       $('input[name="raw_quantity[]"], input[name="prod_quantity[]"], input[name="sale_price[]"]')
-          .attr("readonly", true)
-          .addClass("bg-light");
+        .attr("readonly", true)
+        .addClass("bg-light");
     } else if (selectedType === "same_line") {
       $("#finishProduct").addClass("d-none");
       $('input[name="raw_quantity[]"], input[name="prod_quantity[]"], input[name="sale_price[]"]')
-          .removeAttr("readonly")
-          .removeClass("bg-light");
+        .removeAttr("readonly")
+        .removeClass("bg-light");
     } else {
       $("#finishProduct").addClass("d-none");
     }
@@ -69,7 +69,7 @@ $(document).ready(function () {
       autoclose: true,
       todayHighlight: true,
       // startDate: new Date(),
-  });
+    });
   $("#stockCheck").on("hidden.bs.modal", function () {
     // $('#chk_mat_type').val('').trigger('change');
     // $('#chk_customer_id').val('').trigger('change');
@@ -229,6 +229,20 @@ $(document).ready(function () {
       newWindow.document.body.insertAdjacentHTML("afterbegin");
     };
   }
+  $(document).on("click", ".print_order_edit_logs", function () {
+    viewPrintLogChallan($(this).attr("data-id"));
+  });
+  function viewPrintLogChallan(id) {
+    open(
+      base_url + "order-edit-log-print/" + id,
+      "Print Customer Order Edit Log",
+      "width=1600,height=550"
+    );
+    newWindow.focus();
+    newWindow.onload = function () {
+      newWindow.document.body.insertAdjacentHTML("afterbegin");
+    };
+  }
   modalIssueFix();
   function modalIssueFix() {
     $("#product_id").select2({
@@ -336,8 +350,8 @@ $(document).ready(function () {
       if ($("#order_type").is("select")) {
         selected_tax = $("#order_type option:selected").text().trim();
       } else if ($("#order_type").is("input")) {
-        let orderTypeValue = $("#order_type").val(); 
-        if(orderTypeValue == "Quotation") {
+        let orderTypeValue = $("#order_type").val();
+        if (orderTypeValue == "Quotation") {
           selected_tax = "Labor";
         } else {
           selected_tax = "Sales";
@@ -380,8 +394,8 @@ $(document).ready(function () {
     if ($("#order_type").is("select")) {
       selected_tax = $("#order_type option:selected").text().trim();
     } else if ($("#order_type").is("input")) {
-      let orderTypeValue = $("#order_type").val(); 
-      if(orderTypeValue == "Quotation") {
+      let orderTypeValue = $("#order_type").val();
+      if (orderTypeValue == "Quotation") {
         selected_tax = "Labor";
       } else {
         selected_tax = "Sales";
@@ -433,8 +447,8 @@ $(document).ready(function () {
       if ($("#order_type").is("select")) {
         selected_tax = $("#order_type option:selected").text().trim();
       } else if ($("#order_type").is("input")) {
-        let orderTypeValue = $("#order_type").val(); 
-        if(orderTypeValue == "Quotation") {
+        let orderTypeValue = $("#order_type").val();
+        if (orderTypeValue == "Quotation") {
           selected_tax = "Labor";
         } else {
           selected_tax = "Sales";
@@ -519,7 +533,7 @@ $(document).ready(function () {
       $("#cgst_th, #sgst_th").hide();
       $("#igst_th").show();
     }
-  } 
+  }
   let i = $('.rowCount').length;
   $(document).on("click", "#finishProduct", function (e) {
     i++;
@@ -530,8 +544,8 @@ $(document).ready(function () {
     if ($("#order_type").is("select")) {
       selectedOrderType = $("#order_type option:selected").text().trim();
     } else if ($("#order_type").is("input")) {
-      let orderTypeValue = $("#order_type").val(); 
-      if(orderTypeValue == "Quotation") {
+      let orderTypeValue = $("#order_type").val();
+      if (orderTypeValue == "Quotation") {
         selectedOrderType = "Labor";
       } else {
         selectedOrderType = "Sales";
@@ -545,111 +559,111 @@ $(document).ready(function () {
     }
     $(".errProduct").remove();
     let firstInterState = $('input[name^="inter_state["]:checked').first().val() || "N";
-    console.log("firstInterState",firstInterState);
-    
+    console.log("firstInterState", firstInterState);
+
     $(".add_trm").append(
       "<tr>" +
-        '<td class="ir_txt_center"><p class="set_sn rowCount">' +
-        i +
-        "</p></td>" +
-        '<td><select class="form-control fproduct_id select2" name="product[]" id="fproduct_id_' +
-        i +
-        '"><option value="">Please Select</option>\n' +
-        hidden_product +
-        "</select></td>" +
-        '<td><select class="form-control rm_id select2" name="raw_material[]" id="rm_id_' +
-        i +
-        '"><option value="">Please Select</option></select></td>' +
-        '<td><input type="text" name="raw_quantity[]" onfocus="this.select();" class="check_required form-control rquantity_c" placeholder="Material Quantity" id="rquantity_' +
-        i +
-        '"></td>' +
-        '<td><input type="number" name="prod_quantity[]" onfocus="this.select();" class="check_required form-control integerchk pquantity_c" placeholder="Product Quantity" id="pquantity_' +
-        i +
-        '"></td>' +
-        '<td><div class="input-group"><input type="text" name="sale_price[]" onfocus="this.select();" class="check_required form-control integerchk sale_price_c" placeholder="Unit Price" id="sale_price_' +
-        i +
-        '" ><span class="input-group-text rmcurrency">' +
-        default_currency +
-        '</span></div><span class="text-success" id="up_' +
-        i +
-        '"></span></td>' +
-        '<td><div class="input-group"><input type="text" name="price[]" onfocus="this.select();" class="check_required form-control integerchk price_c" readonly="" placeholder="Price" id="price_' +
-        i +
-        '" ><span class="input-group-text rmcurrency">' +
-        default_currency +
-        '</span></div><span class="text-success" id="up_' +
-        i +
-        '"></span></td>' +
-        '<td><input type="hidden" class="form-control tax_type_id" name="tax_type[]" id="tax_type_id_' +
-        i +
-        '" value="' +
-        tax_type_id +
-        '" readonly placeholder="Tax Type"><span class="selected_taxtype">' +
-        selectedOrderType +
-        "</span></td>" +
-        '<td><div class="form-group radio_button_problem"><div class="radio">' +
-        '<label><input type="radio" name="inter_state[' +
-        i +
-        ']" id="inter_state_yes_' +
-        i +
-        '" value="Y" ' +
-        (i === 0
-          ? "checked"
-          : firstInterState === "Y"
+      '<td class="ir_txt_center"><p class="set_sn rowCount">' +
+      i +
+      "</p></td>" +
+      '<td><select class="form-control fproduct_id select2" name="product[]" id="fproduct_id_' +
+      i +
+      '"><option value="">Please Select</option>\n' +
+      hidden_product +
+      "</select></td>" +
+      '<td><select class="form-control rm_id select2" name="raw_material[]" id="rm_id_' +
+      i +
+      '"><option value="">Please Select</option></select></td>' +
+      '<td><input type="text" name="raw_quantity[]" onfocus="this.select();" class="check_required form-control rquantity_c" placeholder="Material Quantity" id="rquantity_' +
+      i +
+      '"></td>' +
+      '<td><input type="number" name="prod_quantity[]" onfocus="this.select();" class="check_required form-control integerchk pquantity_c" placeholder="Product Quantity" id="pquantity_' +
+      i +
+      '"></td>' +
+      '<td><div class="input-group"><input type="text" name="sale_price[]" onfocus="this.select();" class="check_required form-control integerchk sale_price_c" placeholder="Unit Price" id="sale_price_' +
+      i +
+      '" ><span class="input-group-text rmcurrency">' +
+      default_currency +
+      '</span></div><span class="text-success" id="up_' +
+      i +
+      '"></span></td>' +
+      '<td><div class="input-group"><input type="text" name="price[]" onfocus="this.select();" class="check_required form-control integerchk price_c" readonly="" placeholder="Price" id="price_' +
+      i +
+      '" ><span class="input-group-text rmcurrency">' +
+      default_currency +
+      '</span></div><span class="text-success" id="up_' +
+      i +
+      '"></span></td>' +
+      '<td><input type="hidden" class="form-control tax_type_id" name="tax_type[]" id="tax_type_id_' +
+      i +
+      '" value="' +
+      tax_type_id +
+      '" readonly placeholder="Tax Type"><span class="selected_taxtype">' +
+      selectedOrderType +
+      "</span></td>" +
+      '<td><div class="form-group radio_button_problem"><div class="radio">' +
+      '<label><input type="radio" name="inter_state[' +
+      i +
+      ']" id="inter_state_yes_' +
+      i +
+      '" value="Y" ' +
+      (i === 0
+        ? "checked"
+        : firstInterState === "Y"
           ? "checked disabled"
           : "disabled") +
-        "> Yes</label>&nbsp;" +
-        '<label><input type="radio" name="inter_state[' +
-        i +
-        ']" id="inter_state_no_' +
-        i +
-        '" value="N" ' +
-        (i === 0
-          ? "checked"
-          : firstInterState === "N"
+      "> Yes</label>&nbsp;" +
+      '<label><input type="radio" name="inter_state[' +
+      i +
+      ']" id="inter_state_no_' +
+      i +
+      '" value="N" ' +
+      (i === 0
+        ? "checked"
+        : firstInterState === "N"
           ? "checked disabled"
           : "disabled") +
-        "> No</label>" +
-        (i !== 0
-          ? '<input type="hidden" name="inter_state[' +
-            i +
-            ']" value="' +
-            firstInterState +
-            '">'
-          : "") +
-        "</div></div></td>" +
-        '<td class="cgst_cell" style="display:none;"><input type="text" name="cgst[]" class="form-control cgst_input" id="cgst_' +
+      "> No</label>" +
+      (i !== 0
+        ? '<input type="hidden" name="inter_state[' +
         i +
-        '" readonly></td>' +
-        '<td class="sgst_cell" style="display:none;"><input type="text" name="sgst[]" class="form-control sgst_input" id="sgst_' +
-        i +
-        '" readonly></td>' +
-        '<td class="igst_cell" style="display:none;"><input type="text" name="igst[]" class="form-control igst_input" id="igst_' +
-        i +
-        '" readonly></td>' +
-        '<td><div class="input-group"><input type="number" id="tax_amount_' +
-        i +
-        '" name="tax_amount[]" class="form-control tax_amount_c" placeholder="Tax Amount" readonly=""><span class="input-group-text rmcurrency">' +
-        default_currency +
-        "</span></div></td>" +
-        '<td><div class="input-group"><input type="number" id="sub_total_' +
-        i +
-        '" name="sub_total[]" class="form-control sub_total_c" placeholder="Subtotal" readonly=""><span class="input-group-text rmcurrency">' +
-        default_currency +
-        "</span></div></td>" +
-        '<td><input type="text" id="delivery_date_' +
-        i +
-        '" name="delivery_date_product[]" class="form-control order_delivery_date" placeholder="Delivery Date"></td>' +
-        '<td><span id="production_status_' +
-        i +
-        '">NIL</span></td>' +
-        '<td><span id="deliveries_qty_' +
-        i +
-        '">0</span></td>' +
-        '<td><input type="text" name="line_item_no[]" onfocus="this.select();" class="check_required form-control line_item_c" placeholder="PO Line Item No" id="line_item_no_' +
-        i + '" ></td>' +
-        '<td class="ir_txt_center"><a class="btn btn-xs del_row remove-tr dlt_button"><iconify-icon icon="solar:trash-bin-minimalistic-broken"></iconify-icon></a></td>' +
-        "</tr>"
+        ']" value="' +
+        firstInterState +
+        '">'
+        : "") +
+      "</div></div></td>" +
+      '<td class="cgst_cell" style="display:none;"><input type="text" name="cgst[]" class="form-control cgst_input" id="cgst_' +
+      i +
+      '" readonly></td>' +
+      '<td class="sgst_cell" style="display:none;"><input type="text" name="sgst[]" class="form-control sgst_input" id="sgst_' +
+      i +
+      '" readonly></td>' +
+      '<td class="igst_cell" style="display:none;"><input type="text" name="igst[]" class="form-control igst_input" id="igst_' +
+      i +
+      '" readonly></td>' +
+      '<td><div class="input-group"><input type="number" id="tax_amount_' +
+      i +
+      '" name="tax_amount[]" class="form-control tax_amount_c" placeholder="Tax Amount" readonly=""><span class="input-group-text rmcurrency">' +
+      default_currency +
+      "</span></div></td>" +
+      '<td><div class="input-group"><input type="number" id="sub_total_' +
+      i +
+      '" name="sub_total[]" class="form-control sub_total_c" placeholder="Subtotal" readonly=""><span class="input-group-text rmcurrency">' +
+      default_currency +
+      "</span></div></td>" +
+      '<td><input type="text" id="delivery_date_' +
+      i +
+      '" name="delivery_date_product[]" class="form-control order_delivery_date" placeholder="Delivery Date"></td>' +
+      '<td><span id="production_status_' +
+      i +
+      '">NIL</span></td>' +
+      '<td><span id="deliveries_qty_' +
+      i +
+      '">0</span></td>' +
+      '<td><input type="text" name="line_item_no[]" onfocus="this.select();" class="check_required form-control line_item_c" placeholder="PO Line Item No" id="line_item_no_' +
+      i + '" ></td>' +
+      '<td class="ir_txt_center"><a class="btn btn-xs del_row remove-tr dlt_button"><iconify-icon icon="solar:trash-bin-minimalistic-broken"></iconify-icon></a></td>' +
+      "</tr>"
     );
     let newRow = $(".add_trm").find("tr").last();
     let taxInput = newRow.find(".tax_type_id");
@@ -729,8 +743,8 @@ $(document).ready(function () {
         if ($("#order_type").is("select")) {
           selected_tax = $("#order_type option:selected").text().trim();
         } else if ($("#order_type").is("input")) {
-          let orderTypeValue = $("#order_type").val(); 
-          if(orderTypeValue == "Quotation") {
+          let orderTypeValue = $("#order_type").val();
+          if (orderTypeValue == "Quotation") {
             selected_tax = "Labor";
           } else {
             selected_tax = "Sales";
@@ -819,13 +833,13 @@ $(document).ready(function () {
             let code = rm.raw_materials.code;
             select.append(
               '<option value="' +
-                id +
-                '">' +
-                name +
-                " (" +
-                code +
-                ")" +
-                "</option>"
+              id +
+              '">' +
+              name +
+              " (" +
+              code +
+              ")" +
+              "</option>"
             );
           }
         });
@@ -854,20 +868,20 @@ $(document).ready(function () {
   $(document).on("keyup", ".line_item_c", function (e) {
     let line_item_no = $(this).val().trim();
     let existingLineItems = $("input[name='line_item_no[]']")
-        .not(this)
-        .map(function () {
-            return $(this).val().trim();
-        })
-        .get();
+      .not(this)
+      .map(function () {
+        return $(this).val().trim();
+      })
+      .get();
     if (line_item_no !== "" && existingLineItems.includes(line_item_no)) {
-        console.warn("Duplicate line item number:", line_item_no);
-        $(this).addClass("is-invalid");
-        if (!$(this).next(".duplicate-msg").length) {
-            $(this).after('<div class="text-danger duplicate-msg">This PO Line Item No already exists.</div>');
-        }
+      console.warn("Duplicate line item number:", line_item_no);
+      $(this).addClass("is-invalid");
+      if (!$(this).next(".duplicate-msg").length) {
+        $(this).after('<div class="text-danger duplicate-msg">This PO Line Item No already exists.</div>');
+      }
     } else {
-        $(this).removeClass("is-invalid");
-        $(this).next(".duplicate-msg").remove();
+      $(this).removeClass("is-invalid");
+      $(this).next(".duplicate-msg").remove();
     }
   });
   $(document).on("input", ".quantity_c", function (e) {
@@ -918,8 +932,8 @@ $(document).ready(function () {
     if ($("#order_type").is("select")) {
       order_type_text = $("#order_type option:selected").text().trim();
     } else if ($("#order_type").is("input")) {
-      let orderTypeValue = $("#order_type").val(); 
-      if(orderTypeValue == "Quotation") {
+      let orderTypeValue = $("#order_type").val();
+      if (orderTypeValue == "Quotation") {
         order_type_text = "Labor";
       } else {
         order_type_text = "Sales";
@@ -953,8 +967,8 @@ $(document).ready(function () {
     console.log(today);
     $(".add_order_inv").html(
       '<tr class="rowCount"><td class="width_1_p ir_txt_center">1</td><td><input type="text" name="invoice_type[]" class="form-control" value="Quotation" readonly></td><td><input type="text" name="invoice_date[]" class="form-control" value="' +
-        today +
-        '" readonly></td> <td><input type="text" name="invoice_amount[]" class="form-control invoice_amount_c" value="0" readonly></td><td><input type="text" name="invoice_paid[]" class="form-control" value="0" readonly></td><td><input type="text" name="invoice_due[]" class="form-control due_amount_c" value="0" readonly></td></tr>'
+      today +
+      '" readonly></td> <td><input type="text" name="invoice_amount[]" class="form-control invoice_amount_c" value="0" readonly></td><td><input type="text" name="invoice_paid[]" class="form-control" value="0" readonly></td><td><input type="text" name="invoice_due[]" class="form-control due_amount_c" value="0" readonly></td></tr>'
     );
   }
   /**
@@ -979,16 +993,16 @@ $(document).ready(function () {
 
     $(".add_order_inv").append(
       '<tr class="rowCount"><td class="width_1_p ir_txt_center">1</td><td><input type="text" name="invoice_type[]" class="form-control" value="' +
-        invoice_type +
-        '" readonly></td><td><input type="text" name="invoice_date[]" class="form-control" value="' +
-        invoice_date +
-        '" readonly></td> <td><input type="text" name="invoice_amount[]" class="form-control invoice_amount_c" value="' +
-        invoice_amount +
-        '" readonly></td><td><input type="text" name="invoice_paid[]" class="form-control" value="' +
-        invoice_amount +
-        '" readonly></td><td><input type="text" name="invoice_due[]" class="form-control due_amount_c" value="' +
-        invoice_due +
-        '" readonly></td><td class="ir_txt_center"><a class="btn btn-xs del_inv_row dlt_button"><iconify-icon icon="solar:trash-bin-minimalistic-broken"></iconify-icon></a></td></tr>'
+      invoice_type +
+      '" readonly></td><td><input type="text" name="invoice_date[]" class="form-control" value="' +
+      invoice_date +
+      '" readonly></td> <td><input type="text" name="invoice_amount[]" class="form-control invoice_amount_c" value="' +
+      invoice_amount +
+      '" readonly></td><td><input type="text" name="invoice_paid[]" class="form-control" value="' +
+      invoice_amount +
+      '" readonly></td><td><input type="text" name="invoice_due[]" class="form-control due_amount_c" value="' +
+      invoice_due +
+      '" readonly></td><td class="ir_txt_center"><a class="btn btn-xs del_inv_row dlt_button"><iconify-icon icon="solar:trash-bin-minimalistic-broken"></iconify-icon></a></td></tr>'
     );
     $("#invoiceModal").modal("hide");
   });
@@ -1046,20 +1060,20 @@ $(document).ready(function () {
       success: function (data) {
         $(".add_deliveries").append(
           '<tr class="rowCount"><td class="width_1_p ir_txt_center">' +
-            rowCount +
-            '</td><td><input type="hidden" name="delivaries_product[]" value="' +
-            product +
-            '" /><input type="text" class="form-control" value="' +
-            data.name +
-            '" readonly></td><td><input type="text" name="delivaries_quantity[]" class="form-control" value="' +
-            quantity +
-            '"></td><td><input type="text" name="delivaries_date[]" class="form-control customDatepicker" value="' +
-            delivery_date +
-            '"></td><td><input type="text" name="delivaries_status[]" class="form-control" value="' +
-            delivery_status +
-            '"></td><td><input type="text" name="delivaries_note[]" class="form-control" value="' +
-            delivery_note +
-            '"></td><td class="ir_txt_center"><a class="btn btn-xs del_del_row dlt_button"><iconify-icon icon="solar:trash-bin-minimalistic-broken"></iconify-icon></a></td></tr>'
+          rowCount +
+          '</td><td><input type="hidden" name="delivaries_product[]" value="' +
+          product +
+          '" /><input type="text" class="form-control" value="' +
+          data.name +
+          '" readonly></td><td><input type="text" name="delivaries_quantity[]" class="form-control" value="' +
+          quantity +
+          '"></td><td><input type="text" name="delivaries_date[]" class="form-control customDatepicker" value="' +
+          delivery_date +
+          '"></td><td><input type="text" name="delivaries_status[]" class="form-control" value="' +
+          delivery_status +
+          '"></td><td><input type="text" name="delivaries_note[]" class="form-control" value="' +
+          delivery_note +
+          '"></td><td class="ir_txt_center"><a class="btn btn-xs del_del_row dlt_button"><iconify-icon icon="solar:trash-bin-minimalistic-broken"></iconify-icon></a></td></tr>'
         );
         $("#deliveryModal").modal("hide");
       },
@@ -1515,14 +1529,14 @@ $(document).ready(function () {
     if ($('input[name="po_type"]').length > 0) {
       let po_type = $('input[name="po_type"]:checked').val();
       if (!po_type) {
-          $('input[name="po_type"]').closest('.form-group').find('.text-danger')
-              .text("The PO Creation Mode field is required")
-              .removeClass("d-none");
-          status = false;
+        $('input[name="po_type"]').closest('.form-group').find('.text-danger')
+          .text("The PO Creation Mode field is required")
+          .removeClass("d-none");
+        status = false;
       } else {
-          $('input[name="po_type"]').closest('.form-group').find('.text-danger')
-              .text("")
-              .addClass("d-none");
+        $('input[name="po_type"]').closest('.form-group').find('.text-danger')
+          .text("")
+          .addClass("d-none");
       }
     }
     if (customer_id == "") {

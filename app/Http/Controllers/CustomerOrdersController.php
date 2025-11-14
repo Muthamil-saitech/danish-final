@@ -561,4 +561,34 @@ class CustomerOrdersController extends Controller
         $orderDeliveries = CustomerOrderDelivery::where('customer_order_id', $obj->id)->where('del_status', "Live")->orderBy('id', 'desc')->get();
         return view('pages.customer_order.invoice', compact('obj', 'orderDetails', 'orderInvoice', 'orderDeliveries'));
     }
+    public function order_edit_logs($id){
+        $id = encrypt_decrypt($id, 'decrypt');
+        $order_edit_logs =  CustomerPoReorder::where('customer_order_detail_id',$id)->orderBy('id','desc')->get();
+        // dd($order_edit_logs);
+        $orderDetails = CustomerOrderDetails::where('id', $id)->where('del_status', "Live")->first();
+        $customerOrder = CustomerOrder::find($orderDetails->customer_order_id);
+        $title = __('index.customer_order_details');
+        $obj = $customerOrder;
+        return view('pages.customer_order.view_order_edit_logs', compact('title', 'obj', 'orderDetails','order_edit_logs'));
+    }
+    public function downloadEditLog($id){
+        $id = encrypt_decrypt($id, 'decrypt');
+        $order_edit_logs =  CustomerPoReorder::where('customer_order_detail_id',$id)->orderBy('id','desc')->get();
+        $orderDetails = CustomerOrderDetails::where('id', $id)->where('del_status', "Live")->first();
+        $customerOrder = CustomerOrder::find($orderDetails->customer_order_id);
+        $title = __('index.customer_order_details');
+        $obj = $customerOrder;
+        $pdf = PDF::loadView('pages.customer_order.order_edit_logs_invoice', compact('title', 'obj', 'orderDetails','order_edit_logs'))->setPaper('a4', 'landscape');
+        return $pdf->stream('order_edit_logs_'.$orderDetails->po_no . '.pdf');
+    }
+    public function printEditLog($id)
+    {
+       $id = encrypt_decrypt($id, 'decrypt');
+        $order_edit_logs =  CustomerPoReorder::where('customer_order_detail_id',$id)->orderBy('id','desc')->get();
+        $orderDetails = CustomerOrderDetails::where('id', $id)->where('del_status', "Live")->first();
+        $customerOrder = CustomerOrder::find($orderDetails->customer_order_id);
+        $title = __('index.customer_order_details');
+        $obj = $customerOrder;
+        return view('pages.customer_order.order_edit_logs_invoice', compact('title', 'obj', 'orderDetails','order_edit_logs'))->setPaper('a4', 'landscape');
+    }
 }

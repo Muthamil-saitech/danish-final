@@ -76,6 +76,14 @@ if (isset($setting->base_color) && $setting->base_color) {
                                     @if (routePermission('order.edit'))
                                     <a href="{{ url('customer-orders') }}/{{ encrypt_decrypt($detail->id, 'encrypt') }}/edit" class="button-success" data-bs-toggle="tooltip" data-bs-placement="top" title="@lang('index.edit')"><i class="fa fa-edit tiny-icon"></i></a>
                                     @endif
+                                    @php
+                                        $hasLogs = \DB::table('tbl_customer_po_reorders')
+                                        ->where('customer_order_detail_id', $detail->id)
+                                        ->exists();
+                                    @endphp
+                                    @if ($hasLogs)
+                                    <a href="{{ url('customer-orders') }}/{{ encrypt_decrypt($detail->id, 'encrypt') }}/order_edit_logs" class="button-info" data-bs-toggle="tooltip" data-bs-placement="top" title="View Order Edit Logs"><i class="fa fa-list"></i></a>
+                                    @endif
                                     @if (routePermission('order.delete') && $detail->order_status == 0)
                                     <a href="#" class="delete button-danger"
                                         data-form_class="alertDelete{{ $detail->id }}" type="submit"
