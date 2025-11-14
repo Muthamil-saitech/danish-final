@@ -1,0 +1,250 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Instrument;
+use App\InstrumentCategory;
+use Illuminate\Validation\Rule;
+use App\Unit;
+use App\Customer;
+use App\InstrumentAssetEntry;
+use Barryvdh\DomPDF\Facade\Pdf;
+
+class InstrumentController extends Controller
+{
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    public function index()
+    {
+        $obj = Instrument::orderBy('id','DESC')->where('del_status','Live')->get();
+        $title =  __('index.instruments');
+        return view('pages.instruments.index', compact('title','obj'));
+    }
+    public function create() {
+        $title = __('index.add_instrument');
+        $instrument_categories = InstrumentCategory::where('del_status','Live')->get();
+        $units = Unit::where('del_status','Live')->get();
+        $customers = Customer::where('del_status', 'Live')->orderBy('id', 'DESC')->get();
+        return view('pages.instruments.addEditInstrument', compact('title','instrument_categories','units','customers'));
+    }
+    public function store(Request $request)
+    {
+        request()->validate([
+            'type' => 'required',
+            'category' => 'required',
+            'code' => [
+                'required',
+                'max:50',
+                /* Rule::unique('tbl_instruments', 'instrument_name')->where(function ($query) {
+                    return $query->where('del_status', 'Live');
+                }), */
+            ],
+            'instrument_name' => [
+                'required',
+                'max:50',
+                Rule::unique('tbl_instruments', 'instrument_name')
+                ->where(function ($query) use ($request) {
+                    return $query->where('del_status', 'Live')
+                                ->where('type', $request->type)
+                                ->where('category', $request->category);
+                }),
+            ],
+            'unit' => 'required',
+            'owner_type' => 'required',
+            'customer_id' => 'required_if:owner_type,2',
+            'range' => [
+                'required',
+                'max:25',
+            ],
+            'accuracy' => [
+                'required',
+                'max:25'
+            ],
+            'make' => [
+                'required',
+                'max:25'
+            ],
+            'history_card_no' => [
+                'required',
+                'max:50'
+            ],
+            'due_date' => 'required',
+            'location' => [
+                'required',
+                'max:50'
+            ],
+            'remarks' => [
+                'nullable',
+                'max:255'
+            ],
+        ], [
+            'code.required' => "The instrument code field is required",
+            'code.unique' => "The instrument code field already exists",
+            'instrument_name.required' => "The instrument name field is required",
+            'instrument_name.unique' => "The instrument name field already exists",
+            'type.required' => "The type field is required",
+            'category.required' => "The instrument category field is required",
+            'unit.required' => "The unit field is required",
+            'owner_type.required' => "The owner field is required",
+            'customer_id.required_if' => 'The customers field is required',
+            'range.required' => "The range/size field is required",
+            'accuracy.required' => "The accuracy field is required",
+            'make.required' => "The make field is required",
+            'history_card_no.required' => "The history card no field is required",
+            'due_date.required' => "The due date field is required",
+        ]);
+
+        $obj = new \App\Instrument;
+        $obj->code = escape_output($request->get('code'));
+        $obj->instrument_name = escape_output($request->get('instrument_name'));
+        $obj->type = $request->get('type');
+        $obj->category = $request->get('category');
+        $obj->unit = $request->get('unit');
+        $obj->owner_type = $request->get('owner_type');
+        $obj->customer_id = $request->get('customer_id') ?: null;
+        $obj->range = escape_output($request->get('range'));
+        $obj->accuracy = escape_output($request->get('accuracy'));
+        $obj->make = escape_output($request->get('make'));
+        $obj->history_card_no = escape_output($request->get('history_card_no'));
+        $obj->due_date = date('Y-m-d', strtotime($request->get('due_date')));
+        $obj->location = escape_output($request->get('location'));
+        $obj->remarks = escape_output($request->get('remarks'));
+        $obj->save();
+        return redirect('instruments')->with(saveMessage());
+    }
+    public function show($id) {
+        $id = encrypt_decrypt($id, 'decrypt');
+        $title = "View Asset Maintenance";
+        $instrument_entries = InstrumentAssetEntry::where('instrument_id',$id)->get();
+        $instrument = Instrument::find($id)->first();
+        return view('pages.instruments.view', compact('title','instrument_entries','instrument'));
+    }
+    public function edit($id)
+    {
+        $instrument = Instrument::find(encrypt_decrypt($id, 'decrypt'));
+        $title =  __('index.edit_instrument');
+        $instrument_categories = InstrumentCategory::where('del_status','Live')->where('type',$instrument->type)->get();
+        $units = Unit::where('del_status','Live')->get();
+        $customers = Customer::where('del_status', 'Live')->orderBy('id', 'DESC')->get();
+        $obj = $instrument;
+        return view('pages.instruments.addEditInstrument', compact('title', 'obj','instrument_categories','units','customers'));
+    }
+    public function update(Request $request, Instrument $instrument)
+    {
+        request()->validate([
+            'code' => [
+                'required',
+                'max:50',
+                /* Rule::unique('tbl_instruments', 'instrument_name')->ignore($instrument->id, 'id')->where(function ($query) {
+                    return $query->where('del_status', 'Live');
+                }), */
+            ],
+            'instrument_name' => [
+                'required',
+                'max:50',
+                Rule::unique('tbl_instruments', 'instrument_name')
+                    ->ignore($instrument->id,'id')
+                    ->where(function ($query) use ($request) {
+                        return $query->where('del_status', 'Live')
+                                    ->where('type', $request->type)
+                                    ->where('category', $request->category);
+                    }),
+            ],
+            'type' => 'required',
+            'category' => 'required',
+            'unit' => 'required',
+            'owner_type' => 'required',
+            'range' => [
+                'required',
+                'max:25',
+            ],
+            'accuracy' => [
+                'required',
+                'max:25'
+            ],
+            'make' => [
+                'required',
+                'max:25'
+            ],
+            'history_card_no' => [
+                'required',
+                'max:50'
+            ],
+            'due_date' => 'required',
+            'location' => [
+                'required',
+                'max:50'
+            ],
+            'remarks' => [
+                'nullable',
+                'max:255'
+            ],
+        ], [
+            'code.required' => "The instrument code field is required",
+            'instrument_name.required' => "The instrument name field is required",
+            'type.required' => "The type field is required",
+            'category.required' => "The category field is required",
+            'unit.required' => "The unit field is required",
+            'owner_type.required' => "The owner type field is required",
+            'range.required' => "The range/size field is required",
+            'accuracy.required' => "The accuracy field is required",
+            'make.required' => "The make field is required",
+            'history_card_no.required' => "The history card no field is required",
+            'due_date.required' => "The due date field is required",
+        ]);
+
+        $instrument->type = $request->get('type');
+        $instrument->category = $request->get('category');
+        $instrument->code = escape_output($request->get('code'));
+        $instrument->instrument_name = ucwords(escape_output($request->get('instrument_name')));
+        $instrument->unit = $request->get('unit');
+        $instrument->owner_type = $request->get('owner_type');
+        $instrument->customer_id = $request->get('customer_id') ?: null;
+        $instrument->range = escape_output($request->get('range'));
+        $instrument->accuracy = escape_output($request->get('accuracy'));
+        $instrument->make = escape_output($request->get('make'));
+        $instrument->history_card_no = escape_output($request->get('history_card_no'));
+        $instrument->due_date = date('Y-m-d', strtotime($request->get('due_date')));
+        $instrument->location = escape_output($request->get('location'));
+        $instrument->remarks = escape_output($request->get('remarks'));
+        $instrument->save();
+        return redirect('instruments')->with(saveMessage());
+    }
+    public function destroy(Instrument $instrument)
+    {
+        $instrument->del_status = "Deleted";
+        $instrument->save();
+        return redirect('instruments')->with(deleteMessage());
+    }
+    public function serviceEntry(Request $request){
+        $instrument_id = $request->get('instrument_id');
+        $instrument_entry = new InstrumentAssetEntry();
+        $instrument_entry->instrument_id = $instrument_id;
+        $instrument_entry->service_date = date('Y-m-d',strtotime($request->get('service_date')));
+        $instrument_entry->next_service_date = date('Y-m-d',strtotime($request->get('next_service_date')));
+        $instrument_entry->notes = $request->notes ?? null;
+        $instrument_entry->save();
+        $instrument = Instrument::where('id',$instrument_id)->where('del_status','Live')->first();
+        $instrument->due_date = date('Y-m-d',strtotime($request->get('next_service_date')));
+        $instrument->save();
+        return response()->json(['success' => true]);
+    }
+    public function download($id)
+    {
+        $instrument_id = encrypt_decrypt($id, 'decrypt');
+        $instrument_entries = InstrumentAssetEntry::where('instrument_id',$instrument_id)->get();
+        $instrument = Instrument::find($instrument_id)->first();
+        $pdf = PDF::loadView('pages.instruments.print_assets', compact('instrument', 'instrument_entries'))->setPaper('a4', 'landscape');
+        return $pdf->download($instrument->instrument_name . '.pdf');
+    }
+    public function print($id)
+    {
+        $instrument_entries = InstrumentAssetEntry::where('instrument_id',$id)->get();
+        $instrument = Instrument::find($id)->first();
+        return view('pages.instruments.print_assets', compact('instrument','instrument_entries'));
+    }
+}

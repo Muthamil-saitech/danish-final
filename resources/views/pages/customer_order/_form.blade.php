@@ -1,0 +1,450 @@
+@php
+$orderType = isset($customerOrder->order_type) && $customerOrder->order_type ? $customerOrder->order_type : '';
+@endphp
+<input type="hidden" name="currency" id="only_currency_sign" value={{ getCurrencyOnly() }}>
+<div>
+    <div class="row">
+        <div class="col-sm-12 mb-2 col-md-4">
+            <div class="form-group">
+                <label>@lang('index.po_date') <span class="required_star">*</span></label>
+                {!! Form::text('po_date', isset($customerOrder->po_date) && $customerOrder->po_date!='' ? date('d-m-Y',strtotime($customerOrder->po_date)) : (old('po_date') ?: date('d-m-Y')), [
+                'class' => 'form-control',
+                'id' => 'po_date',
+                'placeholder' => 'PO Date',
+                ]) !!}
+                @if ($errors->has('po_date'))
+                <div class="error_alert text-danger">
+                    {{ $errors->first('po_date') }}
+                </div>
+                @endif
+                <div class="text-danger d-none"></div>
+            </div>
+        </div>
+        <div class="col-sm-12 mb-2 col-md-4">
+            <div class="form-group">
+                <label>@lang('index.po_no') <span class="required_star">*</span></label>
+                <input type="text" name="reference_no" id="code"
+                    class="check_required form-control @error('reference_no') is-invalid @enderror"
+                    placeholder="{{ __('index.po_no') }}"
+                    value="{{ isset($customerOrder->reference_no) ? $customerOrder->reference_no : old('reference_no') }}"
+                    onfocus="select()" {{ isset($customerOrder) ? 'readonly' : ''  }}>
+                <div class="text-danger d-none"></div>
+                @error('reference_no')
+                <div class="text-danger">{{ $message }}</div>
+                @enderror
+            </div>
+        </div>
+        <div class="col-sm-12 mb-2 col-md-4">
+            <div class="form-group">
+                <label>@lang('index.customer') <span class="required_star">*</span></label>
+                @if(isset($customerOrder) && $customerOrder->id)
+                <input type="hidden" name="customer_id" value="{{ $customerOrder->customer_id }}">
+                <select class="form-control select2" disabled>
+                    <option value="">@lang('index.select')</option>
+                    @foreach ($customers as $key => $customer)
+                    <option value="{{ $key }}" {{ $customerOrder->customer_id == $key ? 'selected' : '' }}>
+                        {{ $customer }}
+                    </option>
+                    @endforeach
+                </select>
+                @else
+                <select name="customer_id" id="customer_id" class="form-control select2">
+                    <option value="">@lang('index.select')</option>
+                    @foreach ($customers as $key => $customer)
+                    <option value="{{ $key }}" {{ old('customer_id') == $key ? 'selected' : '' }}>
+                        {{ $customer }}
+                    </option>
+                    @endforeach
+                </select>
+                @endif
+                <div class="text-danger d-none"></div>
+                @error('customer_id')
+                <div class="text-danger">{{ $message }}</div>
+                @enderror
+            </div>
+        </div>
+        <div class="col-sm-12 mb-2 col-md-4">
+            <div class="form-group">
+                <label>@lang('index.order_type') <span class="required_star">*</span></label>
+                @if(isset($customerOrder))
+                <input type="hidden" name="order_type" id="order_type" value="{{ isset($customerOrder) ? $customerOrder->order_type : "" }}">
+                <select class="form-control @error('order_type') is-invalid @enderror select2" {{ isset($customerOrder) ? 'disabled' : ''  }}>
+                    <option value="">@lang('index.select')</option>
+                    @foreach ($orderTypes as $key => $orderType)
+                    <option value="{{ $key }}"
+                        {{ isset($customerOrder->order_type) && $customerOrder->order_type == $key ? 'selected' : '' }}>
+                        {{ $orderType }}
+                    </option>
+                    @endforeach
+                </select>
+                @else
+                <select name="order_type" id="order_type" class="form-control @error('order_type') is-invalid @enderror select2" {{ isset($customerOrder) ? 'disabled' : ''  }}>
+                    <option value="">@lang('index.select')</option>
+                    @foreach ($orderTypes as $key => $orderType)
+                    <option value="{{ $key }}"
+                        {{ isset($customerOrder->order_type) && $customerOrder->order_type == $key ? 'selected' : '' }}>
+                        {{ $orderType }}
+                    </option>
+                    @endforeach
+                </select>
+                @endif
+                <div class="text-danger d-none"></div>
+                @error('order_type')
+                <div class="text-danger">{{ $message }}</div>
+                @enderror
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-6 mb-2 col-lg-8">
+            <div class="form-group">
+                <label>@lang('index.delivery_address') <span class="required_star">*</span></label>
+                <textarea name="delivery_address" id="delivery_address" cols="30" rows="10" class="form-control @error('delivery_address') is-invalid @enderror" placeholder="{{ __('index.delivery_address') }}">{{ isset($customerOrder->delivery_address) ? $customerOrder->delivery_address : old('delivery_address') }}</textarea>
+                <div class="text-danger d-none"></div>
+                @error('delivery_address')
+                <div class="text-danger">{{ $message }}</div>
+                @enderror
+            </div>
+        </div>
+        @if(isset($orderDetails))
+        <div class="col-sm-12 col-md-6 col-lg-8 mb-2">
+            <div class="form-group">
+                <label>PO Creation Mode <span class="required_star">*</span></label>
+                <div class="d-flex align-items-center gap-4">
+                    <div class="form-check form-check-inline m-0">
+                        <input class="form-check-input" type="radio" name="po_type" id="same_po_type" value="same_po" {{ old('po_type', $customerOrder->po_type ?? '') == 'same_po' ? 'checked' : '' }} @if(isset($customerOrder) && $customerOrder->po_type!='') disabled  @endif>
+                        <label class="form-check-label" for="same_po_type">Same PO</label>
+                    </div>
+                    <div class="form-check form-check-inline m-0">
+                        <input class="form-check-input" type="radio" name="po_type" id="same_line_item_type" value="same_line" {{ old('po_type', $customerOrder->po_type ?? '') == 'same_line' ? 'checked' : '' }} @if(isset($customerOrder) && $customerOrder->po_type!='') disabled  @endif>
+                        <label class="form-check-label" for="same_line_item_type">Same Line Item</label>
+                    </div>
+                    <input type="hidden" name="po_type_hidden" id="po_type_hidden" value="{{ old('po_type', $customerOrder->po_type ?? '') }}">
+                </div>
+                <div class="text-danger"></div>
+                @error('po_type')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+            </div>
+        </div>
+        @endif
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table-responsive" id="fprm">
+                @php
+                $showIColumns = false;
+                $showCSColumns = false;
+                if (isset($orderDetails)) {
+                // foreach ($orderDetails as $od) {
+                if ($orderDetails->inter_state === 'Y') {
+                $showIColumns = true;
+                }
+                if ($orderDetails->inter_state === 'N') {
+                $showCSColumns = true;
+                }
+                // }
+                }
+                @endphp
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="w-50-p">@lang('index.sn')</th>
+                            <th class="w-220-p">Part Name(Part No) <span class="required_star">*</span></th>
+                            <th class="w-220-p">@lang('index.raw_material_name')(Code) <span class="required_star">*</span></th>
+                            <th class="w-220-p">@lang('index.raw_quantity') <span class="required_star">*</span></th>
+                            <th class="w-220-p">@lang('index.prod_quantity') <span class="required_star">*</span></th>
+                            <th class="w-220-p">@lang('index.unit_price') <span class="required_star">*</span></th>
+                            <th class="w-220-p">@lang('index.price')</th>
+                            {{-- <th class="w-220-p">@lang('index.discount')</th> --}}
+                            <th class="w-220-p">@lang('index.tax_type')</th>
+                            <th class="w-220-p">@lang('index.inter_state')</th>
+                            <th class="w-75-p" id="cgst_th" style="{{ $showCSColumns ? '' : 'display: none;' }}">CGST (%)</th>
+                            <th class="w-75-p" id="sgst_th" style="{{ $showCSColumns ? '' : 'display: none;' }}">SGST (%)</th>
+                            <th class="w-150-p" id="igst_th" style="{{ $showIColumns ? '' : 'display: none;' }}">IGST (%)</th>
+                            <th class="w-220-p">@lang('index.tax_amount')</th>
+                            <th class="w-220-p">@lang('index.subtotal')</th>
+                            <th class="w-220-p">@lang('index.delivery_date') <span class="required_star">*</span></th>
+                            <th class="w-220-p">@lang('index.production_status')</th>
+                            <th class="w-220-p">@lang('index.delivered') Quantity</th>
+                            <th class="w-220-p">@lang('index.line_item_no') <span class="required_star">*</span></th>
+                            @if(!isset($orderDetails))<th class="ir_txt_center">@lang('index.actions')</th>@endif
+                        </tr>
+                    </thead>
+                    <tbody class="add_trm">
+                        <?php $i = 1; ?>
+                        @if (isset($orderDetails) && $orderDetails)
+                        {{-- @foreach ($orderDetails as $key => $value) --}}
+                        <?php /* $i++; */ ?>
+                        <tr class="rowCount" data-id="{{ $orderDetails->id }}">
+                            <td class="width_1_p ir_txt_center">1</td>
+                            <td>
+                                <input type="hidden" name="detail_id" value="{{ $orderDetails->id }}">
+                                <input type="hidden" name="product[]" value="{{ $orderDetails->product_id }}">
+                                <select id="fproduct_id_{{ $i }}"
+                                    class="form-control @error('title') is-invalid @enderror fproduct_id select2" {{ isset($orderDetails) ? 'disabled' : ''  }}>
+                                    <option value="">@lang('index.please_select')</option>
+                                    @foreach ($productList as $product)
+                                    <option value="{{ $product->id }}" @selected($product->id == $orderDetails->product_id)>
+                                        {{ $product->name }} ({{ $product->code }})
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </td>
+                            <td>
+                                <input type="hidden" name="raw_material[]" value="{{ $orderDetails->raw_material_id }}">
+                                <select id="rm_id_{{ $i }}"
+                                    class="form-control @error('title') is-invalid @enderror rm_id select2" {{ isset($orderDetails) ? 'disabled' : ''  }}>
+                                    <option value="">@lang('index.please_select')</option>
+                                    @foreach ($rawMaterialList as $rm)
+                                    <option value="{{ $rm->id }}"
+                                        @selected($rm->id == optional($orderDetails)->raw_material_id)>
+                                        {{ $rm->name }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" name="raw_quantity[]" onfocus="this.select();"
+                                    class="check_required form-control @error('title') is-invalid @enderror rquantity_c"
+                                    placeholder="Raw Quantity" value="{{ $orderDetails->raw_qty }}"
+                                    id="rquantity_{{ $i }}" {{ isset($customerOrder) && $customerOrder->po_type == 'same_po' ? 'readonly' : ''  }}>
+                                <input type="hidden" name="old_raw_quantity[]" id="old_rquantity_{{ $i }}" value="{{ $orderDetails->raw_qty }}">
+                            </td>
+                            <td>
+                                <input type="number" name="prod_quantity[]" onfocus="this.select();"
+                                    class="check_required form-control @error('title') is-invalid @enderror integerchk pquantity_c" placeholder="Quantity" value="{{ $orderDetails->quantity }}"
+                                    id="pquantity_{{ $i }}" {{ isset($customerOrder) && $customerOrder->po_type == 'same_po' ? 'readonly' : ''  }}>
+                                <input type="hidden" name="old_prod_quantity[]" id="old_pquantity_{{ $i }}" value="{{ $orderDetails->quantity }}">
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" name="sale_price[]" onfocus="this.select();"
+                                        class="check_required form-control @error('title') is-invalid @enderror integerchk sale_price_c" placeholder="Unit Price" value="{{ $orderDetails->sale_price }}" id="sale_price_{{ $i }}" {{ isset($customerOrder) && $customerOrder->po_type == 'same_po' ? 'readonly' : ''  }}>
+                                    <span class="input-group-text"> {{ $setting->currency }}</span>
+                                </div>
+                                <input type="hidden" name="old_sale_price[]" id="old_sale_price_{{ $i }}" value="{{ $orderDetails->sale_price }}">
+                            </td>
+                            <td>
+                                <input type="number" name="price[]" onfocus="this.select();"
+                                    class="check_required form-control @error('price') is-invalid @enderror integerchk price_c" placeholder="Price" value="{{ $orderDetails->price }}"
+                                    id="price_{{ $i }}" readonly>
+                                <input type="hidden" name="old_price[]" id="old_price_{{ $i }}" value="{{ $orderDetails->price }}">
+                            </td>
+                            {{-- <td>
+                                        <div class="input-group">
+                                            <input type="text" id="discount_percent_{{ $i }}"
+                            name="discount_percent[]" onfocus="this.select();"
+                            class="check_required form-control @error('title') is-invalid @enderror integerchk discount_percent_c"
+                            value="{{ $value->discount_percent }}" placeholder="Discount">
+                            <span class="input-group-text">%</span>
+                            </div>
+                            </td> --}}
+                            <td>
+                                <input type="hidden" name="tax_type[]" value="{{ $orderDetails->tax_type }}">
+                                <select id="tax_type_id_{{ $i }}"
+                                    class="form-control @error('title') is-invalid @enderror tax_type_id select2" {{ isset($orderDetails) ? 'disabled' : ''  }}>
+                                    <option value="">@lang('index.please_select')</option>
+                                    @foreach ($tax_types as $tax)
+                                    <option value="{{ $tax->id }}" @selected($tax->id == $orderDetails->tax_type)>
+                                        {{ $tax->tax_type }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </td>
+                            <td>
+                                <div class="form-group radio_button_problem">
+                                    <div class="radio">
+                                        <label>
+                                            <input tabindex="1" type="radio" name="disabled_inter_state[{{ $i }}]" id="inter_state_yes_{{ $i }}"
+                                                value="Y" @if(isset($orderDetails->inter_state) && $orderDetails->inter_state === 'Y') checked @endif disabled>
+                                            @lang('index.yes')
+                                        </label>
+                                        <label>
+                                            <input tabindex="2" type="radio" name="disabled_inter_state[{{ $i }}]" id="inter_state_no_{{ $i }}"
+                                                value="N" @if(isset($orderDetails->inter_state) && $orderDetails->inter_state === 'N') checked @endif disabled>
+                                            @lang('index.no')
+                                        </label>
+                                    </div>
+                                    <input type="hidden" name="inter_state[{{ $i }}]" value="{{ $orderDetails->inter_state }}">
+                                </div>
+                            </td>
+                            <td class="cgst_cell" style="{{ ($showCSColumns && $orderDetails->inter_state == 'N') ? '' : 'display: none;' }}">
+                                <input type="hidden" name="cgst[]" class="form-control cgst_input" value="{{ $orderDetails->cgst }}">
+                                <input type="text" class="form-control cgst_input" value="{{ $orderDetails->cgst }}" {{ isset($orderDetails) ? 'disabled' : ''  }}>
+                            </td>
+                            <td class="sgst_cell" style="{{ ($showCSColumns && $orderDetails->inter_state == 'N') ? '' : 'display: none;' }}">
+                                <input type="hidden" name="sgst[]" class="form-control sgst_input" value="{{ $orderDetails->sgst }}">
+                                <input type="text" class="form-control sgst_input" value="{{ $orderDetails->sgst }}" {{ isset($orderDetails) ? 'disabled' : ''  }}>
+                            </td>
+                            <td class="igst_cell" style="{{ ($showIColumns && $orderDetails->inter_state == 'Y') ? '' : 'display: none;' }}">
+                                <input type="hidden" name="igst[]" class="form-control igst_input" value="{{ $orderDetails->igst }}" {{ isset($orderDetails) ? 'disabled' : ''  }}>
+                                <input type="text" class="form-control igst_input" value="{{ $orderDetails->igst }}">
+                            </td>
+                            <td>
+                                <input type="text" name="tax_amount[]" onfocus="this.select();"
+                                    class="check_required form-control @error('tax_amount') is-invalid @enderror integerchk tax_amount_c"
+                                    placeholder="Tax Amount" value="{{ $orderDetails->tax_amount }}"
+                                    id="tax_amount_{{ $i }}" readonly>
+                                <input type="hidden" name="old_tax_amount[]" id="old_tax_amount_{{ $i }}" value="{{ $orderDetails->tax_amount }}">
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" id="sub_total_{{ $i }}"
+                                        name="sub_total[]"
+                                        class="form-control sub_total_c"
+                                        value="{{ $orderDetails->sub_total }}"
+                                        placeholder="Subtotal"
+                                        readonly>
+                                    <span class="input-group-text"> {{ $setting->currency }}</span>
+                                </div>
+                                <input type="hidden" name="old_sub_total[]" id="old_sub_total_{{ $i }}" value="{{ $orderDetails->sub_total }}">
+                            </td>
+                            <td>
+                                @if(isset($orderDetails))
+                                {!! Form::text('disabled_delivery_date_product[]', $orderDetails->delivery_date != '' ? date('d-m-Y', strtotime($orderDetails->delivery_date)) : '', [
+                                'class' => 'form-control order_delivery_date',
+                                'placeholder' => 'Delivery Date',
+                                'disabled'
+                                ]) !!}
+                                {!! Form::hidden('delivery_date_product[]', $orderDetails->delivery_date != '' ? date('d-m-Y', strtotime($orderDetails->delivery_date)) : '') !!}
+                                @else
+                                {!! Form::text('delivery_date_product[]', date('d-m-Y'), [
+                                'class' => 'form-control order_delivery_date',
+                                'placeholder' => 'Delivery Date'
+                                ]) !!}
+                                @endif
+                            </td>
+                            <td>
+                                <input type="hidden" name="status[]" value="{{ $orderDetails->status }}">
+                                <select id="fstatus_id_{{ $i }}"
+                                    class="form-control @error('title') is-invalid @enderror fstatus_id select2" {{ isset($orderDetails) ? 'disabled' : ''  }}>
+                                    <option value="none" {{ $orderDetails->status == 'none' ? 'selected' : '' }}>
+                                        @lang('index.none')
+                                    </option>
+                                    <option value="in_progress"
+                                        {{ $orderDetails->status == 'in_progress' ? 'selected' : '' }}>
+                                        @lang('index.in_progress')
+                                    </option>
+                                    <option value="done" {{ $orderDetails->status == 'done' ? 'selected' : '' }}>
+                                        @lang('index.done')
+                                    </option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="hidden" name="delivered_qty[]" value="{{ $orderDetails->delivered_qty }}">
+                                <input type="number" class="check_required form-control @error('title') is-invalid @enderror integerchk" placeholder="@lang('index.delivered')" value="{{ $orderDetails->delivered_qty }}" id="delivered_{{ $i }}" {{ isset($orderDetails) ? 'disabled' : ''  }}>
+                            </td>
+                            <td>
+                                <input type="text" name="line_item_no[]" class="check_required form-control line_item_c @error('title') is-invalid @enderror" placeholder="@lang('index.line_item_no')" value="{{ $orderDetails->line_item_no }}" id="line_item_no_{{ $i }}" readonly>
+                            </td>
+                            {{-- @if(!isset($orderDetails)) --}}
+                            <td class="ir_txt_center"><a class="btn btn-xs del_row dlt_button"><iconify-icon
+                                        icon="solar:trash-bin-minimalistic-broken"></iconify-icon></a></td>
+                            {{-- @endif --}}
+                        </tr>
+                        {{-- @endforeach --}}
+                        @endif
+                    </tbody>
+                </table>
+                @if(isset($customerOrder) && $customerOrder->po_type == 'same_po')
+                <button id="finishProduct" class="btn bg-blue-btn w-10 mb-2 mt-2 {{ $customerOrder->po_type == 'same_po' ? '' : 'd-none' }}" type="button">@lang('index.add_more')</button>
+                @elseif(isset($customerOrder) && $customerOrder->po_type == 'same_line')
+                <button id="finishProduct" class="btn bg-blue-btn w-10 mb-2 mt-2 d-none" type="button">@lang('index.add_more')</button>
+                @elseif(isset($customerOrder))
+                <button id="finishProduct" class="btn bg-blue-btn w-10 mb-2 mt-2 d-none" type="button">@lang('index.add_more')</button>
+                @else
+                <button id="finishProduct" class="btn bg-blue-btn w-10 mb-2 mt-2" type="button">@lang('index.add_more')</button>
+                @endif
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2 gap-2">
+        <button class="btn bg-blue-btn w-20 stockCheck" data-bs-toggle="modal" data-bs-target="#stockCheck"
+            type="button">@lang('index.check_stock')</button>
+        {{-- <button class="btn bg-blue-btn w-20 estimateCost" data-bs-toggle="modal" data-bs-target="#estimateCost"
+                type="button">@lang('index.estimate_cost_date')</button> --}}
+    </div>
+    <div class="row mt-3">
+        <div class="col-sm-6 col-md-6 mb-2">
+            <div class="form-group">
+                <label>Upload Document</label>
+                <input type="hidden" name="file_old" value="{{ isset($customerOrder->file) && $customerOrder->file ? $customerOrder->file : '' }}">
+                <input type="file" name="file_button" id="file_button"
+                    class="form-control @error('title') is-invalid @enderror file_checker_global image_preview"
+                    accept="image/png,image/jpeg,image/jpg,application/pdf,.doc,.docx">
+                <p class="text-danger errorFile"></p>
+                <div class="image-preview-container">
+                    @if (isset($customerOrder->file) && $customerOrder->file)
+                    @php($file = $customerOrder->file)
+                    {{-- @foreach ($files as $file) --}}
+                    @php($fileExtension = pathinfo($file, PATHINFO_EXTENSION))
+                    @if ($fileExtension == 'pdf')
+                    <a class="text-decoration-none"
+                        href="{{ $baseURL }}uploads/order/{{ $file }}"
+                        target="_blank">
+                        <img src="{{ $baseURL }}assets/images/pdf.png"
+                            alt="PDF Preview" class="img-thumbnail mx-2"
+                            width="100px">
+                    </a>
+                    @elseif($fileExtension == 'doc' || $fileExtension == 'docx')
+                    <a class="text-decoration-none"
+                        href="{{ $baseURL }}uploads/order/{{ $file }}"
+                        target="_blank">
+                        <img src="{{ $baseURL }}assets/images/word.png"
+                            alt="Word Preview" class="img-thumbnail mx-2"
+                            width="100px">
+                    </a>
+                    @else
+                    <a class="text-decoration-none"
+                        href="{{ $baseURL }}uploads/order/{{ $file }}"
+                        target="_blank">
+                        <img src="{{ $baseURL }}uploads/order/{{ $file }}"
+                            alt="File Preview" class="img-thumbnail mx-2"
+                            width="100px">
+                    </a>
+                    @endif
+                    {{-- @endforeach --}}
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-sm-6 col-md-6 mb-2">
+            <div class="form-group">
+                <label>@lang('index.quotation_note')</label>
+                <textarea name="quotation_note" id="quotation_note" class="form-control @error('title') is-invalid @enderror" placeholder="{{ __('index.quotation_note') }}" rows="3">{{ isset($customerOrder) ?$customerOrder->quotation_note : "" }}</textarea>
+                <input type="hidden" name="total_subtotal" id="total_subtotal"
+                    value="{{ isset($customerOrder->total_amount) ? $customerOrder->total_amount : 0 }}"
+                    class="form-control input_aligning" placeholder="@lang('index.total')"
+                    readonly="">
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-md-6 mb-2">
+            <div class="form-group">
+                <label>@lang('index.internal_note')</label>
+                <textarea name="internal_note" id="internal_note" class="form-control @error('title') is-invalid @enderror" placeholder="{{ __('index.internal_note') }}" rows="3">{{ isset($customerOrder) ?$customerOrder->internal_note : "" }}</textarea>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col-sm-12 col-md-6 mb-2 d-flex gap-3">
+            <button type="submit" name="submit" value="submit"
+                class="btn bg-blue-btn order_submit_button"><iconify-icon
+                    icon="solar:check-circle-broken"></iconify-icon>@lang('index.submit')</button>
+            <a class="btn bg-second-btn" href="{{ route('customer-orders.index') }}"><iconify-icon
+                    icon="solar:round-arrow-left-broken"></iconify-icon>@lang('index.back')</a>
+        </div>
+    </div>
+</div>
+<select id="hidden_product" class="display_none">
+    @foreach ($productList as $value)
+    <option value="{{ $value->id ?? '' }}">{{ $value->name }} ({{ $value->code }})</option>
+    @endforeach
+</select>
+<select id="hidden_tax_type" class="display_none">
+    @foreach ($tax_types as $value)
+    <option value="{{ $value->id ?? '' }}">{{ $value->tax_type ?? '' }}</option>
+    @endforeach
+</select>
+<input type="hidden" id="default_currency" value="{{ $setting->currency }}" />

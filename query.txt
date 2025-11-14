@@ -1,0 +1,31 @@
+menus
+menuactivity
+ALTER TABLE `tbl_purchase` DROP `invoice_no`;
+ALTER TABLE `tbl_customer_ios` ADD `del_challan_no` VARCHAR(50) NULL DEFAULT NULL AFTER `id`;
+ALTER TABLE `tbl_customer_ios` ADD `outward_type` VARCHAR(6) NULL DEFAULT NULL AFTER `del_challan_no`;
+ALTER TABLE `tbl_customer_ios` ADD `outward_challan_no` VARCHAR(20) NULL DEFAULT NULL AFTER `outward_type`;
+ALTER TABLE `tbl_customer_ios` ADD `return_due_date` DATE NULL DEFAULT NULL AFTER `date`;
+ALTER TABLE `tbl_customer_io_details` ADD `inter_state` VARCHAR(1) NULL DEFAULT NULL AFTER `total`;
+ALTER TABLE `tbl_customer_io_details` ADD `cgst` VARCHAR(3) NULL DEFAULT NULL AFTER `inter_state`;
+ALTER TABLE `tbl_customer_io_details` ADD `sgst` VARCHAR(3) NULL DEFAULT NULL AFTER `cgst`;
+ALTER TABLE `tbl_customer_io_details` ADD `igst` VARCHAR(3) NULL DEFAULT NULL AFTER `sgst`;
+ALTER TABLE `tbl_customer_order_details` ADD `so_entry_no` VARCHAR(50) NOT NULL AFTER `id`;
+ALTER TABLE `tbl_customer_order_details` CHANGE `raw_qty` `raw_qty` FLOAT NOT NULL;
+ALTER TABLE `tbl_material_stocks` CHANGE `current_stock` `current_stock` FLOAT NOT NULL;
+ALTER TABLE `tbl_stock_adjust_logs` CHANGE `quantity` `quantity` FLOAT NOT NULL;
+ALTER TABLE `tbl_manufactures_rmaterials` CHANGE `stock` `stock` FLOAT NOT NULL;
+ALTER TABLE `tbl_stock_return_entries` CHANGE `qty` `qty` FLOAT NOT NULL;
+ALTER TABLE `tbl_partner_ios` ADD `del_challan_no` VARCHAR(50) NULL DEFAULT NULL AFTER `id`;
+ALTER TABLE `tbl_partner_ios` ADD `return_due_date` DATE NULL DEFAULT NULL AFTER `io_date`;
+ALTER TABLE `tbl_partner_io_details` ADD `inter_state` VARCHAR(1) NULL DEFAULT NULL AFTER `total`;
+ALTER TABLE `tbl_partner_io_details` ADD `cgst` VARCHAR(3) NULL DEFAULT NULL AFTER `inter_state`;
+ALTER TABLE `tbl_partner_io_details` ADD `sgst` VARCHAR(3) NULL DEFAULT NULL AFTER `cgst`;
+ALTER TABLE `tbl_partner_io_details` ADD `igst` VARCHAR(3) NULL DEFAULT NULL AFTER `sgst`;
+ALTER TABLE `tbl_partner_io_details` ADD `outward_type` VARCHAR(6) NULL DEFAULT NULL AFTER `inward_date`;
+ALTER TABLE `tbl_partner_io_details` ADD `outward_challan_no` VARCHAR(20) NULL DEFAULT NULL AFTER `outward_type`;
+ALTER TABLE `tbl_customer_orders` ADD `po_type` VARCHAR(30) NULL DEFAULT NULL AFTER `order_type`;
+ALTER TABLE `tbl_customer_po_reorders` ADD `product_id` INT NULL DEFAULT NULL AFTER `customer_order_detail_id`;
+ALTER TABLE `tbl_customer_po_reorders` ADD `mat_id` INT NULL DEFAULT NULL AFTER `product_id`;
+ALTER TABLE `tbl_manufactures` ADD `customer_reorder_id` INT NULL DEFAULT NULL AFTER `customer_order_id`;
+ALTER TABLE `tbl_stock_adjust_logs` ADD `customer_reorder_id` INT NULL DEFAULT NULL AFTER `mat_stock_id`;
+ALTER TABLE `tbl_quotation_details` ADD `manufacture_id` INT NULL DEFAULT NULL AFTER `customer_order_id`;
