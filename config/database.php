@@ -7,7 +7,7 @@ $db['default'] = array(
 	'hostname' => 'localhost',
 	'username' => 'root',
 	'password' => '',
-	'database' => 'danish'
+	'database' => 'danish-final'
 );
 
 return [
@@ -46,7 +46,7 @@ return [
             'url' => '',
             'host' => 'localhost',
             'port' => '3306',
-            'database' => 'danish',
+            'database' => 'danish-final',
             'username' => 'root',
             'password' => '',
             'unix_socket' => '',
