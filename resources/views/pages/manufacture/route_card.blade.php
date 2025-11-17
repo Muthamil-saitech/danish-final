@@ -19,11 +19,6 @@ $baseURL = getBaseURL();
     <section class="content-header">
         <div class="row">
             <div class="col-md-6">
-                @if(!isset($latest_form))
-                <div class="flex-start">
-                    <img src="{!! getBaseURL() . (isset(getWhiteLabelInfo()->logo) ? 'uploads/white_label/' . getWhiteLabelInfo()->logo : 'images/logo.png') !!}" alt="Logo Image" class="img-fluid mb-2">
-                </div>
-                @endif
             </div>
             <div class="col-md-6">
                 <button id="route_add" data-bs-toggle="modal" data-id="{{ $obj->id }}" data-bs-target="#routeUpl" class="btn bg-second-btn" title="Route Card Form Upload" type="button"><i class="fa-regular fa-circle-up"></i>&nbsp;Upload</button>
@@ -69,8 +64,23 @@ $baseURL = getBaseURL();
         </div>
     @else
     <div style="width: 98%; max-width: 1100px; margin: 5px auto;">
-        <h3 style="text-align: center; font-weight: bold; font-size: 22px; margin-bottom: 5px;">{{ strtoupper($setting->name_company_name) }}</h3>
-        <p style="text-align: center; font-size: 16px; font-weight: bold; margin-bottom: 10px;">{{ isset($title) && $title ? strtoupper($title) : '' }}</p>
+        <div style="display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 10px;">
+            <div style="position: absolute; left: 0;">
+                <img src="{!! getBaseURL() .
+                            (isset(getWhiteLabelInfo()->logo) ? 'uploads/white_label/' . getWhiteLabelInfo()->logo : 'images/logo.png') !!}" 
+                    alt="Logo Image" 
+                    class="img-fluid mb-2" 
+                    style="max-height: 70px;">
+            </div>
+            <div style="text-align: center;">
+                <h3 style="font-weight: bold; font-size: 22px; margin-bottom: 5px;">
+                    {{ strtoupper($setting->name_company_name) }}
+                </h3>
+                <p style="font-size: 16px; font-weight: bold; margin: 0;">
+                    {{ isset($title) && $title ? strtoupper($title) : '' }}
+                </p>
+            </div>
+        </div>
         <div style="border: 1px solid #222; border-top:none; margin-top: 20px;">
            <table style="width: 100%; border-collapse: collapse; font-size: 15px; ">
                 <!-- First Row: Two Even Columns -->

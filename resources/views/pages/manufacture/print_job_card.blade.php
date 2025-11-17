@@ -29,13 +29,15 @@ $whiteLabelInfo = App\WhiteLabelSettings::first();
     </div>
     @else
     <div style="width: 98%; max-width: 1100px; margin: 30px auto; font-family: Arial, sans-serif;  padding: 18px;">
-        <div class="text-center">
-            <img src="{!! getBaseURL() .
-                        (isset(getWhiteLabelInfo()->logo) ? 'uploads/white_label/' . getWhiteLabelInfo()->logo : 'images/logo.png') !!}" alt="Logo Image" class="img-fluid mb-2">
-        </div>
-        <div style="text-align: center;">
-            <!-- <h3 style="margin: 0; font-size: 22px;">{{ strtoupper($setting->name_company_name) }}</h3> -->
-            <p style="font-size: 14px; margin-bottom: 10px">{{ strtoupper($setting->address) }}</p>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="text-align: left;">
+                <img src="{!! getBaseURL() .
+                            (isset(getWhiteLabelInfo()->logo) ? 'uploads/white_label/' . getWhiteLabelInfo()->logo : 'images/logo.png') !!}" alt="Logo Image" class="img-fluid mb-2">
+                <!-- <h3 style="margin: 0; font-size: 22px;">{{ strtoupper($setting->name_company_name) }}</h3> -->
+            </div>
+            <div style="text-align:right;">
+                <p style="font-size: 14px; margin-bottom: 10px">{{ strtoupper($setting->address) }}</p>
+            </div>
         </div>
         <h3 style="text-align: center; margin-bottom: 10px; font-size: 18px;">{{ isset($title) && $title ? strtoupper($title) : '' }}</h3>
         <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">

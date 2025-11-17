@@ -47,16 +47,16 @@ $baseURL = getBaseURL();
                         <table>
                             <tr>
                                 <td class="w-50">
+                                    <img src="{!! getBaseURL() .
+                                            (isset(getWhiteLabelInfo()->logo) ? 'uploads/white_label/' . getWhiteLabelInfo()->logo : 'images/logo.png') !!}" alt="site-logo">
+                                </td>
+                                <td class="w-50 text-right">
                                     <h3 class="pb-7">{{ getCompanyInfo()->company_name }}</h3>
                                     <p class="pb-7 rgb-71">{{ safe(getCompanyInfo()->address) }}</p>
                                     <p class="pb-7 rgb-71">@lang('index.email') : {{ safe(getCompanyInfo()->email) }}</p>
                                     <p class="pb-7 rgb-71">@lang('index.phone') : {{ safe(getCompanyInfo()->phone) }}</p>
                                     <p class="pb-7 rgb-71">@lang('index.website') : <a href="{{ getCompanyInfo()->website }}" target="_blank">{{ safe(getCompanyInfo()->website) }}</a>
                                     </p>
-                                </td>
-                                <td class="w-50 text-right">
-                                    <img src="{!! getBaseURL() .
-                                            (isset(getWhiteLabelInfo()->logo) ? 'uploads/white_label/' . getWhiteLabelInfo()->logo : 'images/logo.png') !!}" alt="site-logo">
                                 </td>
                             </tr>
                         </table>

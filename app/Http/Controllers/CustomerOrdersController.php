@@ -66,21 +66,7 @@ class CustomerOrdersController extends Controller
         if (isset($customer_id) && $customer_id != '') {
             $order->where('customer_id', $customer_id);
         }
-        $obj = $order->with('details')->orderBy('id', 'DESC')->get()->map(function ($customer_order) {
-            foreach ($customer_order->details as $detail) {
-                $detail->reorder_total = DB::table('tbl_customer_po_reorders')
-                ->where('customer_order_detail_id', $detail->id)
-                ->value('subtotal');
-                /* $exists = MaterialStock::where('reference_no', $customer_order->reference_no)
-                    ->where('line_item_no', $detail->line_item_no)
-                    ->where('mat_id', $detail->raw_material_id)
-                    ->where('del_status', 'Live')
-                    ->exists();
-                    dd($customer_order->reference_no, $detail->line_item_no, $detail->raw_material_id, $exists);
-                $detail->used_in_stock = $exists; */
-            }
-            return $customer_order;
-        });
+        $obj = $order->with('details')->orderBy('id', 'DESC')->get();
         // dd($obj);
         $customers = Customer::where('del_status', 'Live')->orderBy('id', 'DESC')->get();
         $title = __('index.customer_order');
@@ -313,7 +299,7 @@ class CustomerOrdersController extends Controller
         $customerOrder->po_date = date('Y-m-d', strtotime($request->get('po_date')));
         $customerOrder->delivery_address = escape_output($request->get('delivery_address'));
         $customerOrder->total_product = null_check(sizeof($productList));
-        $customerOrder->total_amount = $customerOrder->total_amount + $request->get('total_subtotal');
+        $customerOrder->total_amount = null_check(escape_output($request->get('total_subtotal')));
         $customerOrder->quotation_note = html_entity_decode($request->get('quotation_note'));
         $customerOrder->internal_note = html_entity_decode($request->get('internal_note'));
         $customerOrder->save();
@@ -353,8 +339,6 @@ class CustomerOrdersController extends Controller
                         $re_order = new CustomerPoReorder();
                         $re_order->customer_order_id = $last_id;
                         $re_order->customer_order_detail_id = $existingDetail->id;
-                        $re_order->product_id = $existingDetail->product_id;
-                        $re_order->mat_id = $existingDetail->raw_material_id;
                         $re_order->mat_qty = $existingDetail->raw_qty;
                         $re_order->prod_qty = $existingDetail->quantity;
                         $re_order->unit_price = $existingDetail->sale_price;
@@ -366,8 +350,8 @@ class CustomerOrdersController extends Controller
                         $re_order->igst = $existingDetail->igst;
                         $re_order->tax_amount = $existingDetail->tax_amount;
                         $re_order->subtotal = $existingDetail->sub_total;
+                        // dd($re_order);
                         $re_order->save();
-                        $customer_reorder_id = $re_order->id;
                         $reference_no = $customerOrder->reference_no;
                         $line_item_no = $existingDetail->line_item_no;
 
@@ -387,7 +371,6 @@ class CustomerOrdersController extends Controller
                                 $stock_qty = $newData['raw_qty'] ?? 0;
                                 $log = new \App\StockAdjustLog();
                                 $log->mat_stock_id = $materialStock->id;
-                                $log->customer_reorder_id = $customer_reorder_id;
                                 $log->type = 'addition';
                                 $log->quantity = $stock_qty;
                                 $log->stock_type = 'customer';
@@ -426,21 +409,17 @@ class CustomerOrdersController extends Controller
                     $obj->save();
                 }
             }
-            $currentDetailId = $existingDetail->id ?? $obj->id;
-            $invoiceExists = CustomerOrderInvoice::where('customer_order_id', $currentDetailId)->exists();
-            if (!$invoiceExists) {
-                $total_amount = ($existingDetail->sub_total ?? $obj->sub_total)
-                            + $request->get('total_subtotal');
-
-                $inv_obj = new CustomerOrderInvoice();
-                $inv_obj->customer_order_id = $currentDetailId;
-                $inv_obj->invoice_type = 'Quotation';
-                $inv_obj->amount = $total_amount;
-                $inv_obj->invoice_date = date('Y-m-d', strtotime($request->get('po_date')));
-                $inv_obj->paid_amount = 0.00;
-                $inv_obj->due_amount = $total_amount;
-                $inv_obj->save();
-            }
+        }
+        $invoiceExists = CustomerOrderInvoice::where('customer_order_id', $detail_id)->exists();
+        if (!$invoiceExists) {
+            $inv_obj = new \App\CustomerOrderInvoice();
+            $inv_obj->customer_order_id = null_check($detail_id);
+            $inv_obj->invoice_type = 'Quotation';
+            $inv_obj->amount = null_check(escape_output($request->get('total_subtotal')));
+            $inv_obj->invoice_date = null_check(date('Y-m-d', strtotime($request->get('po_date'))));
+            $inv_obj->paid_amount = 0.00;
+            $inv_obj->due_amount = null_check(escape_output($request->get('total_subtotal')));
+            $inv_obj->save();
         }
         return redirect('customer-orders')->with(updateMessage());
     }
@@ -523,11 +502,9 @@ class CustomerOrdersController extends Controller
             if ($remainingProducts === 1) {
                 CustomerOrder::where('id', $customerOrderId)->update(['del_status' => 'Deleted']);
                 CustomerOrderInvoice::where('customer_order_id', $customerOrder->id)->update(['del_status' => 'Deleted']);
-                CustomerPoReorder::where('customer_order_detail_id', $customerOrder->id)->update(['del_status' => 'Deleted']);
                 $customerOrder->update(['del_status' => 'Deleted']);
             } else {
                 CustomerOrderInvoice::where('customer_order_id', $customerOrder->id)->update(['del_status' => 'Deleted']);
-                CustomerPoReorder::where('customer_order_detail_id', $customerOrder->id)->update(['del_status' => 'Deleted']);
                 $customerOrder->update(['del_status' => 'Deleted']);
             }
             return redirect('customer-orders')->with(deleteMessage());
@@ -560,14 +537,14 @@ class CustomerOrdersController extends Controller
         $orderInvoice = CustomerOrderInvoice::where('customer_order_id', $obj->id)->where('del_status', "Live")->orderBy('id', 'desc')->get();
         $orderDeliveries = CustomerOrderDelivery::where('customer_order_id', $obj->id)->where('del_status', "Live")->orderBy('id', 'desc')->get();
         return view('pages.customer_order.invoice', compact('obj', 'orderDetails', 'orderInvoice', 'orderDeliveries'));
-    }
+    } 
     public function order_edit_logs($id){
         $id = encrypt_decrypt($id, 'decrypt');
         $order_edit_logs =  CustomerPoReorder::where('customer_order_detail_id',$id)->orderBy('id','desc')->get();
         // dd($order_edit_logs);
         $orderDetails = CustomerOrderDetails::where('id', $id)->where('del_status', "Live")->first();
         $customerOrder = CustomerOrder::find($orderDetails->customer_order_id);
-        $title = __('index.customer_order_details');
+        $title = __('index.order_edit_logs');
         $obj = $customerOrder;
         return view('pages.customer_order.view_order_edit_logs', compact('title', 'obj', 'orderDetails','order_edit_logs'));
     }
@@ -576,19 +553,18 @@ class CustomerOrdersController extends Controller
         $order_edit_logs =  CustomerPoReorder::where('customer_order_detail_id',$id)->orderBy('id','desc')->get();
         $orderDetails = CustomerOrderDetails::where('id', $id)->where('del_status', "Live")->first();
         $customerOrder = CustomerOrder::find($orderDetails->customer_order_id);
-        $title = __('index.customer_order_details');
+        $title = __('index.order_edit_logs');
         $obj = $customerOrder;
         $pdf = PDF::loadView('pages.customer_order.order_edit_logs_invoice', compact('title', 'obj', 'orderDetails','order_edit_logs'))->setPaper('a4', 'landscape');
         return $pdf->stream('order_edit_logs_'.$orderDetails->po_no . '.pdf');
     }
     public function printEditLog($id)
     {
-       $id = encrypt_decrypt($id, 'decrypt');
         $order_edit_logs =  CustomerPoReorder::where('customer_order_detail_id',$id)->orderBy('id','desc')->get();
         $orderDetails = CustomerOrderDetails::where('id', $id)->where('del_status', "Live")->first();
         $customerOrder = CustomerOrder::find($orderDetails->customer_order_id);
-        $title = __('index.customer_order_details');
+        $title = __('index.order_edit_logs');
         $obj = $customerOrder;
-        return view('pages.customer_order.order_edit_logs_invoice', compact('title', 'obj', 'orderDetails','order_edit_logs'))->setPaper('a4', 'landscape');
+        return view('pages.customer_order.order_edit_logs_invoice', compact('title', 'obj', 'orderDetails','order_edit_logs'));
     }
 }

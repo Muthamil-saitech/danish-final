@@ -18,9 +18,9 @@ if (isset($setting->base_color) && $setting->base_color) {
             </div>
             <div class="col-md-6">
                 <a href="javascript:void();" target="_blank" class="btn bg-second-btn print_invoice"
-                    data-id="1"><iconify-icon icon="solar:printer-broken"></iconify-icon>
+                    data-id="{{ $customer_io->id }}"><iconify-icon icon="solar:printer-broken"></iconify-icon>
                     @lang('index.print')</a>
-                <a class="btn bg-second-btn" href="#"><iconify-icon
+                <a class="btn bg-second-btn" href="{{ route('customer_io.index') }}"><iconify-icon
                         icon="solar:round-arrow-left-broken"></iconify-icon>@lang('index.back')</a>
             </div>
         </div>
@@ -38,34 +38,27 @@ if (isset($setting->base_color) && $setting->base_color) {
                         </p>
                     </div>
                 </div>                
-                <div style="display: flex;">
-                    <div style="width: 50%; border-right: 1px solid #000; border-bottom: 1px solid #000; padding: 8px 10px; font-size: 16px;">
-                        <div style="display: flex; margin-bottom: 4px;">
-                            <span style="width: 40%;">GSTIN </span> <b>: {{ $customer_io->customer->gst_no }}</b>
-                        </div>
-                        <div style="display: flex;margin-bottom: 4px;">
-                            <span style="width: 40%;">Name </span> <b> : {{ $customer_io->customer->name }}</b>
-                        </div>
-                        <div style="display: flex; margin-bottom: 4px;">
-                            <span style="width: 40%;">Address</span> <b> : {{ $customer_io->d_address }}</b>
-                        </div>
+                <div style="display: flex; width: 100%;">
+                    <div style="width: 50%; border-right: 1px solid #000; border-bottom: 1px solid #000; padding: 8px 10px; font-size: 16px;
+                        display: grid; grid-template-columns: 40% 60%; grid-auto-rows: min-content; row-gap: 4px; align-items: start; word-break: break-word;">
+                        <span>GSTIN</span>
+                        <b>: {{ $customer_io->customer->gst_no }}</b>
+                        <span>Name</span>
+                        <b>: {{ $customer_io->customer->name }}</b>
+                        <span>Address</span>
+                        <b>: {{ $customer_io->d_address }}</b>
                     </div>
-                    <div style="width: 50%; border-bottom: 1px solid #000; padding: 8px 10px; font-size: 16px;">
-                        <div style="display: flex; margin-bottom: 4px;">
-                            <span style="width: 40%;">Reference PO Number </span> <b>: {{ $customer_io->po_no .'/'. $customer_io->line_item_no }}</b>
-                        </div>
-                        <div style="display: flex;margin-bottom: 4px;">
-                            <span style="width: 40%;">Delivery Challan Number</span> <b> : {{ $customer_io->del_challan_no }}</b>
-                        </div>
-                        <div style="display: flex; margin-bottom: 4px;">
-                            <span style="width: 40%;">Delivery Challan Date</span> <b> : {{ date('d-m-Y', strtotime($customer_io->date)) }}</b>
-                        </div>
-                        <div style="display: flex; margin-bottom: 4px;">
-                            <span style="width: 40%;">Place of Supply</span> <b> : </b>
-                        </div>
-                        <div style="display: flex; margin-bottom: 4px;">
-                            <span style="width: 40%;">Region of Consignee</span> <b> : </b>
-                        </div>
+                    <div style="width: 50%; border-bottom: 1px solid #000; padding: 8px 10px; font-size: 16px; display: grid; grid-template-columns: 40% 60%; grid-auto-rows: min-content; row-gap: 4px; align-items: start; word-break: break-word;">
+                        <span>Reference PO Number</span>
+                        <b>: {{ $customer_io->po_no . '/' . $customer_io->line_item_no }}</b>
+                        <span>Delivery Challan Number</span>
+                        <b>: {{ $customer_io->del_challan_no }}</b>
+                        <span>Delivery Challan Date</span>
+                        <b>: {{ date('d-m-Y', strtotime($customer_io->date)) }}</b>
+                        <span>Place of Supply</span>
+                        <b>: </b>
+                        <span>Region of Consignee</span>
+                        <b>: </b>
                     </div>
                 </div>
                 <div style="display: flex;">
@@ -264,6 +257,7 @@ if (isset($setting->base_color) && $setting->base_color) {
                 <div style="display: flex;">
                     <div style="width: 60%; display: flex; margin-top: 0px; border-right:1px solid #000;">
                         <span style="width: 40%;"><b>Notes: </b> FOR INSPECTION</span>
+                        <span style="width: 20%;">Not For Sale</span>
                     </div>
                     <div style="width: 40%; text-align: center;">
                         <b>ANDERSON GREENWOOD CROSBY SANMAR LIMITED(Formerly Pentair Sanmar Ltd)</b><br><br><br>
@@ -326,3 +320,4 @@ $(document).ready(function () {
 });
 </script>
 @endsection
+

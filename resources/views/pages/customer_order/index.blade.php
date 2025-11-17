@@ -140,12 +140,12 @@ if (isset($setting->base_color) && $setting->base_color) {
                                 <select name="customer_id" id="fil_customer_id" class="form-control select2">
                                     <option value="">@lang('index.select')</option>
                                     @if(isset($customer_id))
-                                    @foreach ($customers as $key => $value)
-                                    <option value="{{ $value->id }}"
-                                        {{ isset($customer_id) && $customer_id == $value->id ? 'selected' : '' }}>
-                                        {{ $value->name }} ({{ $value->customer_id }})
-                                    </option>
-                                    @endforeach
+                                        @foreach ($customers as $key => $value)
+                                        <option value="{{ $value->id }}"
+                                            {{ isset($customer_id) && $customer_id == $value->id ? 'selected' : '' }}>
+                                            {{ $value->name }} ({{ $value->customer_id }})
+                                        </option>
+                                        @endforeach
                                     @endif
                                 </select>
                             </div>

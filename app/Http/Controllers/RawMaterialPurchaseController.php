@@ -177,7 +177,8 @@ class RawMaterialPurchaseController extends Controller
         $rmaterials = RawMaterial::orderBy('name', 'ASC')->where('del_status', "Live")->get();
         $accounts = Account::orderBy('name', 'ASC')->where('del_status', "Live")->get();
         $pruchse_rmaterials = RMPurchase_model::where('purchase_id', $rawmaterialpurchase->id)->where('del_status', "Live")->get();
-        return view('pages.purchase.viewDetails', compact('title', 'company', 'obj', 'suppliers', 'rmaterials', 'pruchse_rmaterials', 'accounts'));
+        $material_types = MaterialType::where('del_status','Live')->orderBy('id','DESC')->get();
+        return view('pages.purchase.viewDetails', compact('title', 'company', 'obj', 'suppliers', 'rmaterials', 'pruchse_rmaterials', 'accounts', 'material_types'));
     }
 
     public function printPurchase($id)
@@ -190,7 +191,8 @@ class RawMaterialPurchaseController extends Controller
         $accounts = Account::orderBy('name', 'ASC')->where('del_status', "Live")->get();
         $pruchse_rmaterials = RMPurchase_model::where('purchase_id', $id)->where('del_status', "Live")->get();
         $setting = getSettingsInfo();
-        return view('pages.purchase.print_purchase_invoice', compact('title', 'company', 'obj', 'suppliers', 'rmaterials', 'pruchse_rmaterials', 'accounts', 'setting'));
+        $material_types = MaterialType::where('del_status','Live')->orderBy('id','DESC')->get();
+        return view('pages.purchase.print_purchase_invoice', compact('title', 'company', 'obj', 'suppliers', 'rmaterials', 'pruchse_rmaterials', 'accounts', 'setting', 'material_types'));
     }
 
     /**

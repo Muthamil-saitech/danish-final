@@ -14,4 +14,8 @@ class PartnerIoDetail extends Model
     {
         return $this->hasOne(PartnerInstrumentPayment::class, 'partner_io_detail_id', 'id');
     }
+    public function instrument()
+    {
+        return $this->belongsTo(Instrument::class, 'ins_name');
+    }
 }

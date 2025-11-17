@@ -76,7 +76,7 @@ $baseURL = getBaseURL();
             </tr>
         </table>
         <div class="text-center pt-10 pb-10">
-            <h2 class="color-000000 pt-20 pb-20">@lang('index.order_details')</h2>
+            <h2 class="color-000000 pt-20 pb-20">@lang('index.order_edit_logs')</h2>
         </div>
         <table>
             <tr>
@@ -108,7 +108,7 @@ $baseURL = getBaseURL();
                 </td>
             </tr>
         </table>
-        <table class="w-100 mt-20 order_details" style="border: 1px solid #000;">
+        <table class="w-100 mt-20 order_details">
             <thead class="b-r-3">
                 <tr>
                     <th class="w-5 text-center" style="border:1px solid #000;">@lang('index.sn')</th>
@@ -142,7 +142,7 @@ $baseURL = getBaseURL();
                             <td class="text-right" style="border:1px solid #000; font-family: DejaVu Sans, sans-serif;">₹{{ $log->price }}</td>
                             <td class="text-right" style="border:1px solid #000; font-family: DejaVu Sans, sans-serif;">₹{{ $log->tax_amount }}</td>
                             <td class="text-right" style="border:1px solid #000; font-family: DejaVu Sans, sans-serif;">₹{{ number_format($log->subtotal,2) }}</td>
-                            <td class="text-center" style="border:1px solid #000;">{{ getDateFormat($log->created_at) }}</td>
+                            <td class="text-center" style="border:1px solid #000;">{{ getDateFormat($log->created_at) }} {{ date('h:i A', strtotime($log->created_at)) }}</td>
                         </tr>
                     @endforeach
                 @else

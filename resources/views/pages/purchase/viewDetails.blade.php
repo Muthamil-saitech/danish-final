@@ -45,16 +45,16 @@
                             <table>
                                 <tr>
                                     <td class="w-50">
+                                        <img src="{!! getBaseURL() .
+                                            (isset(getWhiteLabelInfo()->logo) ? 'uploads/white_label/' . getWhiteLabelInfo()->logo : 'images/logo.png') !!}" alt="site-logo">
+                                    </td>
+                                    <td class="w-50 text-right">
                                         <h3 class="pb-7">{{ getCompanyInfo()->company_name }}</h3>
                                         <p class="pb-7 rgb-71">{{ safe(getCompanyInfo()->address) }}</p>
                                         <p class="pb-7 rgb-71">@lang('index.email') : {{ safe(getCompanyInfo()->email) }}</p>
                                         <p class="pb-7 rgb-71">@lang('index.phone') : {{ safe(getCompanyInfo()->phone) }}</p>
                                         <p class="pb-7 rgb-71">@lang('index.website') : <a href="{{ getCompanyInfo()->website }}" target="_blank">{{ safe(getCompanyInfo()->website) }}</a>
                                         </p>
-                                    </td>
-                                    <td class="w-50 text-right">
-                                        <img src="{!! getBaseURL() .
-                                            (isset(getWhiteLabelInfo()->logo) ? 'uploads/white_label/' . getWhiteLabelInfo()->logo : 'images/logo.png') !!}" alt="site-logo">
                                     </td>
                                 </tr>
                             </table>
@@ -83,20 +83,17 @@
                                             {{ getDateFormat($obj->date) }}
                                         </p>
                                         <p class="pb-7 rgb-71">
-                                            <span class="f-w-600">@lang('index.status'):</span>
-                                            <span class="status-draft">{{ $obj->status }}</span>
-                                        </p>
-                                        <p class="pb-7 rgb-71">
                                             <span class="f-w-600">@lang('index.mat_type'):</span>
                                             @php
-                                                $types = [
-                                                    "2" => "Raw Material",
-                                                    "3" => "Insert"
-                                                ];
-                                                $selectedTypes = explode(',', $obj->mat_type);
+                                                $type = $material_types->firstWhere('id', $obj->mat_type);
+                                                $typeName = $type ? $type->type_name : '';
                                             @endphp
-                                            <span
-                                                class="status-draft">{{ collect($selectedTypes)->map(fn($type) => $types[trim($type)] ?? '')->filter()->join(', ') }}</span>
+                                            <span class="status-draft">{{ $typeName }}</span>
+                                        </p>
+
+                                        <p class="pb-7 rgb-71">
+                                            <span class="f-w-600">@lang('index.status'):</span>
+                                            <span class="status-draft">{{ $obj->status }}</span>
                                         </p>
                                         {{-- <p class="pb-7 rgb-71">
                                             <span class="f-w-600">@lang('index.ins_type'):</span>
@@ -117,6 +114,7 @@
                                         {{-- <th class="w-15 text-center">Heat No</th> --}}
                                         <th class="w-15 text-center">@lang('index.unit_price')</th>
                                         <th class="w-15 text-center">@lang('index.raw_quantity')</th>
+                                        <th class="w-15 text-center">@lang('index.tax_percentage')</th>
                                         <th class="w-15 text-center">@lang('index.tax_amount')</th>
                                         <th class="w-20 text-right pr-5">@lang('index.total')</th>
                                     </tr>
@@ -136,7 +134,9 @@
                                                 <td class="text-center">{{ $value->quantity_amount }}
                                                     {{ getRMUnitById($value->mat_unit) }}
                                                 </td>
-                                                <td class="text-right pr-10">{{ getAmtCustom($value->tax_amount) }}
+                                                <td class="text-center pr-10">{{ $value->tax_percent }} %
+                                                </td>
+                                                <td class="text-center pr-10">{{ getAmtCustom($value->tax_amount) }}
                                                 </td>
                                                 <td class="text-right pr-10">{{ getAmtCustom($value->total) }}
                                                 </td>
@@ -149,6 +149,7 @@
                             <table>
                                 <tr>
                                     <td valign="top" class="w-50">
+                                        @if(isset($obj->note) && !empty($obj->note))
                                         <div class="pt-20">
                                             <h4 class="d-block pb-10">@lang('index.note')</h4>
                                             <div class="">
@@ -157,6 +158,15 @@
                                                 </p>
                                             </div>
                                         </div>
+                                        @endif
+                                        @if(isset($obj->file) && !empty($obj->file))
+                                        <div class="pt-5">
+                                            <h4 class="d-block pb-10">@lang('index.relavent_file')</h4>
+                                            <div>
+                                                <img src="{{ $baseURL }}uploads/purchase/{{ $obj->file }}" alt="" width="150">
+                                            </div>
+                                        </div>
+                                        @endif
                                     </td>
                                     <td class="w-50">
                                         <table>

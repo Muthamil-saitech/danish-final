@@ -37,18 +37,31 @@ table thead tr th {
   border: 0;
   background: #dfdede !important;
 }
+
 .manufacture_table th,
 .manufacture_table td {
   border: 1px solid #000;
   padding: 6px;
   background: none !important;
 }
+
+.purchase_table th {
+  border: 1px solid #000;
+  background: none !important;
+}
+
+.purchase_table td {
+  border: 1px solid #000;
+  padding: 6px;
+}
+
 .production_table th,
 .production_table td {
   border: 1px solid #000;
   padding: 6px;
   background: none !important;
 }
+
 .sales_table th,
 .sales_table td {
   border: 1px solid #000;

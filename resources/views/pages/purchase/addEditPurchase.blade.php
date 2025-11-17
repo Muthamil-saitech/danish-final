@@ -153,11 +153,11 @@
                                 <table class="table">
                                     <thead>
                                         <th class="w-5 text-start">@lang('index.sn')</th>
-                                        <th class="w-30">@lang('index.raw_material_name')(@lang('index.code'))</th>
-                                        <th class="w-20">@lang('index.unit_price')<span class="required_star">*</span></th>
-                                        <th class="w-20">@lang('index.raw_quantity')<span class="required_star">*</span></th>
-                                        <th class="w-20">@lang('index.tax_percentage') <span class="required_star">*</span></th>
-                                        <th class="w-20">@lang('index.tax_amount')</th>
+                                        <th class="w-25">@lang('index.raw_material_name')(@lang('index.code'))</th>
+                                        <th class="w-15">@lang('index.unit_price')<span class="required_star">*</span></th>
+                                        <th class="w-15">@lang('index.raw_quantity')<span class="required_star">*</span></th>
+                                        <th class="w-10">@lang('index.tax_percentage') <span class="required_star">*</span></th>
+                                        <th class="w-15">@lang('index.tax_amount')</th>
                                         <th class="w-20">@lang('index.total')</th>
                                         <th class="w-5 ir_txt_center">@lang('index.actions')</th>
                                     </thead>
@@ -197,18 +197,14 @@
                                                     </td>
                                                     <td>
                                                         <div class="input-group">
-                                                            <div class="input-group">
-                                                                <input type="text" name="tax_percent" id="tax_percent_1" class="form-control @error('tax_percent') is-invalid @enderror tax_percent_c cal_row" placeholder="@lang('index.tax_percentage')" value="{{ isset($value->tax_percent) ? $value->tax_percent : old('tax_percent') }}">
-                                                                <span class="input-group-text">%</span>
-                                                            </div>
+                                                            <input type="text" name="tax_percent[]" id="tax_percent_2" class="form-control @error('tax_percent') is-invalid @enderror tax_percent_c cal_row" placeholder="@lang('index.tax_percentage')" value="{{ isset($value->tax_percent) ? $value->tax_percent : old('tax_percent') }}">
+                                                            <span class="input-group-text">%</span>
                                                         </div>
                                                     </td>
                                                     <td>
                                                         <div class="input-group">
-                                                            <div class="input-group">
-                                                                <input type="text" name="tax_amount" id="tax_amount_1" class="form-control @error('tax_amount') is-invalid @enderror tax_amount_c cal_row" placeholder="@lang('index.tax_amount')" value="{{ isset($value->tax_amount) ? $value->tax_amount : old('tax_amount') }}">
-                                                                <span class="input-group-text">{{ $setting->currency }}</span>
-                                                            </div>
+                                                            <input type="text" name="tax_amount[]" id="tax_amount_1" class="form-control @error('tax_amount') is-invalid @enderror tax_amount_c cal_row" placeholder="@lang('index.tax_amount')" value="{{ isset($value->tax_amount) ? $value->tax_amount : old('tax_amount') }}">
+                                                            <span class="input-group-text">{{ $setting->currency }}</span>
                                                         </div>
                                                     </td>
                                                     <td>

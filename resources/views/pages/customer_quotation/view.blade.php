@@ -12,16 +12,15 @@
         <table>
             <tr>
                 <td class="w-50">
-                    <h3 class="pb-7">{{ getCompanyInfo()->company_name }}</h3>
-                    <p class="pb-7 rgb-71">@lang('index.email') : {{ getCompanyInfo()->email }}</p>
-                    <p class="pb-7 rgb-71">@lang('index.phone') : {{ safe(getCompanyInfo()->phone) }}</p>
-                    <p class="pb-7 rgb-71">{{ getCompanyInfo()->address }}</p>
-                    <p class="pb-7 rgb-71">@lang('index.website') : <a href="{{ getCompanyInfo()->website }}" target="_blank">{{ getCompanyInfo()->website }}</a>
-                    </p>
-                </td>
-                <td class="w-50 text-right">
                     <img src="{!! getBaseURL() .
                         (isset(getWhiteLabelInfo()->logo) ? 'uploads/white_label/' . getWhiteLabelInfo()->logo : 'images/logo.png') !!}" alt="site-logo">
+                </td>
+                <td class="w-50 text-right">
+                    <h3 class="pb-7">{{ getCompanyInfo()->company_name }}</h3>
+                    <p class="pb-7 rgb-71">{{ getCompanyInfo()->address }}</p>
+                    <p class="pb-7 rgb-71">@lang('index.email') : {{ getCompanyInfo()->email }}</p>
+                    <p class="pb-7 rgb-71">@lang('index.phone') : {{ getCompanyInfo()->phone }}</p>
+                    <p class="pb-7 rgb-71">@lang('index.website') : {{ getCompanyInfo()->website }}</p>
                 </td>
             </tr>
         </table>

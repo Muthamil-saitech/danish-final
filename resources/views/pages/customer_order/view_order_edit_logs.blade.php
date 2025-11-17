@@ -19,7 +19,7 @@
                     <h2 class="top-left-header">{{ isset($title) && $title ? $title : '' }}</h2>
                 </div>
                 <div class="col-md-6">
-                        <a href="javascript:void();" target="_blank" class="btn bg-second-btn print_invoice"
+                        <a href="javascript:void();" target="_blank" class="btn bg-second-btn print_order_edit_logs"
                             data-id="{{ isset($orderDetails) ? $orderDetails->id : '' }}"><iconify-icon icon="solar:printer-broken"></iconify-icon>
                             @lang('index.print')</a>
                         <a href="{{ route('order-edit-log-download', encrypt_decrypt($orderDetails->id, 'encrypt')) }}"
@@ -56,7 +56,7 @@
                                 </tr>
                             </table>
                             <div class="text-center pt-10 pb-10">
-                                <h2 class="color-000000 pt-20 pb-20">@lang('index.order_details')</h2>
+                                <h2 class="color-000000 pt-20 pb-20">@lang('index.order_edit_logs')</h2>
                             </div>
                             <table>
                                 <tr>
@@ -130,7 +130,9 @@
                                                 <td class="text-start">{{ getAmtCustom($order_edit_log->price) }}</td>
                                                 <td class="text-center">{{ getAmtCustom($order_edit_log->tax_amount) }}</td>
                                                 <td class="text-center">{{ getAmtCustom($order_edit_log->subtotal) }}</td>
-                                                <td class="text-center">{{ getDateFormat($order_edit_log->created_at) }}</td>
+                                                <td class="text-center">
+                                                    {{ getDateFormat($order_edit_log->created_at) }} {{ date('h:i A', strtotime($order_edit_log->created_at)) }}
+                                                </td>
                                             </tr>
                                         @endforeach 
                                     @endif

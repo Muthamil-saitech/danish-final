@@ -75,7 +75,7 @@
                         </div>
                         <div class="col-sm-12 mb-2 col-md-4">
                             <div class="form-group">
-                                <label>@lang('index.po_no')<span class="required_star">*</span></label>
+                                <label>Po Time<span class="required_star">*</span></label>
                                 <input type="hidden" name="selected_customer_order_id" value="{{ isset($selected_customer_order_id) ? $selected_customer_order_id : old('selected_customer_order_id') }}" >
                                 <input type="hidden" name="selected_customer_order_detail_id" value="{{ isset($selected_customer_order_detail_id) ? $selected_customer_order_detail_id : old('selected_customer_order_detail_id') }}" id="selected_customer_order_detail_id">
                                 <select class="form-control customer_order_id_c1 select2" name="customer_order_id" id="customer_order_id" {{ isset($selected_customer_order_detail_id) ? 'disabled' : '' }}>
@@ -91,6 +91,13 @@
                                 @error('customer_order_id')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
+                            </div>
+                        </div>
+                       <div class="col-sm-12 mb-2 col-md-4">
+                                <label>@lang('index.po_no')</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control stage_aligning timePicker" name="stage_minute[]" placeholder="Select Time" value="{{ $value->stage_minute }}">
+                                    <span class="input-group-text">@lang('index.minutes')</span>
                             </div>
                         </div>
                         <div class="clearfix"></div>
@@ -1288,6 +1295,8 @@
 @endsection
 @push('top_script')
     <script type="text/javascript" src="{!! $baseURL . 'assets/bower_components/jquery-ui/jquery-ui.min.js' !!}"></script>
+    <script src="{!! $baseURL.'assets/plugins/local/jquery.timepicker.min.js'!!}"></script>
+<link rel="stylesheet" href="{!! $baseURL.'assets/plugins/local/jquery.timepicker.min.css'!!}">
 @endpush
 @section('script')
     <script type="text/javascript" src="{!! $baseURL . 'assets/bower_components/gantt/js/jquery.fn.gantt.js' !!}"></script>
@@ -1295,4 +1304,15 @@
     <script type="text/javascript" src="{!! $baseURL . 'frequent_changing/js/genchat.js' !!}"></script>
     <script type="text/javascript" src="{!! $baseURL . 'frequent_changing/js/addManufactures.js?v=2.1' !!}"></script>
     <script type="text/javascript" src="{!! $baseURL . 'frequent_changing/js/imagePreview.js' !!}"></script>
+    <script>
+        $(document).ready(function() {
+            $('.timePicker').timepicker({
+                interval: 60,    
+                dynamic: false,
+                scrollbar: true
+            });
+        });
+    </script>
+
 @endsection
+

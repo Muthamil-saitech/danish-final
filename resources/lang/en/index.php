@@ -1021,4 +1021,5 @@ return [
     'edit_customer_order_io' => 'Edit Customer I/O',
     'incharge' => 'Incharge',
     'so_entry_no' => 'S.O.Entry No',
+    'order_edit_logs' => 'Order Edit Logs'
 ];

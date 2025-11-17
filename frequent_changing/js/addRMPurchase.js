@@ -25,19 +25,19 @@ $(document).ready(function () {
             data: { mat_type_id: mat_type_id },
             dataType: "json",
             success: function (data) {
-                if(data) {
+                if (data) {
                     let category = data;
                     let select = $("#category");
                     select.empty();
                     select.append('<option value="">Please Select</option>');
-                    category.forEach(function(item) {
+                    category.forEach(function (item) {
                         if (item) {
                             let id = item.id;
                             let name = item.name;
                             select.append('<option value="' + id + '">' + name + '</option>');
                         }
                     });
-                }                
+                }
             },
             error: function () {
                 console.error("Failed to fetch product details.");
@@ -53,15 +53,15 @@ $(document).ready(function () {
         $.ajax({
             type: "POST",
             url: hidden_base_url + "getMaterialById",
-            data: { mat_type: mat_type, id: cat_id},
+            data: { mat_type: mat_type, id: cat_id },
             dataType: "json",
             success: function (data) {
-                if(data) {
+                if (data) {
                     let materials = data;
                     let select = $("#rmaterial");
                     select.empty();
                     select.append('<option value="">Please Select</option>');
-                    materials.forEach(function(item) {
+                    materials.forEach(function (item) {
                         if (item) {
                             let id = item.id;
                             let name = item.name;
@@ -70,7 +70,7 @@ $(document).ready(function () {
                             select.append('<option value="' + id + '|' + name + ' (' + code + ')|' + name + '|' + insert_type + '">' + name + ' (' + code + ')</option>');
                         }
                     });
-                }                
+                }
             },
             error: function () {
                 console.error("Failed to fetch product details.");
@@ -78,7 +78,7 @@ $(document).ready(function () {
         });
         $('#rmaterial').val("").trigger('change.select2');
     });
-    
+
     let hidden_alert = $("#hidden_alert").val();
     let hidden_cancel = $("#hidden_cancel").val();
     let hidden_ok = $("#hidden_ok").val();
@@ -307,72 +307,72 @@ $(document).ready(function () {
         let row_total_sum = 0;
         let totalTax = 0;
         $(".unit_price_c").each(function () {
-        // read unit price / qty (try id pattern first, fallback to row-relative)
-        let unit_price = Number($("#unit_price_" + i).val());
-        if (isNaN(unit_price)) {
-            unit_price = parseFloat($(this).val()) || 0;
-        }
+            // read unit price / qty (try id pattern first, fallback to row-relative)
+            let unit_price = Number($("#unit_price_" + i).val());
+            if (isNaN(unit_price)) {
+                unit_price = parseFloat($(this).val()) || 0;
+            }
 
-        let qty = Number($("#qty_" + i).val());
-        if (isNaN(qty)) {
-            let $row = $(this).closest("tr");
-            qty = parseFloat($row.find(".qty_c").val()) || parseFloat($row.find("input[name^='qty']").val()) || 0;
-        }
+            let qty = Number($("#qty_" + i).val());
+            if (isNaN(qty)) {
+                let $row = $(this).closest("tr");
+                qty = parseFloat($row.find(".qty_c").val()) || parseFloat($row.find("input[name^='qty']").val()) || 0;
+            }
 
-        // base total
-        let row_total = unit_price * qty;
+            // base total
+            let row_total = unit_price * qty;
 
-        // --- per-row tax detection ---
-        let taxPerVal = $("#tax_percent_" + i).length ? $("#tax_percent_" + i).val() : undefined;
-        if (taxPerVal === undefined || $.trim(taxPerVal) === "") {
-            let $rowTax = $(this).closest("tr").find(".tax_percent").first();
-            if ($rowTax.length) taxPerVal = $rowTax.val();
-            else taxPerVal = $("#tax_percent").val(); // global fallback
-        }
+            // --- per-row tax detection ---
+            let taxPerVal = $("#tax_percent_" + i).length ? $("#tax_percent_" + i).val() : undefined;
+            if (taxPerVal === undefined || $.trim(taxPerVal) === "") {
+                let $rowTax = $(this).closest("tr").find(".tax_percent").first();
+                if ($rowTax.length) taxPerVal = $rowTax.val();
+                else taxPerVal = $("#tax_percent").val(); // global fallback
+            }
 
-        let taxPer = 0;
-        if ($.trim(taxPerVal) === "" || isNaN(taxPerVal)) {
-            taxPer = 0;
-        } else {
-            taxPer = parseFloat($.trim(taxPerVal));
-        }
+            let taxPer = 0;
+            if ($.trim(taxPerVal) === "" || isNaN(taxPerVal)) {
+                taxPer = 0;
+            } else {
+                taxPer = parseFloat($.trim(taxPerVal));
+            }
 
-        // calculate per-row tax and total-with-tax
-        let taxAmountForRow = row_total * (taxPer / 100);
-        let row_total_with_tax = row_total + taxAmountForRow;
+            // calculate per-row tax and total-with-tax
+            let taxAmountForRow = row_total * (taxPer / 100);
+            let row_total_with_tax = row_total + taxAmountForRow;
 
-        // accumulate totals
-        row_total_sum += row_total_with_tax;
-        totalTax += taxAmountForRow;
+            // accumulate totals
+            row_total_sum += row_total_with_tax;
+            totalTax += taxAmountForRow;
 
-        // set per-row tax amount if present
-        if ($("#tax_amount_" + i).length) {
-            $("#tax_amount_" + i).val(taxAmountForRow.toFixed(2));
-        } else {
-            let $taxAmtField = $(this).closest("tr").find(".tax_amount_c");
-            if ($taxAmtField.length) $taxAmtField.val(taxAmountForRow.toFixed(2));
-        }
+            // set per-row tax amount if present
+            if ($("#tax_amount_" + i).length) {
+                $("#tax_amount_" + i).val(taxAmountForRow.toFixed(2));
+            } else {
+                let $taxAmtField = $(this).closest("tr").find(".tax_amount_c");
+                if ($taxAmtField.length) $taxAmtField.val(taxAmountForRow.toFixed(2));
+            }
 
-        // ✅ update total to include tax
-        if ($("#total_" + i).length) {
-            $("#total_" + i).val(row_total_with_tax.toFixed(2));
-        } else {
-            $(this).closest("tr").find(".total_c").val(row_total_with_tax.toFixed(2));
-        }
+            // ✅ update total to include tax
+            if ($("#total_" + i).length) {
+                $("#total_" + i).val(row_total_with_tax.toFixed(2));
+            } else {
+                $(this).closest("tr").find(".total_c").val(row_total_with_tax.toFixed(2));
+            }
 
-        i++;
-    });
+            i++;
+        });
 
-    // subtotal includes tax
-    let subtotal_with_tax = row_total_sum + totalTax;
-    let paid = parseFloat($("#paid").val()) || 0;
-    let other_amount = parseFloat($("#other").val()) || 0;
+        // subtotal includes tax
+        let subtotal_with_tax = row_total_sum + totalTax;
+        let paid = parseFloat($("#paid").val()) || 0;
+        let other_amount = parseFloat($("#other").val()) || 0;
 
-    $("#tax_amount").val(totalTax.toFixed(2));
-    $("#subtotal").val(row_total_sum.toFixed(2));
-    $("#grand_total").val((row_total_sum + other_amount).toFixed(2));
-    let due = row_total_sum - paid + other_amount;
-    $("#due").val(due.toFixed(2));
+        $("#tax_amount").val(totalTax.toFixed(2));
+        $("#subtotal").val(row_total_sum.toFixed(2));
+        $("#grand_total").val((row_total_sum + other_amount).toFixed(2));
+        let due = row_total_sum - paid + other_amount;
+        $("#due").val(due.toFixed(2));
     }
 
     /**
@@ -422,12 +422,12 @@ $(document).ready(function () {
         let item_unit_name_modal = $("#item_unit_name_modal").val();
         let item_name_modal = $("#item_name_modal").val();
         let item_id_modal = $("#item_id_modal").val();
-        let item_currency_modal = $("#item_currency_modal").val();  
-        let insert_type = $("#insert_type_modal").val(); 
-        let insert_type_modal = ""; 
-        if(insert_type!="" && insert_type==1) {
+        let item_currency_modal = $("#item_currency_modal").val();
+        let insert_type = $("#insert_type_modal").val();
+        let insert_type_modal = "";
+        if (insert_type != "" && insert_type == 1) {
             insert_type_modal = "(Consumable)";
-        } else if(insert_type!="" && insert_type==2){
+        } else if (insert_type != "" && insert_type == 2) {
             insert_type_modal = "(Non Consumable)";
         } else {
             insert_type_modal;
@@ -453,7 +453,7 @@ $(document).ready(function () {
         }
         if (hasError) {
             return false;
-        }    
+        }
         appendCart(
             item_id_modal,
             item_name_modal,
@@ -497,23 +497,23 @@ $(document).ready(function () {
             '" name="rm_id[]"> ' +
             "<span>" +
             item_name_modal +
-            "<br><small>"+ insert_type_modal +"</small></span></td>\n" +
+            "<br><small>" + insert_type_modal + "</small></span></td>\n" +
             '<td><div class="input-group"><input type="number" tabindex="5" name="unit_price[]" onfocus="this.select();" class="check_required form-control integerchk input_aligning unit_price_c cal_row" placeholder="Unit Price" value="' +
             unit_price +
             '"></div><div class="text-danger d-none unitPriceErr"></div></td>' +
             '<td>' +
-            '<input type="hidden" name="mat_unit[]" value="' + item_unit_modal + '">'+
+            '<input type="hidden" name="mat_unit[]" value="' + item_unit_modal + '">' +
             '<div class="input-group"><input type="number" data-countid="1" tabindex="51" id="quantity_amount_1" name="quantity_amount[]" onfocus="this.select();" class="check_required form-control integerchk input_aligning qty_c cal_row" value="' +
             qty_modal +
             '" placeholder="Quantity" ><span class="input-group-text">' +
             item_unit_name_modal +
             '</span></div><div class="text-danger d-none qtyErr"></div></td>' +
             '<td>' +
-            '<input type="hidden" name="mat_unit[]" value="' + item_unit_modal + '">'+
-            '<div class="input-group"><input type="number" data-countid="1" tabindex="51" id="tax_percent_1" name="tax_percent[]" onfocus="this.select();" class="check_required form-control integerchk input_aligning tax_percent_c cal_row" value="" placeholder="Tax Percentage" style="min-width: 120px;"></div><div class="text-danger d-none taxPerErr"></div></td>' +
+            '<input type="hidden" name="mat_unit[]" value="' + item_unit_modal + '">' +
+            '<div class="input-group"><input type="text" data-countid="1" tabindex="51" id="tax_percent_1" name="tax_percent[]" onfocus="this.select();" class="check_required form-control integerchk input_aligning tax_percent_c cal_row" value="" placeholder="Tax Percentages"><span class="input-group-text">%</span></div><div class="text-danger d-none taxPerErr"></div></td>' +
             '<td>' +
-            '<div class="input-group"><input type="number" data-countid="1" tabindex="51" id="tax_amount_1" name="tax_amount[]" onfocus="this.select();" class="check_required form-control integerchk input_aligning tax_amount_c cal_row" value="" placeholder="Tax Amount" style="min-width: 120px;" ></div><div class="text-danger d-none taxAmtErr"></div></td>' +
-            '<td><div class="input-group mb-3"><input type="number" id="total_1" name="total[]" class="form-control input_aligning total_c" placeholder="Total" readonly="" style="min-width: 120px;"></div></td>"' +
+            '<div class="input-group"><input type="text" data-countid="1" tabindex="51" id="tax_amount_1" name="tax_amount[]" onfocus="this.select();" class="check_required form-control integerchk input_aligning tax_amount_c cal_row" value="" placeholder="Tax Amount"><span class="input-group-text">₹</span></div><div class="text-danger d-none taxAmtErr"></div></td>' +
+            '<td><div class="input-group mb-3"><input type="text" id="total_1" name="total[]" class="form-control input_aligning total_c" placeholder="Total" readonly="" style="min-width: 120px;"><span class="input-group-text">₹</span></div></td>"' +
             '<td class="ir_txt_center"><a class="btn btn-xs del_row dlt_button"><iconify-icon icon="solar:trash-bin-minimalistic-broken"></iconify-icon> </a></td>\n' +
             "</tr>";
 
@@ -670,7 +670,20 @@ $(document).ready(function () {
                 closestDiv.addClass("d-none");
             }
         });
-        let rowCount = $(".rowCount").length;        
+        $("input[name='tax_percent[]']").each(function () {
+            let tax_rate = $(this).val();
+            let $outerGroup = $(this).closest("td").find(".input-group").first();
+            if (tax_rate === "" || tax_rate == "0") {
+                $(this).addClass("is-invalid");
+                $outerGroup.next(".text-danger").remove();
+                $outerGroup.after('<div class="text-danger">The tax percentage is required</div>');
+                status = false;
+            } else {
+                $(this).removeClass("is-invalid");
+                $outerGroup.next(".text-danger").remove();
+            }
+        });
+        let rowCount = $(".rowCount").length;
         if (!Number(rowCount)) {
             $("#purchase_cart .add_tr").html(
                 '<tr><td colspan="6" class="text-danger rmError">Please add minimum one Raw Material</td></tr>'
@@ -681,7 +694,7 @@ $(document).ready(function () {
         }
 
         if (status == true) {
-            return true;           
+            return true;
         } else {
             $("html, body").animate({ scrollTop: 0 }, "slow");
             return false;
@@ -733,12 +746,10 @@ $(document).ready(function () {
                 $(".supplier_due").html(
                     `Balance: ${default_currency}${Math.abs(
                         data.supplier_balance
-                    )}${
-                        data.supplier_balance !== 0
-                            ? ` (${
-                                  data.supplier_balance < 0 ? "Debit" : "Credit"
-                              })`
-                            : ""
+                    )}${data.supplier_balance !== 0
+                        ? ` (${data.supplier_balance < 0 ? "Debit" : "Credit"
+                        })`
+                        : ""
                     }`
                 );
                 $("input[name='supplier_due']").val(data.supplier_due);
@@ -921,7 +932,7 @@ $(document).ready(function () {
                     productId.push(data);
                     callAjaxForProductRm(productId);
                 },
-                error: function () {},
+                error: function () { },
             });
         }
     });
