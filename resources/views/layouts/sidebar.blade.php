@@ -176,7 +176,7 @@
                 </li>  
             @endif
             @if (menuPermission('Instruments'))
-                <li class="parent-menu treeview menu__cidirp_10{{ (request()->is('instrument_category*') || request()->is('instruments*')) && !request()->is('instruments-payment*') ? ' menu-open active_sub_menu' : '' }}">
+                <li class="parent-menu treeview menu__cidirp_10{{ (request()->is('instrument_category*') || request()->is('instruments*')) && !request()->is('instruments-payment*') || request()->is('view-instrument-detail*') ? ' menu-open active_sub_menu' : '' }}">
                     <a href="#">
                         <iconify-icon icon="mdi:tools"></iconify-icon>
                         <span class="match_bold">@lang('index.instruments')</span>

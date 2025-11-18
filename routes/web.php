@@ -231,6 +231,9 @@ Route::group(['middleware' => ['XSS']], function () {
         Route::resource('instrument_category', App\Http\Controllers\InstrumentCategoryController::class)->only(['index', 'create', 'store', 'destroy', 'update', 'show', 'edit']);
         Route::resource('instruments', App\Http\Controllers\InstrumentController::class)->only(['index', 'create', 'store', 'destroy', 'update', 'show', 'edit']);
         Route::post('instrument/service-entry',[App\Http\Controllers\InstrumentController::class, 'serviceEntry'])->name('instruments.service-entry');
+        Route::get('/view-instrument-detail/{id}', [App\Http\Controllers\InstrumentController::class, 'view_instrument_detail'])->name('view-instrument-detail');
+        Route::get('/print-instrument-detail/{id}', [App\Http\Controllers\InstrumentController::class, 'print_instrument_detail'])->name('print-instrument-detail');
+        Route::get('/download-instrument-detail/{id}', [App\Http\Controllers\InstrumentController::class, 'download_instrument_detail'])->name('download-instrument-detail');
         Route::get('/print-asset-maintain/{id}', [App\Http\Controllers\InstrumentController::class, 'print'])->name('print-asset-maintain');
         Route::get('/download-asset-maintain/{id}', [App\Http\Controllers\InstrumentController::class, 'download'])->name('download-asset-maintain');
 

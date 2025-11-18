@@ -71,23 +71,36 @@
                         </div>
                     </div>
                 </div>
-
+                @if(isset($quotation_details) && count($quotation_details) > 0)
+                    @php 
+                        $sampleOrder = getOrderDetail($quotation_details[0]->customer_order_id, $quotation_details[0]->product_id);
+                        $tax_type = $sampleOrder->tax_type;
+                    @endphp
+                @endif
                 <table style="width:100%; border-collapse:collapse; font-size:16px;">
                     <tr>
                         <th style="border:1px solid #000; padding:4px; border-left: none;">S.No</th>
                         <th style="border:1px solid #000; padding:4px;">Part No.</th>
                         <th style="border:1px solid #000; padding:4px;">Description</th>
                         <th style="border:1px solid #000; padding:4px;">Qty</th>
-                        <th style="border:1px solid #000; padding:4px;">UOM</th>
-                        <th style="border:1px solid #000; padding:4px;">Rate</th>
+                        {{-- <th style="border:1px solid #000; padding:4px;">UOM</th> --}}
+                        <th style="border:1px solid #000; padding:4px;">Rate<br><small>(per qty)</small></th>
+                        <th style="border:1px solid #000; padding:4px;">Taxable Value (Rs)</th>
+                        @if($tax_type == 1)
+                        <th style="border:1px solid #000; padding:4px;">CGST</th>
+                        <th style="border:1px solid #000; padding:4px;">SGST</th>
+                        @else
+                        <th style="border:1px solid #000; padding:4px;">IGST</th>
+                        @endif
                         <th style="border:1px solid #000; padding:4px;">PO No</th>
                         <th style="border:1px solid #000; padding:4px;">HSN/SAC</th>
                         <th style="border:1px solid #000; padding:4px;">DC Ref</th>
                         <th style="border:1px solid #000; padding:4px;">Challan Ref</th>
-                        <th style="border:1px solid #000; padding:4px; border-right: none;">Remarks</th>
+                        <th style="border:1px solid #000; padding:4px;">Remarks</th>
+                        <th style="border:1px solid #000; padding:4px; border-right: none;">Total</th>
                     </tr>
                     <?php $i = 0;
-                    $totalQty = 0;$totalRate = 0; ?>
+                    $totalQty = 0;$totalRate = 0;$totalTaxbleValue = 0;$totalPrice = 0; $cgst_amount=0;$sgst_amount=0;$igst_amount=0; ?>
                     @if (isset($quotation_details) && $quotation_details)
                     @foreach ($quotation_details as $key => $value)
                     <?php
@@ -96,23 +109,42 @@
                     $totalQty += $value->product_quantity;
                     $orderDetail = getOrderDetail($value->customer_order_id, $value->product_id);
                     $totalRate += getOrderPrice($value->price,$orderDetail->sale_price,$orderDetail->tax_type);
+                    $rate = getOrderPrice($value->price,$orderDetail->sale_price,$orderDetail->tax_type);
+                    $taxable_price = $value->product_quantity * $rate;
+                    $totalTaxbleValue += $taxable_price;
+                    if($orderDetail->tax_type == 1) {
+                        $totalPrice += $taxable_price + ($taxable_price * ($orderDetail->cgst + $orderDetail->sgst) / 100);
+                    } else {
+                        $totalPrice += $taxable_price + ($taxable_price * $orderDetail->igst / 100);
+                    }
                     ?>
                     <tr>
                         <td style="border:1px solid #000; padding:4px; text-align:center;  border-left: none;" rowspan="4">{{ $i }}</td>
                         <td style="padding:4px; text-align: center;">{{ $productInfo->code }}</td>
                         <td style="border:1px solid #000; padding:4px; border-bottom: none;">{{ $productInfo->name }} </td>
-                        <td style="border:1px solid #000; padding:4px; border-bottom: none; text-align:center;">{{ $value->product_quantity }}</td>
-                        <td style="border:1px solid #000; padding:4px; border-bottom: none; text-align:start;">{{ getRMUnitById($value->unit_id) }}</td>
-                        <td style="border:1px solid #000; padding:4px; border-bottom: none; text-align:start;">{{ getOrderPrice($value->price,$orderDetail->sale_price,$orderDetail->tax_type) }}</td>
+                        <td style="border:1px solid #000; padding:4px; border-bottom: none; text-align:center;">{{ $value->product_quantity }}<br>{{ getRMUnitById($value->unit_id) }}</td>
+                        {{-- <td style="border:1px solid #000; padding:4px; border-bottom: none; text-align:start;">{{ getRMUnitById($value->unit_id) }}</td> --}}
+                        <td style="border:1px solid #000; padding:4px; border-bottom: none; text-align:start;">{{ number_format($rate,2) }}</td>
+                        <td style="border:1px solid #000; padding:4px; border-bottom: none; text-align:start;">{{ number_format($taxable_price,2) }}</td>
+                        @if($orderDetail->tax_type == 1)
+                            @php $cgst_amount = $taxable_price * $orderDetail->cgst / 100; $sgst_amount = $taxable_price * $orderDetail->sgst / 100; @endphp
+                            <td style="border:1px solid #000; padding:4px; border-bottom: none; text-align:start;">{{ number_format($taxable_price * $orderDetail->cgst / 100,2) }} <br> ({{ number_format($orderDetail->cgst, 2) }}%)</td>
+                            <td style="border:1px solid #000; padding:4px; border-bottom: none; text-align:start;">{{ number_format($taxable_price * $orderDetail->sgst / 100,2) }} <br> ({{ number_format($orderDetail->sgst, 2) }}%)</td>
+                        @else
+                            <td style="border:1px solid #000; padding:4px; border-bottom: none; text-align:start;">{{ number_format($taxable_price * $orderDetail->igst / 100,2) }} <br> ({{ number_format($orderDetail->igst, 2) }}%)</td>
+                        @endif
                         <td style="border:1px solid #000; padding:4px; border-bottom: none; text-align:start;">{{ $value->po_no.'/'.$value->line_item_no }}
                         </td>
                         <td style="border:1px solid #000; padding:4px; border-bottom: none; text-align:start;">{{ $productInfo->hsn_sac_no }}</td>
                         <td style="border:1px solid #000; padding:4px; border-bottom: none; text-align:start;">{{ $value->dc_ref }}
                         </td>
                         <td style="border:1px solid #000; padding:4px; border-bottom: none; text-align:start;">{{ $value->challan_ref }}</td>
-                        <td style="padding:4px; border-bottom: none; text-align:start; border-right: none;">{{ $value->description }}</td>
+                        <td style="border:1px solid #000; padding:4px; border-bottom: none; text-align:start;">{{ $value->description }}</td>
+                        <td style="padding:4px; border-bottom: none; text-align:start; border-right: none;">{{ number_format($taxable_price + $cgst_amount + $sgst_amount + $igst_amount,2) }}</td>
                     </tr>
                     <tr>
+                        <td style="border-left: 1px solid #000;"></td>
+                        <td style="border-left: 1px solid #000;"></td>
                         <td style="border-left: 1px solid #000;"></td>
                         <td style="border-left: 1px solid #000;"></td>
                         <td style="border-left: 1px solid #000;"></td>
@@ -123,10 +155,14 @@
                         <td style="border-left: 1px solid #000;">{{ $value->dc_ref_date!='' ? date('d-m-Y',strtotime($value->dc_ref_date)) : '' }}</td>
                         <td style="border-left: 1px solid #000;"></td>
                         <td style="border-left: 1px solid #000;"></td>
+                        <td style="border-left: 1px solid #000;"></td>
                     </tr>
                     <tr>
                         <td style="border-left: 1px solid #000; padding: 0 4px;"></td>
                         <td style="border-left: 1px solid #000; padding: 0 4px;"></td>
+                        <td style="border-left: 1px solid #000;"></td>
+                        <td style="border-left: 1px solid #000;"></td>
+                        <td style="border-left: 1px solid #000;"></td>
                         <td style="border-left: 1px solid #000;"></td>
                         <td style="border-left: 1px solid #000;"></td>
                         <td style="border-left: 1px solid #000;"></td>
@@ -148,6 +184,9 @@
                         <td style="border-left: 1px solid #000; "></td>
                         <td style="border-left: 1px solid #000;"></td>
                         <td style="border-left: 1px solid #000;"></td>
+                        <td style="border-left: 1px solid #000;"></td>
+                        <td style="border-left: 1px solid #000;"></td>
+                        <td style="border-left: 1px solid #000;"></td>
                         <td></td>
                     </tr>
                     @endforeach
@@ -156,15 +195,18 @@
                         <tr style="border: 1px solid #000;border-left:none;border-right:none;text-align:center;">
                             <td style="border-right: 1px solid #000; border-left:none;"> </td>
                             <td style="border-right: 1px solid #000;"></td>
-                            <td style="border-right: 1px solid #000;padding-bottom:35px;"><b>Total Quantity</b></td>
+                            <td style="border-right: 1px solid #000;padding-bottom:35px;"><b>Total</b></td>
                             <td style="border-right: 1px solid #000;padding-bottom:35px;"><b>{{ $totalQty }}</b></td>
                             <td style="border-right: 1px solid #000;"></td>
-                            <td style="border-right: 1px solid #000;"><b>{{ number_format($totalRate,2) }}</b></td>
                             <td style="border-right: 1px solid #000;"></td>
                             <td style="border-right: 1px solid #000;"></td>
                             <td style="border-right: 1px solid #000;"></td>
                             <td style="border-right: 1px solid #000;"></td>
-                            <td style="border-right: 1px solid #000;border-right:none;" >&nbsp;&nbsp;</td>
+                            <td style="border-right: 1px solid #000;"></td>
+                            <td style="border-right: 1px solid #000;"></td>
+                            <td style="border-right: 1px solid #000;"></td>
+                            <td style="border-right: 1px solid #000;"></td>
+                            <td style="border-right: 1px solid #000;border-right:none;" ><b>{{ number_format($totalPrice,2) }}</b></td>
                         </tr>
                     </tfoot>
                 </table>

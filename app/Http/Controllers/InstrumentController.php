@@ -20,7 +20,8 @@ class InstrumentController extends Controller
     }
     public function index()
     {
-        $obj = Instrument::orderBy('id','DESC')->where('del_status','Live')->get();
+        $obj = Instrument::orderBy('id','DESC')->where('del_status','Live')->get()->groupBy(['code']);
+        // dd($obj);
         $title =  __('index.instruments');
         return view('pages.instruments.index', compact('title','obj'));
     }
@@ -246,5 +247,24 @@ class InstrumentController extends Controller
         $instrument_entries = InstrumentAssetEntry::where('instrument_id',$id)->get();
         $instrument = Instrument::find($id)->first();
         return view('pages.instruments.print_assets', compact('instrument','instrument_entries'));
+    }
+    public function view_instrument_detail($id) {
+        $id = encrypt_decrypt($id, 'decrypt');
+        $title = "View Instrument Detail";
+        $instruments = Instrument::where('code',$id)->where('del_status','Live')->get();
+        return view('pages.instruments.view_instrument_detail', compact('title','instruments'));
+    }
+    public function print_instrument_detail($id)
+    {
+        $id = encrypt_decrypt($id, 'decrypt');
+        $instruments = Instrument::where('code',$id)->where('del_status','Live')->get();
+        return view('pages.instruments.print_instrument_detail', compact('instruments'));
+    }
+    public function download_instrument_detail($id)
+    {
+        $code = encrypt_decrypt($id, 'decrypt');
+        $instruments = Instrument::where('code',$code)->where('del_status','Live')->get();
+        $pdf = PDF::loadView('pages.instruments.print_instrument_detail', compact('instruments'))->setPaper('a4', 'landscape');
+        return $pdf->download($instruments[0]['code'] . '.pdf');
     }
 }

@@ -243,7 +243,6 @@ class QuotationController extends Controller
         $title = __('index.dc_details');
         $obj = $quotation;
         $quotation_details = $quotation->quotationDetails;
-        // dd($quotation_details);
         return view('pages.quotation.details', compact('title', 'obj', 'quotation_details'));
     }
 
