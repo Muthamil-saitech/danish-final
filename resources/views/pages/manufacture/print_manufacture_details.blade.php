@@ -124,9 +124,9 @@ $whiteLabelInfo = App\WhiteLabelSettings::first();
                 ?>
                 @foreach ($m_stages as $key => $value)
                 <?php
-                $total_req_min += $value->stage_minute;
-                $total_set_min += $value->stage_set_minute;
-                $total_mimute += $value->stage_minute + $value->stage_set_minute;
+                // $total_req_min += $value->stage_minute;
+                // $total_set_min += $value->stage_set_minute;
+                // $total_mimute += $value->stage_minute + $value->stage_set_minute;
                 $checked = '';
                 $tmp_key = $key + 1;
                 if ($obj->stage_counter == $tmp_key) {
@@ -147,14 +147,14 @@ $whiteLabelInfo = App\WhiteLabelSettings::first();
                 @endforeach
                 @endif
             </tbody>
-            <tfoot>
+            {{-- <tfoot>
                 <tr>
                     <td colspan="2" class="text-right pr-10">@lang('index.total') :</td>
                     <td class="text-center">
                         {{ isset($total_mimute) && $total_mimute ? $total_mimute : '' }}
                     </td>
                 </tr>
-            </tfoot>
+            </tfoot> --}}
         </table>
 
         <table>

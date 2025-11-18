@@ -45,154 +45,257 @@
                 </div>
             </div>
         </section>
-
-        <section class="content">
-
-            <div class="col-md-12">
-                <div class="card" id="dash_0">
-                    <div class="card-body p30">
-                        <div class="m-auto b-r-5">
-                            <div class="text-center pt-10 pb-10">
-                                <h3 class="color-000000 pt-20 pb-20">Partner I/O Details</h3>
-                            </div>
-                            <table>
-                                <tr>
-                                    <td class="w-50">
-                                        <p class="pb-7 rgb-71">
-                                            <span class=""><strong>Partner Code:</strong></span>
-                                            {{ $partner_io->partner->partner_id }}
-                                        </p> 
-                                        <p class="pb-7 rgb-71">
-                                            <span class=""><strong>Partner Name:</strong></span>
-                                            {{ $partner_io->partner->name }}
-                                        </p>
-                                        <p class="pb-7 rgb-71">
-                                            <span class=""><strong>@lang('index.phone_number'):</strong></span>
-                                            {{ $partner_io->partner->phone }}
-                                        </p>
-                                        <p class="pb-7 rgb-71">
-                                            <span class=""><strong>@lang('index.email'):</strong></span>
-                                            {{ $partner_io->partner->email }}
-                                        </p>
-                                        <p class="pb-7 rgb-71">
-                                            <span class=""><strong>@lang('index.delivery_address'):</strong></span>
-                                            {{ $partner_io->d_address }}
-                                        </p>
-                                        @if($status == 'Outward')
-                                        <p class="pb-7 rgb-71">
-                                            <span class=""><strong>@lang('index.gst_no'):</strong></span>
-                                            {{ $partner_io->partner->gst_no ?? 'N/A' }}
-                                        </p>
-                                        <p class="pb-7 rgb-71">
-                                            <span class=""><strong>@lang('index.ecc_no'):</strong></span>
-                                            {{ $partner_io->partner->ecc_no ?? 'N/A' }}
-                                        </p>
-                                        @endif
-                                    </td>
-                                    <td class="w-50" style="float: inline-end">
-                                        @if($status == 'Inward')
-                                        <p class="pb-7 rgb-71">
-                                            <span class=""><strong>@lang('index.gst_no'):</strong></span>
-                                            {{ $partner_io->partner->gst_no ?? 'N/A' }}
-                                        </p>
-                                        <p class="pb-7 rgb-71">
-                                            <span class=""><strong>@lang('index.ecc_no'):</strong></span>
-                                            {{ $partner_io->partner->ecc_no ?? 'N/A' }}
-                                        </p>
-                                        @endif
-                                        @if($status == 'Outward')
-                                        <p class="pb-7 rgb-71">
-                                            <span class=""><strong>@lang('index.inward_date'):</strong></span>
-                                            {{ !empty($partner_io_detail->inward_date) ? date('d-m-Y', strtotime($partner_io_detail->inward_date)) : '' }}
-                                        </p>
-                                        <p class="pb-7 rgb-71">
-                                            <span class=""><strong>@lang('index.inward_notes'):</strong></span>
-                                            {{ $partner_io_detail->notes}}
-                                        </p>
-                                        @endif
-                                    </td>
-                                </tr>
-                            </table>
-                            @if(isset($partner_io->file) && $partner_io->file != '')
-                                <div class="pt-10 pb-10">
-                                    <div class="text-left">
-                                        <h3 class="pt-20 pb-20">Documents</h3>
-                                        <div class="d-flex flex-wrap gap-3">
-                                                @php
-                                                    $files = json_decode($partner_io->file, true);
-                                                @endphp
-
-                                                @foreach($files as $file)
-                                                    @php
-                                                        $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
-                                                    @endphp
-
-                                                    @if(in_array($fileExtension, ['pdf']))
-                                                        <a class="text-decoration-none" href="{{ url('uploads/partner_io/' . $file) }}" target="_blank">
-                                                            <img src="{{ url('assets/images/pdf.png') }}" alt="PDF Preview" class="img-thumbnail mx-2" width="100">
-                                                        </a>
-                                                    @elseif(in_array($fileExtension, ['doc', 'docx']))
-                                                        <a class="text-decoration-none" href="{{ url('uploads/partner_io/' . $file) }}" target="_blank">
-                                                            <img src="{{ url('assets/images/word.png') }}" alt="Word Preview" class="img-thumbnail mx-2" width="100">
-                                                        </a>
-                                                    @else
-                                                        <a class="text-decoration-none" href="{{ url('uploads/partner_io/' . $file) }}" target="_blank">
-                                                            <img src="{{ url('uploads/partner_io/' . $file) }}" alt="File Preview" class="img-thumbnail mx-2" width="100">
-                                                        </a>
-                                                    @endif
-                                                @endforeach
-                                            </div>
-                                    </div>
-                                </div>
-                            @endif
-
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>@lang('index.sn')</th>
-                                        <th>@lang('index.reference_no')</th>
-                                        <th>@lang('index.date')</th>
-                                        <th>@lang('index.type')</th>
-                                        <th>@lang('index.category')</th>
-                                        <th>@lang('index.instrument_name') (Code)</th>
-                                        <th>@lang('index.quantity')</th>
-                                        <th>@lang('index.remarks')</th>
-                                        <th>@lang('index.status')</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php $i = 1; ?>
-                                    @if(isset($partner_io_detail) && isset($partner_io))
-                                    @php 
-                                        $ins_category = \App\InstrumentCategory::where('id',$partner_io_detail->ins_category)->first();
-                                        $instrument = \App\Instrument::where('id',$partner_io_detail->ins_name)->first();
-                                    @endphp
-                                        <tr class="rowCount" data-id="{{ $partner_io_detail->id }}">
-                                            <td>{{ $i }}</td>
-                                            <td>{{ $partner_io->reference_no .'/'. $partner_io_detail->line_item_no }}</td>
-                                            <td>{{ date('d-m-Y', strtotime($partner_io->io_date)) }}</td>
-                                            @if($partner_io_detail->type == '1')
-                                                <td>Gauges/Checking Instruments</td>
-                                            @else
-                                                <td>Measuring Instruments</td>
-                                            @endif
-                                            <td>{{ $ins_category->category ?? 'N/A' }}</td>
-                                            <td>{{ $instrument->instrument_name.'('.$instrument->code.')' }}</td>
-                                            <td>{{ $partner_io_detail->qty ?? 'N/A' }}</td>
-                                            <td>{{ $partner_io_detail->remarks ?? 'N/A' }}</td>
-                                            <td>
-                                                @if($partner_io_detail->status == 'Inward')
-                                                <span class="badge bg-secondary">Inward</span>
-                                                @else
-                                                <span class="badge bg-success">Outward</span>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endif
-                                </tbody>
-                            </table>
+        <section class="content" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+            <div style="width: 98%; max-width: 1200px; margin: 30px auto;">
+                <div style="padding: 0px 0; border: 1px solid #000; background: #fff;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #000;">
+                        <div style="flex: 1; text-align: center; line-height: 1.6;">
+                            <h5 style="font-size: 18px; font-weight: 600; letter-spacing: 1px; margin: 5px 0px 0px 0px;">
+                                {{ $partner_io->outward_type.' '.'Returnable Delivery Challan' }}
+                            </h5>
+                            <p style="font-size: 15px; margin-bottom: 10px; font-weight: 600;">
+                                (Rule 55 of CGST Rules 2017)
+                            </p>
+                        </div>
+                    </div>                
+                    <div style="display: flex; width: 100%;">
+                        <div style="width: 50%; border-right: 1px solid #000; border-bottom: 1px solid #000; padding: 8px 10px; font-size: 16px;
+                            display: grid; grid-template-columns: 40% 60%; grid-auto-rows: min-content; row-gap: 4px; align-items: start; word-break: break-word;">
+                            <span>GSTIN</span>
+                            <b>: {{ $partner_io->partner->gst_no }}</b>
+                            <span>Name</span>
+                            <b>: {{ $partner_io->partner->name }}</b>
+                            <span>Address</span>
+                            <b>: {{ $partner_io->d_address }}</b>
+                        </div>
+                        <div style="width: 50%; border-bottom: 1px solid #000; padding: 8px 10px; font-size: 16px; display: grid; grid-template-columns: 40% 60%; grid-auto-rows: min-content; row-gap: 4px; align-items: start; word-break: break-word;">
+                            <span>Reference PO Number</span>
+                            <b>: {{ $partner_io->reference_no . '/' . $partner_io_detail->line_item_no }}</b>
+                            <span>Delivery Challan Number</span>
+                            <b>: {{ $partner_io->del_challan_no }}</b>
+                            <span>Delivery Challan Date</span>
+                            <b>: {{ date('d-m-Y', strtotime($partner_io->io_date)) }}</b>
+                            <span>Place of Supply</span>
+                            <b>: </b>
+                            <span>Region of Consignee</span>
+                            <b>: </b>
                         </div>
                     </div>
+                    <div style="display: flex;">
+                        <div style="width: 50%; padding: 8px 10px; font-size: 16px;">
+                            <div style="display: flex; margin-bottom: 15px;">
+                                <span style="width: 40%;"><b>Consignee Address </b> </span>
+                            </div> 
+                            <div style="display: flex; margin-bottom: 0px;">
+                                <span style="width: 40%;">{{ strtoupper(getCompanyInfo()->company_name) }}</span>
+                            </div>  
+                            <div style="display: flex; margin-bottom: 0px;">
+                                <span style="width: 40%;">{{ safe(getCompanyInfo()->address) }}</span>
+                            </div>    
+                            <div style="display: flex; margin-bottom: 0px;">
+                                <span style="width: 60%;">GST Number: {{ safe(getCompanyInfo()->gst_no) }}</span>
+                            </div>                    
+                        </div>
+                        <div style="width: 50%; padding: 8px 10px; font-size: 16px;">
+                            <div style="display: flex; justify-content:end; margin-bottom: 4px;">
+                                <span style="width: 50%;"> Return Due Date: {{ !empty($customer_io->return_due_date) ? date('d.m.Y', strtotime($customer_io->return_due_date)) : '' }} </span>
+                            </div>                        
+                        </div>
+                    </div>
+                    <table style="width:100%; border-collapse:collapse; font-size:16px;">
+                        <!-- Header Row 1: Main headings with CGST/SGST spanning 2 columns each -->
+                        @php 
+                            $totalCGST = 0;
+                            $totalSGST = 0;
+                            $totalIGST = 0;
+                            $totalTax = 0;
+                            $finalAmt = 0;
+                            $showIColumns = false;
+                            $showCSColumns = false;
+                            if (isset($partner_io_detail)) {
+                                if ($partner_io_detail['inter_state'] === 'Y') {
+                                    $showIColumns = true;
+                                }
+                                if ($partner_io_detail['inter_state'] === 'N') {
+                                    $showCSColumns = true;
+                                }
+                                $totalCGST = $totalSGST = $totalIGST = $totalTax = $finalAmt = 0;
+                            }
+                        @endphp
+                        <tr style="text-align: center;">
+                            <th style="border:1px solid #000; padding:4px; border-left: none;" rowspan="2">Sr. No.</th>
+                            <th style="border:1px solid #000; padding:4px;" rowspan="2">Description</th>
+                            <th style="border:1px solid #000; padding:4px;" rowspan="2">HSN Number</th>
+                            <th style="border:1px solid #000; padding:4px;" rowspan="2">Quantity</th>
+                            <th style="border:1px solid #000; padding:4px;" rowspan="2">Unit (UOM)</th>
+                            <th style="border:1px solid #000; padding:4px;" rowspan="2">Rate (Rs. Per UOM)</th>
+                            <th style="border:1px solid #000; padding:4px;" rowspan="2">Total (Rs.)</th>
+                            <th style="border:1px solid #000; padding:4px;" rowspan="2">Taxable Value (Rs.)</th>
+                            @if($showCSColumns)
+                                <th style="border:1px solid #000; padding:4px;" colspan="2">CGST</th>
+                                <th style="border:1px solid #000; padding:4px; border-right:none;" colspan="2">SGST</th>
+                            @endif
+                            @if($showIColumns)
+                                <th style="border:1px solid #000; padding:4px; border-right:none;" colspan="2">IGST</th>
+                            @endif
+                        </tr>
+                        <tr style="text-align: center;">
+                            @if($showCSColumns)
+                                <th style="border:1px solid #000; padding:4px;">Rate<br>%</th>
+                                <th style="border:1px solid #000; padding:4px;">Amount<br>(Rs.)</th>
+                                <th style="border:1px solid #000; padding:4px;">Rate<br>%</th>
+                                <th style="border:1px solid #000; padding:4px; border-right:none;">Amount<br>(Rs.)</th>
+                            @endif
+                            @if($showIColumns)
+                                <th style="border:1px solid #000; padding:4px;">Rate<br>%</th>
+                                <th style="border:1px solid #000; padding:4px; border-right:none;">Amount<br>(Rs.)</th>
+                            @endif
+                        </tr>
+                        @php
+                            $i = 1;
+                            $total = $partner_io_detail->qty * $partner_io_detail->rate;
+                            $cgstRate = $showCSColumns ? $partner_io_detail->cgst : 0;
+                            $cgstAmt = $showCSColumns ? $total * $cgstRate/100 : 0;
+                            $sgstRate = $showCSColumns ? $partner_io_detail->sgst : 0;
+                            $sgstAmt = $showCSColumns ? $total * $sgstRate/100 : 0;
+                            $igstRate = $showIColumns ? $partner_io_detail->igst : 0;
+                            $igstAmt = $showIColumns ? $total * $igstRate/100 : 0;
+                            $totalCGST += $cgstAmt;
+                            $totalSGST += $sgstAmt;
+                            $totalIGST += $igstAmt;
+                            $finalAmt += $total;
+                            if($showCSColumns)
+                                $totalTax = $totalCGST + $totalSGST;
+                            else
+                                $totalTax = $totalIGST;
+                        @endphp
+                        <tr>
+                            <td style="border:1px solid #000; padding:4px; text-align:center; border-left: none;" >{{ $i++ }}</td>
+                            <td style="border:1px solid #000; padding:4px; text-align:center;">{{ $partner_io_detail->instrument->code.'_'.$partner_io_detail->instrument->instrument_name.'_'.$partner_io_detail->instrument->range.'_'.getDMYDateFormat($partner_io_detail->instrument->due_date) }}</td>
+                            <td style="border:1px solid #000; padding:4px;">&nbsp;&nbsp;</td>
+                            <td style="border:1px solid #000; padding:4px; text-align:right;">{{ $partner_io_detail->qty }}</td>
+                            <td style="border:1px solid #000; padding:4px; text-align:right;">EA</td>
+                            <td style="border:1px solid #000; padding:4px; text-align:right;">{{ number_format($partner_io_detail->rate, 2, '.', '') }}</td>
+                            <td style="border:1px solid #000; padding:4px; text-align:right;">{{ number_format($total, 2, '.', '') }}</td>
+                            <td style="border:1px solid #000; padding:4px; text-align:right;">{{ number_format($total, 2, '.', '') }}</td>
+                            @if($showCSColumns)
+                                <td style="border:1px solid #000; padding:4px; text-align:center;">{{ $cgstRate }}</td>
+                                <td style="border:1px solid #000; padding:4px; text-align:right;">{{ number_format($cgstAmt, 2) }}</td>
+                                <td style="border:1px solid #000; padding:4px; text-align:center;">{{ $sgstRate }}</td>
+                                <td style="border:1px solid #000; padding:4px; border-right:none; text-align:right;">
+                                    {{ number_format($sgstAmt, 2) }}
+                                </td>
+                            @endif
+                            @if($showIColumns)
+                                <td style="border:1px solid #000; padding:4px; text-align:center;">{{ $igstRate }}</td>
+                                <td style="border:1px solid #000; padding:4px; border-right:none; text-align:right;">
+                                    {{ number_format($igstAmt, 2) }}
+                                </td>
+                            @endif
+                        </tr>
+                        <tr style="font-weight:bold; text-align:right;">
+                            <td colspan="7" style="border:1px solid #000; border-left:none; padding:4px;">Total</td>
+                            <td style="border:1px solid #000; padding:4px;">{{ number_format($total, 2) }}</td>
+                            @if($showCSColumns)
+                                <td colspan="2" style="border:1px solid #000; padding:4px;">{{ number_format($totalCGST, 2) }}</td>
+                                <td colspan="2" style="border:1px solid #000; border-right:none; padding:4px;">{{ number_format($totalSGST, 2) }}</td>
+                            @endif
+                            @if($showIColumns)
+                                <td colspan="2" style="border:1px solid #000; border-right:none; padding:4px;">{{ number_format($totalIGST, 2) }}</td>
+                            @endif
+                        </tr>
+                        @php
+                            $taxTotal = $totalCGST + $totalSGST + $totalIGST;
+                            $grandTotal = $taxTotal + $finalAmt;
+                        @endphp
+                        <tr style="font-weight:bold;">
+                            <td colspan="7" style="border:none;font-size:14px;padding:0px 0px;">Amount of Tax (Rs.)</td>
+                            <td style="border:1px solid #000;text-align:right;">{{ number_format($taxTotal,2) }}</td>
+                            <td colspan="2" style="border:none;"></td>
+                            <td colspan="2" style="border:none;"></td>
+                        </tr>
+                        <tr style="font-weight:bold;">
+                            <td colspan="7" style="border:none;font-size:14px;padding:0px 0px;">Total Invoice Value (Rs.)</td>
+                            <td style="border:1px solid #000;text-align:right;">{{ number_format($grandTotal,2) }}</td>
+                            <td colspan="2" style="border:none;"></td>
+                            <td colspan="2" style="border:none;"></td>
+                        </tr>
+                    </table>
+                    <div style="font-size:14px; line-height:1.4;border-bottom:1px solid #000;">                   
+                        <div style="padding-bottom: 5px;padding-top: 5px;">
+                            <strong>Total Invoice Value (in words) :</strong>
+                            {{ showAmount($grandTotal) }}
+                        </div>
+                        <div>
+                            <strong>Amount of Tax (in words) :</strong>
+                            {{ showAmount($taxTotal) }}
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin: 0px 0px; font-size: 16px; font-family: Arial, sans-serif;">
+                        <!-- Left Column: Transporter Details -->
+                        <div style="flex: 1; padding: 8px 2px; border-bottom: 1px solid #000; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div style="display: flex; margin-bottom: 8px;">
+                                <span style="width: 120px; font-weight: bold;">Transporter Name</span><span style="margin: 0 8px;">:</span><span></span>
+                            </div>
+                            <div style="display: flex; margin-bottom: 8px;">
+                                <span style="width: 120px; font-weight: bold;">Vehicle Details</span><span style="margin: 0 8px;">:</span><span></span>
+                            </div>
+                            <div style="display: flex; margin-bottom: 8px;">
+                                <span style="width: 120px; font-weight: bold;">LR Number</span><span style="margin: 0 8px;">:</span><span></span>
+                            </div>
+                            <div style="display: flex; margin-bottom: 8px;">
+                                <span style="width: 120px; font-weight: bold;">Gross Weight</span><span style="margin: 0 8px;">:</span><span></span>
+                            </div>
+                            <div style="display: flex; margin-bottom: 8px;">
+                                <span style="width: 120px; font-weight: bold;">Net Weight</span><span style="margin: 0 8px;">:</span><span></span>
+                            </div>
+                            <div style="display: flex; margin-bottom: 8px;">
+                                <span style="width: 120px; font-weight: bold;">Tare Weight</span><span style="margin: 0 8px;">:</span><span></span>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Purpose Checkboxes -->
+                        <div style="flex: 1.5; padding: 8px 10px; border-bottom: 1px solid #000; display: flex; flex-direction: column;">
+                            <div style="margin-bottom: 8px; font-weight: bold;">For the Purpose of -</div>
+                            <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                                <label style="display:flex;align-items:flex-start;margin-bottom:6px;cursor:default;">
+                                    <span style="display:inline-block;width:18px;height:18px;border:1px solid #333;border-radius:3px;margin-right:10px;flex-shrink:0;background:#fff;" aria-hidden="true"></span>
+                                    <span>(a) Supply of liquid gas where the quantity at the time of removal from the place of business of the supplier is not known.</span>
+                                </label>
+                                <label style="display:flex;align-items:flex-start;margin-bottom:6px;cursor:default;">
+                                    <span style="display:inline-block;width:18px;height:18px;border:1px solid #333;border-radius:3px;margin-right:10px;flex-shrink:0;background:#fff;" aria-hidden="true"></span>
+                                    <span>(b) Transportation of goods for job work.</span>
+                                </label>
+                                <label style="display:flex;align-items:flex-start;margin-bottom:6px;cursor:default;">
+                                    <span style="display:inline-block;width:18px;height:18px;border:1px solid #333;border-radius:3px;margin-right:10px;flex-shrink:0;background:#fff;" aria-hidden="true"></span>
+                                    <span>(c) Transportation of goods for reasons other than by way of supply.</span>
+                                </label>
+                                <label style="display:flex;align-items:flex-start;margin-bottom:6px;cursor:default;">
+                                    <span style="display:inline-block;width:18px;height:18px;border:1px solid #333;border-radius:3px;margin-right:10px;flex-shrink:0;background:#fff;" aria-hidden="true"></span>
+                                    <span>(d) Such other supplies as may be notified by the board.</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex;">
+                        <div style="width: 60%; display: flex; margin-top: 0px; border-right:1px solid #000;">
+                            <span style="width: 40%;"><b>Notes: </b> FOR INSPECTION</span>
+                            <span style="width: 20%;">Not For Sale</span>
+                        </div>
+                        <div style="width: 40%; text-align: center;">
+                            <b>ANDERSON GREENWOOD CROSBY SANMAR LIMITED(Formerly Pentair Sanmar Ltd)</b><br><br><br>
+                            <p>Authorised Signatory</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin: 0px 0px 80px; font-size: 16px;border-top:1px solid #000;">
+                        <div style="width: 60%; display: flex; margin-top: 0px;">
+                            <span style="width: 40%;"><b>BN8 </b></span>
+                            <span style="width: 40%;"><b>BN8 </b></span>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: end;">
+                    <span style="font-size: 12px;">DAN/STR/SF/01</span>
                 </div>
             </div>
         </section>

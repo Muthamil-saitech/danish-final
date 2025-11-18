@@ -29,3 +29,8 @@ ALTER TABLE `tbl_customer_po_reorders` ADD `mat_id` INT NULL DEFAULT NULL AFTER 
 ALTER TABLE `tbl_manufactures` ADD `customer_reorder_id` INT NULL DEFAULT NULL AFTER `customer_order_id`;
 ALTER TABLE `tbl_stock_adjust_logs` ADD `customer_reorder_id` INT NULL DEFAULT NULL AFTER `mat_stock_id`;
 ALTER TABLE `tbl_quotation_details` ADD `manufacture_id` INT NULL DEFAULT NULL AFTER `customer_order_id`;
+ALTER TABLE `tbl_finished_products_productionstage` CHANGE `stage_minute` `stage_minute` TIME NULL DEFAULT NULL;
+ALTER TABLE `tbl_finished_products_productionstage` CHANGE `stage_set_minute` `stage_set_minute` TIME NULL DEFAULT NULL;
+ALTER TABLE `tbl_manufactures_stages` CHANGE `stage_minute` `stage_minute` TIME NULL DEFAULT NULL;
+ALTER TABLE `tbl_manufactures_stages` CHANGE `stage_set_minute` `stage_set_minute` TIME NULL DEFAULT NULL;
+

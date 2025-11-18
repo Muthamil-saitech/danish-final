@@ -1634,14 +1634,14 @@ class AjaxController extends Controller
                             <td>
                                 <div class="row">
                                     <div class="col-xl-12 col-md-12 getLowRMStock">
-                                        <div class="input-group"><input class="form-control stage_aligning" type="text" id="minute_limit" name="stage_minute[]" min="1" max="60" value="" placeholder="Minutes"><span class="input-group-text">Minutes</span></div>
+                                        <div class="input-group"><input class="form-control stage_aligning timepicker" type="text" name="stage_minute[]" min="1" max="60" value="" placeholder="Minutes"><span class="input-group-text">Minutes</span></div>
                                     </div>
                                 </div>
                             </td>
                             <td>
                                 <div class="row">
                                     <div class="col-xl-12 col-md-12">
-                                        <div class="input-group"><input class="form-control stage_aligning" type="text" id="set_minute_limit" name="stage_set_minute[]" min="1" max="60" value="" placeholder="Minutes"><span class="input-group-text">Minutes</span></div>
+                                        <div class="input-group"><input class="form-control stage_aligning timepicker" type="text" id="set_minute_limit" name="stage_set_minute[]" min="1" max="60" value="" placeholder="Minutes"><span class="input-group-text">Minutes</span></div>
                                     </div>
                                 </div>
                             </td>

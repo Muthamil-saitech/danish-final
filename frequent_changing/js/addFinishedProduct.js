@@ -1,7 +1,7 @@
 $(document).ready(function () {
     "use strict";
     let hidden_currency = $("#hidden_currency").val();
-    
+
 
     //reorder production stage serial number
     function reorderSerial() {
@@ -147,11 +147,11 @@ $(document).ready(function () {
             separate_params[0] +
             '" name="rm_id[]"> ' +
             "<span>" +
-            separate_params[1] + "(" +separate_params[2] + ")" +
-            "</span></td>\n" +            
+            separate_params[1] + "(" + separate_params[2] + ")" +
+            "</span></td>\n" +
             '<td class="text-end"><a class="btn btn-xs del_row dlt_button"><iconify-icon icon="solar:trash-bin-minimalistic-broken"></iconify-icon></a></td>\n' +
             "</tr>";
-            
+
         let check_exist = true;
         $(".rowCount").each(function () {
             let id = $(this).attr("data-id");
@@ -238,7 +238,7 @@ $(document).ready(function () {
             $("#rmaterial").val("").change();
             return false;
         }
-    });    
+    });
 
     $(document).on("click", ".del_row", function (e) {
         $(this).parent().parent().remove();
@@ -271,9 +271,9 @@ $(document).ready(function () {
         let max = parseInt($(this).attr("max"));
         let min = parseInt($(this).attr("min"));
         if ($(this).val() > max) {
-        $(this).val(max);
+            $(this).val(max);
         } else if ($(this).val() < min) {
-        $(this).val(min);
+            $(this).val(min);
         }
         totalMonthDaysHourMinuteCalculate();
     });
@@ -281,15 +281,15 @@ $(document).ready(function () {
         let max = parseInt($(this).attr("max"));
         let min = parseInt($(this).attr("min"));
         if ($(this).val() > max) {
-        let month = $(this).closest("tr").find("#month_limit").val();
-        month = month == "" ? 0 : month;
-        let countedValue = parseInt($(this).val() / 30);
-        let countedValue1 = parseInt($(this).val()) % 30;
-        month = parseInt(month) + countedValue;
-        $(this).closest("tr").find("#month_limit").val(month);
-        $(this).val(countedValue1);
+            let month = $(this).closest("tr").find("#month_limit").val();
+            month = month == "" ? 0 : month;
+            let countedValue = parseInt($(this).val() / 30);
+            let countedValue1 = parseInt($(this).val()) % 30;
+            month = parseInt(month) + countedValue;
+            $(this).closest("tr").find("#month_limit").val(month);
+            $(this).val(countedValue1);
         } else if ($(this).val() < min) {
-        $(this).val(min);
+            $(this).val(min);
         }
         totalMonthDaysHourMinuteCalculate();
     });
@@ -297,15 +297,15 @@ $(document).ready(function () {
         let max = parseInt($(this).attr("max"));
         let min = parseInt($(this).attr("min"));
         if ($(this).val() > max) {
-        let day = $(this).closest("tr").find("#day_limit").val();
-        day = day == "" ? 0 : day;
-        let countedValue = parseInt($(this).val() / 24);
-        let countedValue1 = parseInt($(this).val()) % 24;
-        day = parseInt(day) + countedValue;
-        $(this).closest("tr").find("#day_limit").val(day);
-        $(this).val(countedValue1);
+            let day = $(this).closest("tr").find("#day_limit").val();
+            day = day == "" ? 0 : day;
+            let countedValue = parseInt($(this).val() / 24);
+            let countedValue1 = parseInt($(this).val()) % 24;
+            day = parseInt(day) + countedValue;
+            $(this).closest("tr").find("#day_limit").val(day);
+            $(this).val(countedValue1);
         } else if ($(this).val() < min) {
-        $(this).val(min);
+            $(this).val(min);
         }
         totalMonthDaysHourMinuteCalculate();
     });
@@ -314,9 +314,9 @@ $(document).ready(function () {
         let min = parseInt($(this).attr("min"));
         let value = parseInt($(this).val());
         if (value > max) {
-        $(this).val(max);
+            $(this).val(max);
         } else if (value < min) {
-        $(this).val(min);
+            $(this).val(min);
         }
         totalMinutesCalculate();
     });
@@ -341,18 +341,18 @@ $(document).ready(function () {
         let totalMinutes = 0;
 
         $(".stage_name").each(function () {
-        let month =
-            parseInt($(this).closest("tr").find("#month_limit").val()) || 0;
-        let day = parseInt($(this).closest("tr").find("#day_limit").val()) || 0;
-        let hour =
-            parseInt($(this).closest("tr").find("#hours_limit").val()) || 0;
-        let minute =
-            parseInt($(this).closest("tr").find("#minute_limit").val()) || 0;
+            let month =
+                parseInt($(this).closest("tr").find("#month_limit").val()) || 0;
+            let day = parseInt($(this).closest("tr").find("#day_limit").val()) || 0;
+            let hour =
+                parseInt($(this).closest("tr").find("#hours_limit").val()) || 0;
+            let minute =
+                parseInt($(this).closest("tr").find("#minute_limit").val()) || 0;
 
-        totalMonth += month;
-        totalDays += day;
-        totalHours += hour;
-        totalMinutes += minute;
+            totalMonth += month;
+            totalDays += day;
+            totalHours += hour;
+            totalMinutes += minute;
         });
 
         console.log(totalMonth, totalDays, totalHours, totalMinutes);
@@ -371,7 +371,7 @@ $(document).ready(function () {
             url: hidden_base_url + "getMaterialName",
             data: { id: mat_cat_id },
             dataType: "json",
-            success: function (data) { 
+            success: function (data) {
                 $(".add_tr").empty();
                 $("#rmaterial").val("").change();
                 let raw_materials = data;
@@ -383,7 +383,7 @@ $(document).ready(function () {
                         let id = rm.id;
                         let name = rm.name;
                         let code = rm.code;
-                        select.append('<option value="' + id + '|'+ name +'|'+ code +'">' + name + ' ('+ code +')'+'</option>');
+                        select.append('<option value="' + id + '|' + name + '|' + code + '">' + name + ' (' + code + ')' + '</option>');
                     }
                 });
                 $(".select2").select2();
@@ -403,11 +403,18 @@ $(document).ready(function () {
             dataType: "json",
             success: function (data) {
                 $(".add_tr2").html(data.html);
+                flatpickr(".timepicker", {
+                    enableTime: true,
+                    noCalendar: true,
+                    time_24hr: true,
+                    enableSeconds: true,
+                    dateFormat: "H:i:S"
+                });
                 $("#t_minute").val(0);
                 setAttribute();
                 cal_row();
             },
-            error: function () {},
+            error: function () { },
         });
     });
 
@@ -420,18 +427,18 @@ $(document).ready(function () {
         // let hsn_sac_no = $('#hsn_sac_no').val();
         let description = $('#description').val();
 
-        if(name == "") {
+        if (name == "") {
             status = false;
             showErrorMessage("name", "The Part Name field is required");
-        }else{
+        } else {
             $("#name").removeClass("is-invalid");
             $("#name").closest("div").find(".text-danger").addClass("d-none");
         }
 
-        if(code == "") {
+        if (code == "") {
             status = false;
             showErrorMessage("code", "The Part No field is required");
-        }else{
+        } else {
             $("#code").removeClass("is-invalid");
             $("#code").closest("div").find(".text-danger").addClass("d-none");
         }
@@ -444,30 +451,30 @@ $(document).ready(function () {
             $("#hsn_sac_no").closest("div").find(".text-danger").addClass("d-none");
         } */
 
-        if(category == "") {
+        if (category == "") {
             status = false;
             showErrorMessage("category_id", "The Product Category field is required");
-        }else{
+        } else {
             $("#category_id").removeClass("is-invalid");
             $("#category_id").closest("div").find(".text-danger").addClass("d-none");
         }
 
-        if(drawer_no == "") {
+        if (drawer_no == "") {
             status = false;
             showErrorMessage("drawer_no", "The Drawing No field is required");
-        }else{
+        } else {
             $("#drawer_no").removeClass("is-invalid");
             $("#drawer_no").closest("div").find(".text-danger").addClass("d-none");
         }
 
-        if(description == "") {
+        if (description == "") {
             status = false;
             showErrorMessage("description", "The Description field is required");
-        }else{
+        } else {
             $("#description").removeClass("is-invalid");
             $("#description").closest("div").find(".text-danger").addClass("d-none");
-        }       
-        
+        }
+
         let rowCount = $(".rowCount").length;
 
         if (!Number(rowCount)) {

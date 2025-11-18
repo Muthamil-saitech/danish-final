@@ -299,9 +299,9 @@
                                             @endphp
                                             @foreach ($fp_productionstages as $key => $value)
                                                 <?php                                
-                                                    $total_req_min += $value->stage_minute;
+                                                    /* $total_req_min += $value->stage_minute;
                                                     $total_set_min += $value->stage_set_minute;
-                                                    $total_mimute += $value->stage_minute + $value->stage_set_minute;
+                                                    $total_mimute += $value->stage_minute + $value->stage_set_minute; */
                                                 ?>
                                                 <tr class="rowCount2 align-middle ui-state-default" data-id="{{ $value->productionstage_id }}">
                                                 {{-- <td><span class="handle me-2"><iconify-icon icon="radix-icons:move"></iconify-icon></span></td> --}}
@@ -338,8 +338,8 @@
                                                             <div class="col-xl-12 col-md-12">
                                                                 <div class="input-group">
                                                                     <input
-                                                                        class="form-control @error('title') is-invalid @enderror stage_aligning"
-                                                                        type="number" id="minute_limit"
+                                                                        class="form-control @error('title') is-invalid @enderror stage_aligning timepicker"
+                                                                        type="text" id="minute_limit"
                                                                         name="stage_minute[]" min="0"
                                                                         max="60"
                                                                         value="{{ $value->stage_minute }}"
@@ -354,8 +354,8 @@
                                                             <div class="col-xl-12 col-md-12">
                                                                 <div class="input-group">
                                                                     <input
-                                                                        class="form-control @error('title') is-invalid @enderror stage_aligning"
-                                                                        type="number" id="set_minute_limit"
+                                                                        class="form-control @error('title') is-invalid @enderror stage_aligning timepicker"
+                                                                        type="text" id="set_minute_limit"
                                                                         name="stage_set_minute[]" min="0"
                                                                         max="60"
                                                                         value="{{ $value->stage_set_minute }}"
@@ -369,7 +369,7 @@
                                             @endforeach
                                         @endif
                                     </tbody>
-                                    <tr>
+                                    {{-- <tr>
                                         <td class="width_1_p"></td>
                                         <td class="width_1_p"></td>
                                         <td class="width_1_p">@lang('index.total')</td>
@@ -387,7 +387,7 @@
                                                 </div>
                                             </div>
                                         </td>
-                                    </tr>
+                                    </tr> --}}
                                 </table>
                             </div>
                         </div>
@@ -410,4 +410,21 @@
 @section('script')
     <script type="text/javascript" src="{!!  $baseURL . 'assets/bower_components/jquery-ui/jquery-ui.min.js'  !!}"></script>
     <script type="text/javascript" src="{!! $baseURL . 'frequent_changing/js/addFinishedProduct.js?v=1.2' !!}"></script>
+    <script src="{!! $baseURL.'assets/plugins/local/jquery.timepicker.min.js'!!}"></script>
+    <link rel="stylesheet" href="{!! $baseURL.'assets/plugins/local/jquery.timepicker.min.css'!!}">
+    <link rel="stylesheet" href="{!! $baseURL.'assets/bower_components/flatpickr/css/flatpickr.min.css'!!}">
+    <script src="{!! $baseURL.'assets/bower_components/flatpickr/js/flatpickr.js'!!}"></script>
+    <script>
+    flatpickr(".timepicker", {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        time_24hr: true,
+        enableSeconds: true,
+        dateFormat: "H:i:S",
+        minuteIncrement: 1,
+    });
+</script>
+
+
 @endsection

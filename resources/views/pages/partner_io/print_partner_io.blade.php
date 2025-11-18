@@ -43,7 +43,7 @@ $baseURL = getBaseURL();
                     </div>
                     <div style="width: 50%; border-bottom: 1px solid #000; padding: 8px 10px; font-size: 14px; display: grid; grid-template-columns: 50% 50%; grid-auto-rows: min-content; row-gap: 4px; align-items: start; word-break: break-word;">
                         <span>Reference PO Number</span>
-                        : {{ $partner_io->reference_no . '/' . $partner_io->line_item_no }}
+                        : {{ $partner_io->reference_no . '/' . $partner_io_detail->line_item_no }}
                         <span>Delivery Challan Number</span>
                         : {{ $partner_io->del_challan_no }}
                         <span>Delivery Challan Date</span>

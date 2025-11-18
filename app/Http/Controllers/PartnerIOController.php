@@ -259,7 +259,7 @@ class PartnerIOController extends Controller
    public function inwardIO($id) {
         $id = encrypt_decrypt($id, 'decrypt');
         $partner_io_detail = PartnerIoDetail::where('id',$id)->where('del_status','Live')->first();
-        $partner_io = PartnerIO::find($partner_io_detail->partner_io_id)->first();
+        $partner_io = PartnerIO::where('id',$partner_io_detail->partner_io_id)->first();
         $title = "View Partner Inward I/O";
         $status = "Inward";
         return view('pages.partner_io.view', compact('title','partner_io_detail','partner_io','status'));
@@ -267,7 +267,7 @@ class PartnerIOController extends Controller
     public function outwardIO($id) {
         $id = encrypt_decrypt($id, 'decrypt');
         $partner_io_detail = PartnerIoDetail::where('id',$id)->where('del_status','Live')->first();
-        $partner_io = PartnerIO::find($partner_io_detail->partner_io_id)->first();
+        $$partner_io = PartnerIO::where('id',$partner_io_detail->partner_io_id)->first();
         $title = "View Partner Outward I/O";
         $status = "Outward";
         return view('pages.partner_io.view', compact('title','partner_io_detail','partner_io','status'));

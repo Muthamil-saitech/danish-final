@@ -75,7 +75,7 @@
                         </div>
                         <div class="col-sm-12 mb-2 col-md-4">
                             <div class="form-group">
-                                <label>Po Time<span class="required_star">*</span></label>
+                                <label>@lang('index.po_no')</label>
                                 <input type="hidden" name="selected_customer_order_id" value="{{ isset($selected_customer_order_id) ? $selected_customer_order_id : old('selected_customer_order_id') }}" >
                                 <input type="hidden" name="selected_customer_order_detail_id" value="{{ isset($selected_customer_order_detail_id) ? $selected_customer_order_detail_id : old('selected_customer_order_detail_id') }}" id="selected_customer_order_detail_id">
                                 <select class="form-control customer_order_id_c1 select2" name="customer_order_id" id="customer_order_id" {{ isset($selected_customer_order_detail_id) ? 'disabled' : '' }}>
@@ -91,13 +91,6 @@
                                 @error('customer_order_id')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
-                            </div>
-                        </div>
-                       <div class="col-sm-12 mb-2 col-md-4">
-                                <label>@lang('index.po_no')</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control stage_aligning timePicker" name="stage_minute[]" placeholder="Select Time" value="{{ $value->stage_minute }}">
-                                    <span class="input-group-text">@lang('index.minutes')</span>
                             </div>
                         </div>
                         <div class="clearfix"></div>
@@ -554,9 +547,9 @@
                                                 ?>
                                                 @foreach ($m_stages as $key => $value)
                                                     <?php
-                                                    $total_req_min += $value->stage_minute;
-                                                    $total_set_min += $value->stage_set_minute;
-                                                    $total_mimute += $value->stage_minute + $value->stage_set_minute;
+                                                    // $total_req_min += $value->stage_minute;
+                                                    // $total_set_min += $value->stage_set_minute;
+                                                    // $total_mimute += $value->stage_minute + $value->stage_set_minute;
                                                     $checked = $disabled ='';
                                                     $tmp_key = $key + 1;
                                                     if ($obj->stage_counter == $tmp_key) {
@@ -635,8 +628,8 @@
                                                                 <div class="col-xl-12 col-md-12">
                                                                     <div class="input-group">
                                                                         <input
-                                                                            class="form-control @error('title') is-invalid @enderror stage_aligning timePicker"
-                                                                            type="number" id="minute_limit"
+                                                                            class="form-control @error('title') is-invalid @enderror stage_aligning"
+                                                                            type="text" id="minute_limit"
                                                                             name="stage_minute[]" min="0"
                                                                             max="60"
                                                                             value="{{ $value->stage_minute }}"
@@ -652,7 +645,7 @@
                                                                     <div class="input-group">
                                                                         <input
                                                                             class="form-control @error('title') is-invalid @enderror stage_aligning"
-                                                                            type="number" id="set_minute_limit"
+                                                                            type="text" id="set_minute_limit"
                                                                             name="stage_set_minute[]" min="0"
                                                                             max="60"
                                                                             value="{{ $value->stage_set_minute }}"
@@ -669,13 +662,13 @@
                                                 @endforeach
                                             @endif
                                         </tbody>
-                                        <tr>
+                                        {{-- <tr>
                                             <td class="width_1_p"></td>
                                             <td class="width_1_p"></td>
                                             <td class="width_1_p">@lang('index.total')</td>
                                             <td>
                                                 <div class="row">
-                                                    {{-- <div class="col-md-3">
+                                                    <div class="col-md-3">
                                                         <div class="input-group">
                                                             <input
                                                                 class="form-control @error('title') is-invalid @enderror stage_aligning stage_color"
@@ -694,8 +687,8 @@
                                                                 placeholder="Days">
                                                             <span class="input-group-text">@lang('index.days')</span>
                                                         </div>
-                                                    </div> --}}
-                                                    {{-- <div class="col-md-6">
+                                                    </div> 
+                                                    <div class="col-md-6">
                                                         <div class="input-group">
                                                             <input
                                                                 class="form-control @error('title') is-invalid @enderror stage_aligning stage_color"
@@ -704,7 +697,7 @@
                                                                 placeholder="Hours">
                                                             <span class="input-group-text">@lang('index.hours')</span>
                                                         </div>
-                                                    </div> --}}
+                                                    </div> 
                                                     <div class="col-md-12">
                                                         <div class="input-group">
                                                             <input
@@ -717,7 +710,7 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                        </tr>
+                                        </tr> --}}
                                     </table>
                                 </div>
                             </div>

@@ -163,6 +163,7 @@ $whiteLabelInfo = App\WhiteLabelSettings::first();
                     <th style="border: 1px solid #222; padding: 10px 5px; width: 8%;">OPR No</th>
                     <th style="border: 1px solid #222; padding: 10px 5px; width: 20%;">Operations</th>
                     <th style="border: 1px solid #222; padding: 10px 5px; width: 8%;">Cycle Time</th>
+                    <th style="border: 1px solid #222; padding: 10px 5px; width: 8%;">Setup Time</th>
                     <th style="border: 1px solid #222; padding: 10px 5px; width: 15%;">Date</th>
                     <th style="border: 1px solid #222; padding: 10px 5px; width: 15%;">Opr Code</th>
                     <th style="border: 1px solid #222; padding: 10px 5px; width: 15%;">M/C Code</th>
@@ -173,12 +174,13 @@ $whiteLabelInfo = App\WhiteLabelSettings::first();
                     <?php $total_mimute = 0; ?>
                     @foreach ($m_stages as $value)
                     <?php
-                        $total_mimute = $value->stage_minute + $value->stage_set_minute; 
+                        // $total_mimute = $value->stage_minute + $value->stage_set_minute; 
                     ?>
                     <tr>
                         <td style="border: 1px solid #222; padding:  10px 5px;" rowspan="3">{{ $loop->iteration }}</td>
                         <td style="border: 1px solid #222; padding:  10px 5px;" rowspan="3">{{ getProductionStage($value->productionstage_id) }}</td>
-                        <td style="border: 1px solid #222; padding:  10px 5px;" rowspan="3">{{ $total_mimute }}</td>
+                        <td style="border: 1px solid #222; padding:  10px 5px;" rowspan="3">{{ $value->stage_minute }}</td>
+                            <td style="border: 1px solid #222; padding:  10px 5px;" rowspan="3">{{ $value->stage_set_minute }}</td> 
                         <td style="border: 1px solid #222; padding:  10px 5px;"></td>
                         <td style="border: 1px solid #222; padding:  10px 5px;"></td>
                         <td style="border: 1px solid #222; padding:  10px 5px;"></td>

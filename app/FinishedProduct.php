@@ -91,38 +91,50 @@ class FinishedProduct extends Model
     /**
      * Get Required Time
      */
+    // public function getRequiredTimeAttribute()
+    // {
+    //     // calculate total time required for production
+    //     $total_time = 0;
+    //     $stage_month = 0;
+    //     $stage_day = 0;
+    //     $stage_hours = 0;
+    //     $stage_minutes = 0;
+    //     foreach ($this->stage as $stage) {
+    //         $stage_month += $stage->stage_month;
+    //         $stage_day += $stage->stage_day;
+    //         $stage_hours += $stage->stage_hours;
+    //         $stage_minutes += $stage->stage_minute;
+    //     }
+
+    //     $total_time += $stage_month * 30 * 24 * 60;
+
+    //     $total_time += $stage_day * 24 * 60;
+
+    //     $total_time += $stage_hours * 60;
+
+    //     $total_time += $stage_minutes;
+
+    //     //return total time in like that 2 month 3 days 4 hours 5 minutes
+    //     $month = floor($total_time / (30 * 24 * 60));
+    //     $total_time = $total_time % (30 * 24 * 60);
+    //     $day = floor($total_time / (24 * 60));
+    //     $total_time = $total_time % (24 * 60);
+    //     $hour = floor($total_time / 60);
+    //     $minute = $total_time % 60;
+
+    //     return $month . ' month ' . $day . ' days ' . $hour . ' hours ' . $minute . ' minutes';
+    // }
+
     public function getRequiredTimeAttribute()
     {
-        // calculate total time required for production
-        $total_time = 0;
-        $stage_month = 0;
-        $stage_day = 0;
-        $stage_hours = 0;
-        $stage_minutes = 0;
-        foreach ($this->stage as $stage) {
-            $stage_month += $stage->stage_month;
-            $stage_day += $stage->stage_day;
-            $stage_hours += $stage->stage_hours;
-            $stage_minutes += $stage->stage_minute;
-        }
-
-        $total_time += $stage_month * 30 * 24 * 60;
-
-        $total_time += $stage_day * 24 * 60;
-
-        $total_time += $stage_hours * 60;
-
-        $total_time += $stage_minutes;
-
-        //return total time in like that 2 month 3 days 4 hours 5 minutes
-        $month = floor($total_time / (30 * 24 * 60));
-        $total_time = $total_time % (30 * 24 * 60);
-        $day = floor($total_time / (24 * 60));
-        $total_time = $total_time % (24 * 60);
-        $hour = floor($total_time / 60);
-        $minute = $total_time % 60;
-
-        return $month . ' month ' . $day . ' days ' . $hour . ' hours ' . $minute . ' minutes';
+        return $this->stage->map(function ($stage) {
+            return [
+                'month'   => $stage->stage_month,
+                'day'     => $stage->stage_day,
+                'hour'    => $stage->stage_hours,
+                'minute'  => $stage->stage_minute, 
+            ];
+        });
     }
 
     public function manufacture()
