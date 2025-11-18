@@ -924,7 +924,7 @@ class AjaxController extends Controller
 
             // Determine correct order detail id
             $orderDetailId = $m->customer_reorder_id > 0
-                ? $m->customer_reorder_id
+                ? $m->customer_order_id
                 : $m->customer_order_id;
 
             // Build option
