@@ -113,7 +113,7 @@
                     </td>
                     <td class="text-start" style="font-family: DejaVu Sans, sans-serif;">
                         {{-- {{ getCurrency(getOrderPrice($quote_price,$orderInfo->sale_price,$orderInfo->tax_type))  }} --}}
-                        ₹ {{ numberFormat($orderInfo->sale_price) }}
+                        ₹ {{ numberFormat(getOrderPrice($quote_price,$orderInfo->sale_price,$orderInfo->tax_type)) }}
                     </td>
                     <?php /* $sale_rate = getOrderPrice($quote_price,$orderInfo->sale_price,$orderInfo->tax_type);  */ $sale_rate = $orderInfo->sale_price;
                     ?>
