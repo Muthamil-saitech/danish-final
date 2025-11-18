@@ -31,7 +31,7 @@ if (isset($setting->base_color) && $setting->base_color) {
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #000;">
                     <div style="flex: 1; text-align: center; line-height: 1.6;">
                         <h5 style="font-size: 18px; font-weight: 600; letter-spacing: 1px; margin: 5px 0px 0px 0px;">
-                            {{ $customer_io->outward_type.' '.'Returnable Delivery Challan' }}
+                            {{ $customer_io->outward_type=="RGP" ? 'Returnable Delivery Challan' : 'Non Returnable Delivery Challan' }}
                         </h5>
                         <p style="font-size: 15px; margin-bottom: 10px; font-weight: 600;">
                             (Rule 55 of CGST Rules 2017)
@@ -52,7 +52,7 @@ if (isset($setting->base_color) && $setting->base_color) {
                         <span>Reference PO Number</span>
                         <b>: {{ $customer_io->po_no . '/' . $customer_io->line_item_no }}</b>
                         <span>Delivery Challan Number</span>
-                        <b>: {{ $customer_io->del_challan_no }}</b>
+                        <b>: {{ $status=="Outward" ? $customer_io->outward_challan_no : $customer_io->del_challan_no }}</b>
                         <span>Delivery Challan Date</span>
                         <b>: {{ date('d-m-Y', strtotime($customer_io->date)) }}</b>
                         <span>Place of Supply</span>

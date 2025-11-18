@@ -23,7 +23,7 @@ $baseURL = getBaseURL();
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #000;">
                     <div style="flex: 1; text-align: center;  padding: 5px 0px">
                         <h5 style="font-size: 18px; font-weight: 600; letter-spacing: 1px; margin-bottom: 3px ">
-                            {{ $customer_io->outward_type.' '.'Returnable Delivery Challan' }}
+                            {{ $customer_io->outward_type=="RGP" ? 'Returnable Delivery Challan' : 'Non Returnable Delivery Challan' }}
                         </h5>
                         <p style="font-size: 18px; font-weight: 600;">
                             (Rule 55 of CGST Rules 2017)
@@ -46,7 +46,7 @@ $baseURL = getBaseURL();
                         <span>Reference PO Number</span>
                         : {{ $customer_io->po_no . '/' . $customer_io->line_item_no }}
                         <span>Delivery Challan Number</span>
-                        : {{ $customer_io->del_challan_no }}
+                        : {{ $status=="Outward" ? $customer_io->outward_challan_no : $customer_io->del_challan_no }}
                         <span>Delivery Challan Date</span>
                         : {{ date('d-m-Y', strtotime($customer_io->date)) }}
                         <span>Place of Supply</span>
