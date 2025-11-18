@@ -127,10 +127,10 @@ $baseURL = getBaseURL();
                 $columnsPerPage = $columnsPerPage ?? 13;
 
                 $actualQty = $manufacture->product_quantity;
-                $maxColumns = max($actualQty, $columnsPerPage);
 
+                // FIXED
                 $startIndex = ($currentPage - 1) * $columnsPerPage + 1;
-                $endIndex = $startIndex + $maxColumns - 1;
+                $endIndex = min($startIndex + $columnsPerPage - 1, $actualQty);
                 @endphp
 
                 <div style="border:1px solid #000; border-top: none;">
