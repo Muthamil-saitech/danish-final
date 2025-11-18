@@ -23,7 +23,7 @@ $baseURL = getBaseURL();
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #000;">
                     <div style="flex: 1; text-align: center;  padding: 5px 0px">
                         <h5 style="font-size: 18px; font-weight: 600; letter-spacing: 1px; margin-bottom: 3px ">
-                            {{ $customer_io->outward_type=="RGP" ? 'Returnable Delivery Challan' : 'Non Returnable Delivery Challan' }}
+                            {{ $customer_io->outward_type=="RGP" ? 'Returnable Gate Pass' : 'Non Returnable Gate Pass' }}
                         </h5>
                         <p style="font-size: 18px; font-weight: 600;">
                             (Rule 55 of CGST Rules 2017)
