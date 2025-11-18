@@ -232,7 +232,8 @@ class RawMaterialPurchaseController extends Controller
         $accounts = Account::orderBy('name', 'ASC')->where('del_status', "Live")->get();
         $pruchse_rmaterials = RMPurchase_model::where('purchase_id', $obj->id)->where('del_status', "Live")->get();
         $setting = getSettingsInfo();
-        $pdf = PDF::loadView('pages.purchase.print_purchase_invoice', compact('obj', 'company', 'suppliers', 'rmaterials', 'pruchse_rmaterials', 'accounts', 'setting'))->setPaper('a4', 'landscape');
+        $material_types = MaterialType::where('del_status','Live')->orderBy('id','DESC')->get();
+        $pdf = PDF::loadView('pages.purchase.print_purchase_invoice', compact('obj', 'company', 'suppliers', 'rmaterials', 'pruchse_rmaterials', 'accounts', 'setting','material_types'))->setPaper('a4', 'landscape');
         return $pdf->download($obj->reference_no . '.pdf');
     }
 
