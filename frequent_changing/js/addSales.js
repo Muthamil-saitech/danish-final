@@ -611,8 +611,9 @@ $(document).ready(function () {
                 data: { order_id: order_id },
                 dataType: "json",
                 success: function (data) {
-                    let pay_amount = data[0].pay_amount;
-                    let balance_amount = data[0].balance_amount;
+                    let row = Array.isArray(data) ? data[0] : data;
+                    let pay_amount = parseFloat(row.pay_amount).toFixed(2);
+                    let balance_amount = parseFloat(row.balance_amount).toFixed(2);
                     $("#paid").val(pay_amount);
                     $("#due").val(balance_amount);
                 },

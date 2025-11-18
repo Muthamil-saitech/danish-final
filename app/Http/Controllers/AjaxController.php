@@ -1444,6 +1444,7 @@ class AjaxController extends Controller
         $total_paid = CustomerDueReceive::where('order_id', $order_id)
             ->where('del_status', 'Live')
             ->sum('pay_amount');
+            // dd($total_paid);
         if ($latest) {
             $customer_paid[] = [
                 'pay_amount' => $total_paid,
