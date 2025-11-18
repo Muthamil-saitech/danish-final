@@ -784,10 +784,6 @@ class AjaxController extends Controller
     public function getCustomerOrderList(Request $request)
     {
         $customer_id = escape_output($request->post('id'));
-
-        /** -----------------------------
-         *  MAIN ORDER ITEMS
-         *  ----------------------------- */
         $mainOrders = \App\CustomerOrder::join('tbl_customer_order_details as cod', 'cod.customer_order_id', '=', 'tbl_customer_orders.id')
             ->where('tbl_customer_orders.customer_id', $customer_id)
             ->where('tbl_customer_orders.del_status', 'Live')
@@ -804,10 +800,6 @@ class AjaxController extends Controller
             )
             ->orderBy('cod.id', 'DESC')
             ->get();
-
-        /** -----------------------------
-         *  REORDER ITEMS
-         *  ----------------------------- */
         $reorders = \App\CustomerPoReorder::join('tbl_customer_orders as co', 'co.id', '=', 'tbl_customer_po_reorders.customer_order_id')
             ->join('tbl_customer_order_details as cod', 'cod.id', '=', 'tbl_customer_po_reorders.customer_order_detail_id')
             ->where('co.customer_id', $customer_id)
@@ -828,15 +820,11 @@ class AjaxController extends Controller
 
         /** 🔹 Combine **/
         $allOrders = $mainOrders->concat($reorders);
-
+        // dd($allOrders);
         /** 🔹 Prepare Dropdown **/
         $html = '<option value="">Select</option>';
-
         foreach ($allOrders as $order) {
-
             if ($order->source_type === 'main') {
-
-                /** MAIN ORDER → Check manufacture.customer_order_id **/
                 $manufactExists = \App\Manufacture::where('customer_order_id', $order->codid)
                     ->where('product_id', $order->product_id)
                     ->where(function ($q) {
@@ -845,7 +833,6 @@ class AjaxController extends Controller
                     })
                     ->where('del_status', 'Live')
                     ->exists();
-
             } else {
 
                 /** REORDER → Check manufacture.customer_reorder_id **/
@@ -854,11 +841,8 @@ class AjaxController extends Controller
                     ->where('del_status', 'Live')
                     ->exists();
             }
-
-            /** Only show if not in manufacture table **/
             if (!$manufactExists) {
                 $ref = $order->reference_no . '/' . $order->line_item_no;
-
                 $html .= '<option value="' . $order->codid . '" 
                             data-ordertype="' . $order->source_type . '" 
                             data-reorder_id="' . $order->reorder_id . '">' 
@@ -882,12 +866,12 @@ class AjaxController extends Controller
                     ->where('del_status', "Live")
                     ->get();
         } else {
-            // dd($manufacture_prods);
             $orderDetails = CustomerOrderDetails::where('id', $customer_order_id)
-                    // ->whereNotIn('product_id', $manufacture_prods)
-                    ->where('del_status', "Live")
-                    ->get();
+            // ->whereNotIn('product_id', $manufacture_prods)
+            ->where('del_status', "Live")
+            ->get();
         }
+        // dd($orderDetails);
         $productId = [];
         $html = '<option value="">Select</option>';
         foreach ($orderDetails as $key => $value) {

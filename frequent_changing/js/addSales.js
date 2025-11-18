@@ -611,11 +611,18 @@ $(document).ready(function () {
                 data: { order_id: order_id },
                 dataType: "json",
                 success: function (data) {
-                    let row = Array.isArray(data) ? data[0] : data;
-                    let pay_amount = parseFloat(row.pay_amount).toFixed(2);
-                    let balance_amount = parseFloat(row.balance_amount).toFixed(2);
-                    $("#paid").val(pay_amount);
-                    $("#due").val(balance_amount);
+                    let row = data[0];
+                    // console.log("data",data[0]);
+                    if(row) {
+                        let pay_amount = parseFloat(row.pay_amount).toFixed(2);
+                        let balance_amount = parseFloat(row.balance_amount).toFixed(2);
+                        $("#paid").val(pay_amount);
+                        $("#due").val(balance_amount);
+                    } else {
+                        $("#paid").val("0.00");
+                        $("#due").val("0.00");
+                    }
+                    
                 },
                 error: function (xhr, status, error) {
                     console.log("XHR:", xhr.responseText);
