@@ -115,7 +115,7 @@
                         {{-- {{ getCurrency(getOrderPrice($quote_price,$orderInfo->sale_price,$orderInfo->tax_type))  }} --}}
                         ₹ {{ numberFormat(getOrderPrice($quote_price,$orderInfo->sale_price,$orderInfo->tax_type)) }}
                     </td>
-                    <?php /* $sale_rate = getOrderPrice($quote_price,$orderInfo->sale_price,$orderInfo->tax_type);  */ $sale_rate = $orderInfo->sale_price;
+                    <?php $sale_rate = getOrderPrice($quote_price,$orderInfo->sale_price,$orderInfo->tax_type);  /* $sale_rate = $orderInfo->sale_price; */
                     ?>
                     <td class="text-right pr-10" style="font-family: DejaVu Sans, sans-serif;">
                         ₹ {{ getSalePrice($sale_rate,$value->product_quantity) }}

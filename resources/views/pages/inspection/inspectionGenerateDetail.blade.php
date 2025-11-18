@@ -124,14 +124,22 @@ $baseURL = getBaseURL();
                 </div>
                 @php
                 $currentPage = request()->get('page', 1);
-                $columnsPerPage = $columnsPerPage ?? 13;
-
+                
                 $actualQty = $manufacture->product_quantity;
+                $columnsPerPage = 13; 
+                $currentPage = request()->get('page', 1);
 
-                // FIXED
-                $startIndex = ($currentPage - 1) * $columnsPerPage + 1;
-                $endIndex = min($startIndex + $columnsPerPage - 1, $actualQty);
+                if ($actualQty <= $columnsPerPage) {
+                    $startIndex = 1;
+                    $endIndex = $columnsPerPage; 
+                    $totalPages = 1;
+                } else {
+                    $totalPages = ceil($actualQty / $columnsPerPage);
+                    $startIndex = ($currentPage - 1) * $columnsPerPage + 1;
+                    $endIndex = min($startIndex + $columnsPerPage - 1, $actualQty);
+                }
                 @endphp
+
 
                 <div style="border:1px solid #000; border-top: none;">
                     <table style="width:100%; border-collapse:collapse; font-size:16px;">
@@ -140,7 +148,7 @@ $baseURL = getBaseURL();
                             <th style='border: 1px solid #000; padding: 10px;'>PARAMETER</th>
                             <th style='border: 1px solid #000; padding: 10px;'>DRAWING <br> SPEC.</th>
                             <th style='border: 1px solid #000; padding: 10px;'>INSP. <br>METHOD</th>
-                            <th style='border: 1px solid #000; border-right: none;' colspan="{{ $columnsPerPage }}">
+                            <th style='border: 1px solid #000; border-right: none;' colspan="{{ $endIndex - $startIndex + 1 }}">
                                 OBSERVED DIMENSIONS SL.No.
                             </th>
                         </tr>
@@ -156,6 +164,7 @@ $baseURL = getBaseURL();
                                     DBF{{ $i }}
                                 </td>
                             @endfor
+
                         </tr>
 
                         {{-- Dimension Inspection Section --}}
