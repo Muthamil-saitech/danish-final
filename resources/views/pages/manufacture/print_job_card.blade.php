@@ -24,6 +24,14 @@ $whiteLabelInfo = App\WhiteLabelSettings::first();
     @endphp
     <div style="width: 98%; max-width: 1100px; margin: 30px auto;">
         <h3 style="text-align: center; font-weight: bold; font-size: 22px; margin-bottom: 5px;">{{ strtoupper($setting->name_company_name) }}</h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="text-align: left;">
+                <img src="{!! getBaseURL() .
+                (isset(getWhiteLabelInfo()->logo) ? 'uploads/white_label/' . getWhiteLabelInfo()->logo : 'images/logo.png') !!}" alt="Logo Image" class="img-fluid mb-2">
+                <p style="font-size: 14px; margin-bottom: 10px; max-width:290px;">{{ strtoupper($setting->address) }}</p>
+                <!-- <h3 style="margin: 0; font-size: 22px;">{{ strtoupper($setting->name_company_name) }}</h3> -->
+            </div>
+        </div>
         <p style="text-align: center; font-size: 16px; font-weight: bold; margin-bottom: 10px;">{{ isset($title) && $title ? strtoupper($title) : '' }}</p>
         <img src="data:{{ $mimeType }};base64,{{ $imageData }}" alt="job card form" style="display: block; margin: 0 auto; width: 100%;">
     </div>
@@ -33,10 +41,8 @@ $whiteLabelInfo = App\WhiteLabelSettings::first();
             <div style="text-align: left;">
                 <img src="{!! getBaseURL() .
                             (isset(getWhiteLabelInfo()->logo) ? 'uploads/white_label/' . getWhiteLabelInfo()->logo : 'images/logo.png') !!}" alt="Logo Image" class="img-fluid mb-2">
+                            <p style="font-size: 14px; margin-bottom: 10px; max-width:290px;">{{ strtoupper($setting->address) }}</p>
                 <!-- <h3 style="margin: 0; font-size: 22px;">{{ strtoupper($setting->name_company_name) }}</h3> -->
-            </div>
-            <div style="text-align:right;">
-                <p style="font-size: 14px; margin-bottom: 10px">{{ strtoupper($setting->address) }}</p>
             </div>
         </div>
         <h3 style="text-align: center; margin-bottom: 10px; font-size: 18px;">{{ isset($title) && $title ? strtoupper($title) : '' }}</h3>

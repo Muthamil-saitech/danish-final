@@ -20,11 +20,18 @@
                     <h2 class="top-left-header">{{ isset($title) && $title ? $title : '' }}</h2>
                 </div>
                 <div class="col-md-6">
-                    <a href="javascript:void();"  class="btn bg-second-btn print_invoice"
-                        data-id="{{ isset($instruments[0]['id']) ? encrypt_decrypt($instruments[0]['id'], 'encrypt') : '' }}"><iconify-icon icon="solar:printer-broken"></iconify-icon>
-                        @lang('index.print')</a>
-                    <a href="{{ route('download-instrument-detail', encrypt_decrypt($instruments[0]['id'], 'encrypt')) }}" target="_blank" class="btn bg-second-btn print_btn"><iconify-icon icon="solar:cloud-download-broken"></iconify-icon>@lang('index.download')</a>
+                    @if (routePermission('instruments.print_instrument_detail'))
+                        <a href="javascript:void();"  class="btn bg-second-btn print_invoice"
+                        data-id="{{ isset($instruments[0]['code']) ? encrypt_decrypt($instruments[0]['code'], 'encrypt') : '' }}"><iconify-icon icon="solar:printer-broken"></iconify-icon>
+                        @lang('index.print')
+                    </a>
+                    @endif
+                    @if (routePermission('instruments.download-instrument-detail'))
+                        <a href="{{ route('download-instrument-detail', encrypt_decrypt($instruments[0]['code'], 'encrypt')) }}" target="_blank" class="btn bg-second-btn print_btn"><iconify-icon icon="solar:cloud-download-broken"></iconify-icon>@lang('index.download')</a>
+                    @endif
+                    @if (routePermission('instruments.index'))
                     <a class="btn bg-second-btn" href="{{ route('instruments.index') }}"><iconify-icon icon="solar:round-arrow-left-broken"></iconify-icon>@lang('index.back')</a>
+                    @endif
                 </div>
             </div>
         </section>

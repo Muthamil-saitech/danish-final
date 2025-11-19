@@ -18,7 +18,7 @@ if (isset($setting->base_color) && $setting->base_color) {
             </div>
             <div class="col-md-6">
                 <a href="javascript:void();" target="_blank" class="btn bg-second-btn print_invoice"
-                    data-id="{{ $customer_io->id }}"><iconify-icon icon="solar:printer-broken"></iconify-icon>
+                    data-id="{{ $customer_io->id }}" data-status="{{ isset($status) ? $status : '' }}"><iconify-icon icon="solar:printer-broken"></iconify-icon>
                     @lang('index.print')</a>
                 <a class="btn bg-second-btn" href="{{ route('customer_io.index') }}"><iconify-icon
                         icon="solar:round-arrow-left-broken"></iconify-icon>@lang('index.back')</a>
@@ -27,6 +27,9 @@ if (isset($setting->base_color) && $setting->base_color) {
     </section>
     <section class="content" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
         <div style="width: 98%; max-width: 1200px; margin: 30px auto;">
+            <div>
+                <img src="{!! getBaseURL() . (isset(getWhiteLabelInfo()->logo) ? 'uploads/white_label/' . getWhiteLabelInfo()->logo : 'images/logo.png') !!}" alt="Logo Image" class="img-fluid mb-2">
+            </div>
             <div style="padding: 0px 0; border: 1px solid #000; background: #fff;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #000;">
                     <div style="flex: 1; text-align: center; line-height: 1.6;">
@@ -38,6 +41,52 @@ if (isset($setting->base_color) && $setting->base_color) {
                         </p>
                     </div>
                 </div>                
+                @if($status == 'Outward')
+                 <div style="display: flex; width: 100%;">
+                    <div style="width: 50%; border-right: 1px solid #000; border-bottom: 1px solid #000; padding: 8px 10px; font-size: 16px;
+                        display: grid; grid-template-columns: 40% 60%; grid-auto-rows: min-content; row-gap: 4px; align-items: start; word-break: break-word;">
+                        <span>GSTIN</span>
+                        <b>: {{ safe(getCompanyInfo()->gst_no) }}</b>
+                        <span>Name</span>
+                        <b>: {{ strtoupper(getCompanyInfo()->company_name) }}</b>
+                        <span>Address</span>
+                        <b>: {{ safe(getCompanyInfo()->address) }}</b>
+                    </div>
+                    <div style="width: 50%; border-bottom: 1px solid #000; padding: 8px 10px; font-size: 16px; display: grid; grid-template-columns: 40% 60%; grid-auto-rows: min-content; row-gap: 4px; align-items: start; word-break: break-word;">
+                        <span>Reference PO Number</span>
+                        <b>: {{ $customer_io->po_no . '/' . $customer_io->line_item_no }}</b>
+                        <span>Delivery Challan Number</span>
+                        <b>: {{ $status=="Outward" ? $customer_io->outward_challan_no : $customer_io->del_challan_no }}</b>
+                        <span>Delivery Challan Date</span>
+                        <b>: {{ date('d-m-Y', strtotime($customer_io->date)) }}</b>
+                        <span>Place of Supply</span>
+                        <b>: </b>
+                        <span>Region of Consignee</span>
+                        <b>: </b>
+                    </div>
+                </div>
+                <div style="display: flex;">
+                    <div style="width: 50%; padding: 8px 10px; font-size: 16px;">
+                        <div style="display: flex; margin-bottom: 15px;">
+                            <span style="width: 40%;"><b>Consignee Address </b> </span>
+                        </div> 
+                        <div style="display: flex; margin-bottom: 0px;">
+                            <span style="width: 40%;">{{ $customer_io->customer->name }}</span>
+                        </div>  
+                        <div style="display: flex; margin-bottom: 0px;">
+                            <span style="width: 40%;">{{ $customer_io->d_address }}</span>
+                        </div>    
+                        <div style="display: flex; margin-bottom: 0px;">
+                            <span style="width: 60%;">GST Number: {{ $customer_io->customer->gst_no }}</span>
+                        </div>                    
+                    </div>
+                    <div style="width: 50%; padding: 8px 10px; font-size: 16px;">
+                        <div style="display: flex; justify-content:end; margin-bottom: 4px;">
+                            <span style="width: 50%;"> Return Due Date: {{ !empty($customer_io->return_due_date) ? date('d.m.Y', strtotime($customer_io->return_due_date)) : '' }} </span>
+                        </div>                        
+                    </div>
+                </div>
+                @else
                 <div style="display: flex; width: 100%;">
                     <div style="width: 50%; border-right: 1px solid #000; border-bottom: 1px solid #000; padding: 8px 10px; font-size: 16px;
                         display: grid; grid-template-columns: 40% 60%; grid-auto-rows: min-content; row-gap: 4px; align-items: start; word-break: break-word;">
@@ -82,6 +131,7 @@ if (isset($setting->base_color) && $setting->base_color) {
                         </div>                        
                     </div>
                 </div>
+                @endif
                 <table style="width:100%; border-collapse:collapse; font-size:16px;">
                     <!-- Header Row 1: Main headings with CGST/SGST spanning 2 columns each -->
                     @php 
@@ -260,19 +310,10 @@ if (isset($setting->base_color) && $setting->base_color) {
                         <span style="width: 20%;">Not For Sale</span>
                     </div>
                     <div style="width: 40%; text-align: center;">
-                        <b>ANDERSON GREENWOOD CROSBY SANMAR LIMITED(Formerly Pentair Sanmar Ltd)</b><br><br><br>
+                        <b>@if($status == 'Outward') {{ strtoupper(getCompanyInfo()->company_name) }} @else {{ $customer_io->customer->name }}  @endif</b><br><br><br>
                         <p>Authorised Signatory</p>
                     </div>
                 </div>
-                <div style="display: flex; justify-content: space-between; align-items: start; margin: 0px 0px 80px; font-size: 16px;border-top:1px solid #000;">
-                    <div style="width: 60%; display: flex; margin-top: 0px;">
-                        <span style="width: 40%;"><b>BN8 </b></span>
-                        <span style="width: 40%;"><b>BN8 </b></span>
-                    </div>
-                </div>
-            </div>
-            <div style="text-align: end;">
-                <span style="font-size: 12px;">DAN/STR/SF/01</span>
             </div>
         </div>
     </section>

@@ -22,14 +22,20 @@
                     <h2 class="top-left-header">{{ isset($title) && $title ? $title : '' }}</h2>
                 </div>
                 <div class="col-md-6">
+                    @if (routePermission('instruments.print-asset-detail'))
                     <a href="javascript:void();"  class="btn bg-second-btn print_invoice"
                         data-id="{{ isset($instrument) ? encrypt_decrypt($instrument->id, 'encrypt') : '' }}"><iconify-icon icon="solar:printer-broken"></iconify-icon>
                         @lang('index.print')</a>
+                    @endif
+                    @if(routePermission('instruments.download-asset-detail'))
                     <a href="{{ route('download-asset-maintain', encrypt_decrypt($instrument->id, 'encrypt')) }}"
                         target="_blank" class="btn bg-second-btn print_btn"><iconify-icon
                             icon="solar:cloud-download-broken"></iconify-icon>
                         @lang('index.download')</a>
+                    @endif
+                    @if (routePermission('instruments.index'))
                     <a class="btn bg-second-btn" href="{{ route('instruments.index') }}"><iconify-icon icon="solar:round-arrow-left-broken"></iconify-icon>@lang('index.back')</a>
+                    @endif
                 </div>
             </div>
         </section>
@@ -41,11 +47,13 @@
                             {{-- <div class="text-center pt-10 pb-10">
                                 <h3 class="color-000000 pt-20 pb-20">Asset Maintenance</h3>
                             </div> --}}
-                            <table>
+                            <table style="width:100%;">
                                 <tr>
-                                    <td class="w-25" style="float: inline-end">
-                                        <p class="pb-7 rgb-71">
-                                            <span class=""><strong>@lang('index.instrument_name'):</strong></span>
+                                    <td style="width:30%; text-align:left;">
+                                        <img src="{!! getBaseURL() . (isset(getWhiteLabelInfo()->logo) ? 'uploads/white_label/' . getWhiteLabelInfo()->logo : 'images/logo.png') !!}" alt="Logo Image" class="img-fluid mb-2">
+                                    </td>
+                                    <td style="width:35%;">
+                                        <p class="pb-7 rgb-71" style="font-weight:bold; font-size:18px;">
                                             {{ $instrument->instrument_name.'('.$instrument->code.')' }}
                                         </p>
                                     </td>

@@ -41,7 +41,7 @@ if (isset($setting->base_color) && $setting->base_color) {
                             {{-- <th class="width_10_p">@lang('index.batch_no')</th> --}}
                             <th class="width_10_p">@lang('index.manufacture_stages')</th>
                             {{-- <th class="width_10_p">@lang('index.remaining_time')</th> --}}
-                            <th class="width_10_p">@lang('index.consumed_time')</th>
+                            {{-- <th class="width_10_p">@lang('index.consumed_time')</th> --}}
                             <th class="width_10_p">@lang('index.prod_quantity')</th>
                             {{-- <th class="width_10_p">@lang('index.partially_done_quantity')</th> --}}
                             {{-- <th class="width_10_p">@lang('index.remaining_quantity')</th> --}}
@@ -84,7 +84,7 @@ if (isset($setting->base_color) && $setting->base_color) {
                             {{-- <td>{{ safe($value->batch_no) }}</td> --}}
                             <td>{{ safe($value->stage_name) }}</td>
                             {{-- <td>N/A</td> --}}
-                            <td>{{ safe($value->consumed_time) }}</td>
+                            {{-- <td>{{ safe($value->consumed_time) }}</td> --}}
                             <td>{{ $value->product_quantity ?? 0 }}</td>
                             {{-- <td>{{ $value->partially_done_quantity ?? 0 }}</td> --}}
                             {{-- <td>{{ $value->product_quantity - ($value->partially_done_quantity ?? 0) }}</td> --}}
@@ -107,7 +107,7 @@ if (isset($setting->base_color) && $setting->base_color) {
                                     class="fa fa-pencil" data-bs-toggle="tooltip" data-bs-placement="top"
                                     title="@lang('index.update_partially_done')"></i></a> --}}
                                 @endif
-                                @if (routePermission('manufacture.view'))
+                                @if (routePermission('productions.view'))
                                 <a href="{{ url('productions') }}/{{ encrypt_decrypt($value->id, 'encrypt') }}"
                                     class="button-info" data-bs-toggle="tooltip" data-bs-placement="top"
                                     title="@lang('index.view_details')">
@@ -137,7 +137,7 @@ if (isset($setting->base_color) && $setting->base_color) {
                                 {{-- <a href="{{ route('download_manufacture_details', encrypt_decrypt($value->id, 'encrypt')) }}"
                                 class="button-info" data-bs-toggle="tooltip" data-bs-placement="top"
                                 title="@lang('index.download')"><i class="fa fa-download"></i></a>
-                                @if (routePermission('manufacture.print'))
+                                @if (routePermission('productions.print'))
                                 <a href="javascript:void();" target="_blank" data-id="{{ $value->id }}"
                                     class="button-info print_invoice" data-bs-toggle="tooltip"
                                     data-bs-placement="top" title="@lang('index.print')"><i
@@ -148,7 +148,7 @@ if (isset($setting->base_color) && $setting->base_color) {
                                 </a>
                                 @endif
                                 @if ($value->manufacture_status != 'done')
-                                @if (routePermission('manufacture.delete'))
+                                @if (routePermission('productions.delete'))
                                 <a href="#" class="delete button-danger"
                                     data-form_class="alertDelete{{ $value->id }}" type="submit"
                                     data-bs-toggle="tooltip" data-bs-placement="top" title="@lang('index.delete')">

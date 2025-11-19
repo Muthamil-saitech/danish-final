@@ -25,7 +25,7 @@
                     <h2 class="top-left-header">{{ isset($title) && $title ? $title : '' }}</h2>
                 </div>
                 <div class="col-md-6">
-                    @if (routePermission('manufacture.print'))
+                    @if (routePermission('productions.print'))
                         <a href="javascript:void();" target="_blank" class="btn bg-second-btn print_invoice"
                             data-id="{{ $obj->id }}"><iconify-icon icon="solar:printer-broken"></iconify-icon>
                             @lang('index.print')</a>
@@ -34,7 +34,7 @@
                         target="_blank" class="btn bg-second-btn print_btn"><iconify-icon
                             icon="solar:cloud-download-broken"></iconify-icon>
                         @lang('index.download')</a>
-                    @if (routePermission('manufacture.index'))
+                    @if (routePermission('productions.index'))
                         <a class="btn bg-second-btn" href="{{ route('productions.index') }}"><iconify-icon
                                 icon="solar:round-arrow-left-broken"></iconify-icon>@lang('index.back')</a>
                     @endif

@@ -18,6 +18,9 @@ $baseURL = getBaseURL();
 <body>
     <section class="content" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
         <div style="width: 98%; max-width: 1200px; margin: 30px auto;">
+            <div>
+                <img src="{!! getBaseURL() . (isset(getWhiteLabelInfo()->logo) ? 'uploads/white_label/' . getWhiteLabelInfo()->logo : 'images/logo.png') !!}" alt="Logo Image" class="img-fluid mb-2">
+            </div>
             <div style="padding: 0px 0; border: 1px solid #000; background: #fff;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #000;">
                     <div style="flex: 1; text-align: center;  padding: 5px 0px">
@@ -32,13 +35,13 @@ $baseURL = getBaseURL();
                 <div style="display: flex; width: 100%;">
                     <div style="width: 50%; border-right: 1px solid #000; border-bottom: 1px solid #000; padding: 8px 10px; font-size: 14px; ">  
                          <div style="display: flex; margin-bottom: 8px;">
-                            <span style="width: 20%;">GSTIN</span><span style="margin: 0 8px;">:</span><span style="width: 79%">{{ $partner_io->partner->gst_no }} </span>
+                            <span style="width: 20%;">GSTIN</span><span style="margin: 0 8px;">:</span><span style="width: 79%">@if($status == 'Inward') {{ $partner_io->partner->gst_no }} @else {{ safe(getCompanyInfo()->gst_no) }} @endif </span>
                         </div>
                         <div style="display: flex; margin-bottom: 8px;">
-                            <span style="width: 20%;">Name</span><span style="margin: 0 8px;">:</span><span style="width: 79%">{{ $partner_io->partner->name }}</span>
+                            <span style="width: 20%;">Name</span><span style="margin: 0 8px;">:</span><span style="width: 79%">@if($status == 'Inward') {{ $partner_io->partner->name }} @else {{ strtoupper(getCompanyInfo()->company_name) }} @endif</span>
                         </div>
                         <div style="display: flex; margin-bottom: 8px;">
-                            <span style="width: 20%;">Address</span><span style="margin: 0 8px;">:</span><span style="width: 79%">{{ $partner_io->d_address }}</span>
+                            <span style="width: 20%;">Address</span><span style="margin: 0 8px;">:</span><span style="width: 79%">@if($status == 'Inward') {{ $partner_io->d_address }} @else {{ safe(getCompanyInfo()->address) }} @endif</span>
                         </div>
                     </div>
                     <div style="width: 50%; border-bottom: 1px solid #000; padding: 8px 10px; font-size: 14px; display: grid; grid-template-columns: 50% 50%; grid-auto-rows: min-content; row-gap: 4px; align-items: start; word-break: break-word;">
@@ -60,13 +63,13 @@ $baseURL = getBaseURL();
                             <span><b>Consignee Address </b> </span>
                         </div> 
                         <div style="display: flex; margin-bottom: 0px;">
-                            <span>{{ strtoupper(getCompanyInfo()->company_name) }}</span>
+                            <span>@if($status == 'Inward') {{ strtoupper(getCompanyInfo()->company_name) }} @else {{ $partner_io->partner->name }} @endif</span>
                         </div>  
                         <div style="display: flex; margin-bottom: 0px;">
-                            <span style="width: 65%">{{ safe(getCompanyInfo()->address) }}</span>
+                            <span style="width: 65%">@if($status == 'Inward') {{ safe(getCompanyInfo()->address) }} @else {{ $partner_io->d_address }} @endif</span>
                         </div>    
                         <div style="display: flex; margin-bottom: 0px;">
-                            <span>GST Number: {{ safe(getCompanyInfo()->gst_no) }}</span>
+                            <span>GST Number: @if($status == 'Inward') {{ safe(getCompanyInfo()->gst_no) }} @else {{ $partner_io->partner->gst_no }} @endif</span>
                         </div>                    
                     </div>
                     <div style="width: 40%; padding: 8px 10px; font-size: 14px;">
@@ -258,22 +261,10 @@ $baseURL = getBaseURL();
                         <span style="flex: 1; text-align: start;">Not For Sale</span>
                     </div>
                     <div style="width: 40%; text-align: center; font-size: 14px">
-                        <b>ANDERSON GREENWOOD CROSBY SANMAR LIMITED(Formerly Pentair Sanmar Ltd)</b><br> <br><br>
+                        <b>@if($status == 'Outward') {{ strtoupper(getCompanyInfo()->company_name) }} @else {{ $partner_io->partner->name }}  @endif</b><br> <br><br>
                         <b>Authorised Signatory</b>
                     </div>
                 </div>
-                <div style="display: flex; justify-content: space-between; align-items: start; margin: 0px 0px 40px; font-size: 13px;border-top:1px solid #000;">
-                    <div style="width: 60%; display: flex; margin-top: 0px;">
-                        <span style="width: 40%;">BN8</span>
-                        <span style="width: 40%;">BN8</span>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center;  font-size: 11px;border-top:1px solid #000; text-align: center;"> 
-                    <span>Registered Office: No.9 Cathedral Road, Chennai - 600 089, Tamil nadu - Phone - 91 44 2812 8500 - CIN : U24230TN1985PLC011637</span>  
-                </div>
-            </div>
-            <div style="text-align: end;">
-                <span style="font-size: 11px;">DAN/STR/SF/01</span>
             </div>
         </div>
     </section>

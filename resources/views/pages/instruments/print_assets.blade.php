@@ -20,11 +20,13 @@ $baseURL = getBaseURL();
         <div class="text-center pt-10 pb-10">
             <h2 class="color-000000 pt-20 pb-20">Asset Maintenance</h2>
         </div>
-        <table>
+        <table style="width:100%;">
             <tr>
-                <td class="w-25 text-right">
-                    <p class="pb-7 rgb-71">
-                        <span class=""><strong>@lang('index.instrument_name'):</strong></span>
+                <td style="width:30%; text-align:left;">
+                    <img src="{!! getBaseURL() . (isset(getWhiteLabelInfo()->logo) ? 'uploads/white_label/' . getWhiteLabelInfo()->logo : 'images/logo.png') !!}" alt="Logo Image" class="img-fluid mb-2">
+                </td>
+                <td style="width:35%;">
+                    <p class="pb-7 rgb-71" style="font-weight:bold; font-size:18px;">
                         {{ $instrument->instrument_name.'('.$instrument->code.')' }}
                     </p>
                 </td>

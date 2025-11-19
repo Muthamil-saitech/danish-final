@@ -405,12 +405,12 @@
                         <span class="match_bold">@lang('index.manufacture')</span>
                     </a>
                     <ul class="treeview-menu">
-                        @if (routePermission('manufacture.create'))
+                        @if (routePermission('productions.create'))
                             <li class="menu_assign_class {{ request()->routeIs('productions.create') ? ' treeMenuActive' : '' }}" data-menu__cid="irp_10"><a
                                     href="{{ route('productions.create') }}">@lang('index.add_manufacture')</a>
                             </li>
                         @endif
-                        @if (routePermission('manufacture.index'))
+                        @if (routePermission('productions.index'))
                             <li class="menu_assign_class {{ request()->routeIs('productions.index') || request()->is('productions/*/route-card') || request()->is('productions/*/job-card') || request()->is('productions/*/task-track') || request()->is('productions/*/drawer-image') ? ' treeMenuActive' : '' }}" data-menu__cid="irp_10"><a
                                     href="{{ route('productions.index') }}">@lang('index.manufacture_list')</a>
                             </li>

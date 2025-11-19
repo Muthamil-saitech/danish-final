@@ -22,7 +22,7 @@ $baseURL = getBaseURL();
             </div>
             <div class="col-md-6">
                 <button id="route_add" data-bs-toggle="modal" data-id="{{ $obj->id }}" data-bs-target="#routeUpl" class="btn bg-second-btn" title="Route Card Form Upload" type="button"><i class="fa-regular fa-circle-up"></i>&nbsp;Upload</button>
-                @if (routePermission('manufacture.print'))
+                @if (routePermission('productions.print'))
                 <a href="javascript:void();" target="_blank" class="btn bg-second-btn print_route_card"
                     data-id="{{ $obj->id }}"><iconify-icon icon="solar:printer-broken"></iconify-icon>
                     @lang('index.print')</a>
@@ -31,7 +31,7 @@ $baseURL = getBaseURL();
                         target="_blank" class="btn bg-second-btn print_btn"><iconify-icon
                             icon="solar:cloud-download-broken"></iconify-icon>
                         @lang('index.download')</a>-->
-                @if (routePermission('manufacture.index'))
+                @if (routePermission('productions.index'))
                 <a class="btn bg-second-btn" href="{{ route('productions.index') }}"><iconify-icon
                         icon="solar:round-arrow-left-broken"></iconify-icon>@lang('index.back')</a>
                 @endif

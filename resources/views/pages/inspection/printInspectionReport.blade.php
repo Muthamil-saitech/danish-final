@@ -19,9 +19,9 @@ $whiteLabelInfo = App\WhiteLabelSettings::first();
     <section class="content">
         <div class="row" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
             <div style="max-width: 1200px; margin: 30px auto; ">
+                <img src="{!! getBaseURL() .
+                    (isset(getWhiteLabelInfo()->logo) ? 'uploads/white_label/' . getWhiteLabelInfo()->logo : 'images/logo.png') !!}" alt="Logo Image" class="img-fluid mb-2">
                 <div style="text-align: center; border-bottom: 1px solid #000; padding: 10px;">
-                    <img src="{!! getBaseURL() .
-                        (isset(getWhiteLabelInfo()->logo) ? 'uploads/white_label/' . getWhiteLabelInfo()->logo : 'images/logo.png') !!}" alt="Logo Image" class="img-fluid mb-2">
                     <h3 style="font-weight: 700; text-decoration: underline; font-size: 20px; padding-bottom: 15px;">INSPECTION REPORT</h3>
                     <form style="display: flex; justify-content: center; gap: 30px; align-items: center;">
                         <div style="display: flex; align-items: center;">
@@ -126,7 +126,7 @@ $whiteLabelInfo = App\WhiteLabelSettings::first();
                                 <td style="border: 1px solid #000; padding: 5px;">&nbsp;</td>
                                 @for ($i = $startIndex; $i <= $endIndex; $i++)
                                     <td style="border: 1px solid #000; padding: 5px; border-right:none;">
-                                        DBF{{ $i }}
+                                        {{ $i }}
                                     </td>
                                 @endfor
                             </tr>

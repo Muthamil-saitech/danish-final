@@ -86,10 +86,14 @@
                                                 <i class="fa fa-calendar tiny-icon"></i>
                                             </a>
                                         @endif
+                                        @if (routePermission('instruments.view-asset-detail'))
                                         <a href="{{ url('instruments') }}/{{ encrypt_decrypt($value->id, 'encrypt') }}"
                                         class="button-info" data-bs-toggle="tooltip" data-bs-placement="top"
                                         title="View Asset Details"><i class="fa fa-eye tiny-icon"></i></a>
+                                        @endif
+                                        @if (routePermission('instruments.view-instrument-detail'))
                                         <a href="{{ url('view-instrument-detail') }}/{{ encrypt_decrypt($value->id, 'encrypt') }}" class="button-info" data-bs-toggle="tooltip" data-bs-placement="top" title="View Details"><i class="fa fa-list tiny-icon"></i></a>
+                                        @endif
                                         @if (routePermission('instruments.edit'))
                                             <a href="{{ url('instruments') }}/{{ encrypt_decrypt($value->id, 'encrypt') }}/edit"
                                                 class="button-success" data-bs-toggle="tooltip" data-bs-placement="top"

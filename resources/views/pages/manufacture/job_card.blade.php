@@ -22,7 +22,7 @@ $baseURL = getBaseURL();
             </div>
             <div class="col-md-6">
                 <button id="job_add" data-bs-toggle="modal" data-id="{{ $obj->id }}" data-bs-target="#jobUpl" class="btn bg-second-btn" title="Job Card Upload Form" type="button"><i class="fa-regular fa-circle-up"></i>&nbsp;Upload</button>
-                @if (routePermission('manufacture.print'))
+                @if (routePermission('productions.print'))
                 <a href="javascript:void();" target="_blank" class="btn bg-second-btn print_job_card"
                     data-id="{{ $obj->id }}"><iconify-icon icon="solar:printer-broken"></iconify-icon>
                     @lang('index.print')</a>
@@ -31,7 +31,7 @@ $baseURL = getBaseURL();
                         target="_blank" class="btn bg-second-btn print_btn"><iconify-icon
                             icon="solar:cloud-download-broken"></iconify-icon>
                         @lang('index.download')</a> -->
-                @if (routePermission('manufacture.index'))
+                @if (routePermission('productions.index'))
                 <a class="btn bg-second-btn" href="{{ route('productions.index') }}"><iconify-icon
                         icon="solar:round-arrow-left-broken"></iconify-icon>@lang('index.back')</a>
                 @endif
@@ -40,8 +40,10 @@ $baseURL = getBaseURL();
     </section>
     @if(isset($latest_form) && $latest_form!='')
     <div style="width: 98%; max-width: 1100px; margin: 30px auto;">
-        <img src="{!! getBaseURL() .
-                        (isset(getWhiteLabelInfo()->logo) ? 'uploads/white_label/' . getWhiteLabelInfo()->logo : 'images/logo.png') !!}" alt="Logo Image" class="img-fluid mb-2">
+        <img src="{!! getBaseURL() . (isset(getWhiteLabelInfo()->logo) ? 'uploads/white_label/' . getWhiteLabelInfo()->logo : 'images/logo.png') !!}" alt="Logo Image" class="img-fluid mb-2">
+        <div style="text-align:left;">
+            <p style="font-size: 14px; margin-bottom: 10px; max-width:290px;">{{ strtoupper($setting->address) }}</p>
+        </div>
         <!-- <h3 style="text-align: center; font-weight: bold; font-size: 22px; margin-bottom: 5px;">{{ strtoupper($setting->name_company_name) }}</h3> -->
         <p style="text-align: center; font-size: 16px; font-weight: bold; margin-bottom: 10px;">{{ isset($title) && $title ? strtoupper($title) : '' }}</p>
         <img src="{{ $baseURL }}uploads/job_card_form/{{ $latest_form }}" alt="route_card_form" class="img-fluid">
@@ -52,10 +54,8 @@ $baseURL = getBaseURL();
             <div style="text-align: left;">
                 <img src="{!! getBaseURL() .
                             (isset(getWhiteLabelInfo()->logo) ? 'uploads/white_label/' . getWhiteLabelInfo()->logo : 'images/logo.png') !!}" alt="Logo Image" class="img-fluid mb-2">
+                            <p style="font-size: 14px; margin-bottom: 10px; max-width:290px;">{{ strtoupper($setting->address) }}</p>
                 <!-- <h3 style="margin: 0; font-size: 22px;">{{ strtoupper($setting->name_company_name) }}</h3> -->
-            </div>
-            <div style="text-align:right;">
-                <p style="font-size: 14px; margin-bottom: 10px">{{ strtoupper($setting->address) }}</p>
             </div>
         </div>
         <h3 style="text-align: center; margin-bottom: 10px; font-size: 18px;">{{ isset($title) && $title ? strtoupper($title) : '' }}</h3>
