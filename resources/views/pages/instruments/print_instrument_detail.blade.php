@@ -41,6 +41,10 @@ $baseURL = getBaseURL();
                         {{ $instruments[0]['code'] }}
                     </p>
                     <p class="pb-7 rgb-71">
+                        <span class=""><strong>@lang('index.instrument_name'):</strong></span>
+                        {{ $instruments[0]['instrument_name'] }}
+                    </p>
+                    <p class="pb-7 rgb-71">
                         <span class=""><strong>@lang('index.type'):</strong></span>
                         @if($instruments[0]['type'] == 1)
                         Gauges/Checking Instruments
@@ -70,34 +74,34 @@ $baseURL = getBaseURL();
             <thead class="b-r-3">
                 <tr>
                     <th class="w-5 text-start" style="border:1px solid #000;">@lang('index.sn')</th>
-                    <th class="w-5 text-start" style="border:1px solid #000;">@lang('index.instrument_name')</th>
+                    {{-- <th class="w-5 text-start" style="border:1px solid #000;">@lang('index.instrument_name')</th> --}}
                     <th class="w-15 text-start" style="border:1px solid #000;">@lang('index.unit')</th>
                     <th class="w-20 text-start" style="border:1px solid #000;">@lang('index.range/size')</th>
                     <th class="w-20 text-start" style="border:1px solid #000;">@lang('index.accuracy')</th>
                     <th class="w-20 text-start" style="border:1px solid #000;">@lang('index.make')</th>
-                    <th class="w-20 text-start" style="border:1px solid #000;">@lang('index.historycardno')</th>
-                    <th class="w-20 text-start" style="border:1px solid #000;">@lang('index.location')</th>
-                    <th class="w-20 text-start" style="border:1px solid #000;">@lang('index.due_date')</th>
-                    <th class="w-20 text-start" style="border:1px solid #000;">@lang('index.remarks')</th>
+                    {{-- <th class="w-20 text-start" style="border:1px solid #000;">@lang('index.historycardno')</th> --}}
+                    {{-- <th class="w-20 text-start" style="border:1px solid #000;">@lang('index.location')</th> --}}
+                    {{-- <th class="w-20 text-start" style="border:1px solid #000;">@lang('index.due_date')</th> --}}
+                    {{-- <th class="w-20 text-start" style="border:1px solid #000;">@lang('index.remarks')</th> --}}
                 </tr>
             </thead>
             <tbody>
                 <?php $i = 1; ?>
-                @if(isset($instruments) && $instruments->count())
-                    @foreach($instruments as $value)
+                @if(isset($instrument_ranges) && $instrument_ranges->count())
+                    @foreach($instrument_ranges as $value)
                         <tr class="rowCount" data-id="{{ $value->id }}">
                             <td class="width_1_p" style="border:1px solid #000;">
                                 <span class="text-bold">{{ $i++ }}</span>
                             </td>
-                            <td class="text-start" style="border:1px solid #000;">{{ $value->instrument_name }}</td>
-                            <td class="text-start" style="border:1px solid #000;">{{ getRMUnitById($value->unit) }}</td>
-                            <td class="text-start" style="border:1px solid #000;">{{ $value->range }}</td>
-                            <td class="text-start" style="border:1px solid #000;">{{ $value->accuracy }}</td>                         
-                            <td class="text-start" style="border:1px solid #000;">{{ $value->make }}</td>
-                            <td class="text-start" style="border:1px solid #000;">{{ $value->history_card_no }}</td>
-                            <td class="text-start" style="border:1px solid #000;">{{ $value->location }}</td>
-                            <td class="text-start" style="border:1px solid #000;">{{ getDateFormat($value->due_date) }}</td>
-                            <td class="text-start" style="border:1px solid #000;">{{ $value->remarks }}</td>
+                            {{-- <td class="text-start" style="border:1px solid #000;">{{ $value->instrument_name }}</td> --}}
+                            <td class="text-start" style="border:1px solid #000;">{{ getRMUnitById($value->ins_unit_id) }}</td>
+                            <td class="text-start" style="border:1px solid #000;">{{ $value->ins_range }}</td>
+                            <td class="text-start" style="border:1px solid #000;">{{ $value->ins_accuracy }}</td>                         
+                            <td class="text-start" style="border:1px solid #000;">{{ $value->ins_make }}</td>
+                            {{-- <td class="text-start" style="border:1px solid #000;">{{ $value->history_card_no }}</td> --}}
+                            {{-- <td class="text-start" style="border:1px solid #000;">{{ $value->location }}</td> --}}
+                            {{-- <td class="text-start" style="border:1px solid #000;">{{ getDateFormat($value->due_date) }}</td> --}}
+                            {{-- <td class="text-start" style="border:1px solid #000;">{{ $value->remarks }}</td> --}}
                         </tr>
                     @endforeach
                 @endif

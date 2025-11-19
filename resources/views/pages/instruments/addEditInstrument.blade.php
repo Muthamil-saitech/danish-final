@@ -12,8 +12,6 @@
                 {{ isset($title) && $title ? $title : '' }}
             </h3>
         </section>
-
-
         <div class="box-wrapper">
             <!-- general form elements -->
             <div class="table-box">
@@ -233,11 +231,137 @@
                                 <div class="text-danger d-none"></div>
                             </div>
                         </div>
-                    </div>
-                    
+                    </div>    
+                    <div class="add_ins">
+                        @if(isset($instrument_ranges) && $instrument_ranges->count() > 0)
+                            @foreach($instrument_ranges as $key => $inst_range)
+                                <div class="card mb-3 shadow-sm border-0 rounded-3">
+                                    <div class="card-body">
+                                        <div class="row align-items-center ins-row">
+                                            <div class="col-md-1 mb-3 d-flex align-items-center justify-content-center">
+                                                <label class="serial-no">{{ $key + 1 }}</label>
+                                                <input type="hidden" name="ins_serial[]" value="{{ $key + 1 }}">
+                                                <input type="hidden" name="ins_id[]" value="{{ $inst_range->id ?? '' }}">
+                                            </div>
+                                            <div class="col-md-2 mb-3">
+                                                <div class="form-group">
+                                                    <label>Unit <span class="required_star">*</span></label>
+                                                    <select name="ins_unit[]" class="form-control select2">
+                                                        <option value="">Select Unit</option>
+                                                        @foreach ($units as $value)
+                                                            <option value="{{ $value->id }}" {{ isset($inst_range->ins_unit_id) && $inst_range->ins_unit_id == $value->id || old('ins_unit') == $value->id ? 'selected' : '' }}>{{ $value->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12 mb-2 col-md-2">
+                                                <div class="form-group">
+                                                    <label>@lang('index.range/size') <span class="required_star">*</span></label>
+                                                    <input type="text" name="ins_range[]"
+                                                        class="check_required form-control @error('range') is-invalid @enderror range"
+                                                        placeholder="@lang('index.range/size')"
+                                                        value="{{ $inst_range->ins_range ?? old('ins_range') }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12 mb-2 col-md-2">
+                                                <div class="form-group">
+                                                    <label>@lang('index.accuracy') <span class="required_star">*</span></label>
+                                                    <input type="text" name="ins_accuracy[]"
+                                                        class="check_required form-control @error('accuracy') is-invalid @enderror range"
+                                                        placeholder="@lang('index.accuracy')"
+                                                        value="{{ $inst_range->ins_accuracy ?? old('ins_accuracy') }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12 mb-2 col-md-2">
+                                                <div class="form-group">
+                                                    <label>@lang('index.make') <span class="required_star">*</span></label>
+                                                    <input type="text" name="ins_make[]"
+                                                        class="check_required form-control @error('make') is-invalid @enderror range"
+                                                        placeholder="@lang('index.make')"
+                                                        value="{{ $inst_range->ins_make ?? old('ins_make') }}">
+                                                </div>
+                                            </div>
+                                            @if($key==0)
+                                                <div class="col-md-2 mb-3 mt-1">
+                                                    <button id="insAddMore" class="btn bg-blue-btn mt-4" type="button">@lang('index.add_more')</button>
+                                                </div>
+                                            @else
+                                                @if(isset($instrument_ranges) && $instrument_ranges->count() > 0)
+                                                <div class="col-md-2 mt-4">
+                                                    <a href="#" class="ins_range_del button-danger"
+                                                        data-inst_range_id="{{ $inst_range->id }}" type="submit"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="@lang('index.delete')">
+                                                        <i class="fa fa-trash tiny-icon"></i>
+                                                    </a>
+                                                </div>
+                                                @else
+                                                    <div class="col-md-2 mt-4">
+                                                        <button type="button" class="btn btn-xs del_row dlt_button">
+                                                            <iconify-icon icon="solar:trash-bin-minimalistic-broken"></iconify-icon>
+                                                        </button>
+                                                    </div>
+                                                @endif
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div> 
+                            @endforeach
+                        @else
+                        <div class="card mb-3 shadow-sm border-0 rounded-3">
+                            <div class="card-body">
+                                <div class="row align-items-center ins-row">
+                                    <div class="col-md-1 mb-3 d-flex align-items-center justify-content-center">
+                                        <label class="serial-no">1</label>
+                                        <input type="hidden" name="ins_serial[]" value="1">
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <div class="form-group">
+                                            <label>Unit <span class="required_star">*</span></label>
+                                            <select name="ins_unit[]" class="form-control select2">
+                                                <option value="">Select Unit</option>
+                                                @foreach ($units as $value)
+                                                    <option value="{{ $value->id }}">{{ $value->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 mb-2 col-md-2">
+                                        <div class="form-group">
+                                            <label>@lang('index.range/size') <span class="required_star">*</span></label>
+                                            <input type="text" name="ins_range[]"
+                                                class="check_required form-control @error('range') is-invalid @enderror range"
+                                                placeholder="@lang('index.range/size')"
+                                                value="{{ old('range') }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 mb-2 col-md-2">
+                                        <div class="form-group">
+                                            <label>@lang('index.accuracy') <span class="required_star">*</span></label>
+                                            <input type="text" name="ins_accuracy[]"
+                                                class="check_required form-control @error('accuracy') is-invalid @enderror range"
+                                                placeholder="@lang('index.accuracy')"
+                                                value="{{ old('accuracy') }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 mb-2 col-md-2">
+                                        <div class="form-group">
+                                            <label>@lang('index.make') <span class="required_star">*</span></label>
+                                            <input type="text" name="ins_make[]"
+                                                class="check_required form-control @error('make') is-invalid @enderror range"
+                                                placeholder="@lang('index.make')"
+                                                value="{{ old('make') }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 mb-3 mt-1">
+                                        <button id="insAddMore" class="btn bg-blue-btn mt-4" type="button">@lang('index.add_more')</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> 
+                        @endif                       
+                    </div>                
                 </div>
                 <!-- /.box-body -->
-
                 <div class="row mt-2">
                     <div class="col-sm-12 col-md-6 mb-2 d-flex gap-3">
                         <button type="submit" name="submit" value="submit" class="btn bg-blue-btn"><iconify-icon icon="solar:check-circle-broken"></iconify-icon>@lang('index.submit')</button>
@@ -254,4 +378,115 @@
 @endsection
 @section('script')
     <script type="text/javascript" src="{!! $baseURL . 'frequent_changing/js/instrument.js?v=1.0' !!}"></script>
+    <script>
+        let i = 1;
+        function updateSerialLabels() {
+            document.querySelectorAll(".serial-no").forEach((el, index) => {
+                el.textContent = index + 1;
+                el.nextElementSibling.value = index + 1;
+            });
+        }
+        let base_url = $('#base_url').val();
+        let hidden_base_url = $("#hidden_base_url").val();
+        let hidden_alert = $(".hidden_alert").val();
+        let hidden_ok = $(".hidden_ok").val();
+        let hidden_cancel = $(".hidden_cancel").val();
+        let thischaracterisnotallowed = $(".thischaracterisnotallowed").val();
+        let are_you_sure = $(".are_you_sure").val();
+        $(document).on("click", "#insAddMore", function (e) {
+            ++i;
+            let newRow = `
+                <div class="card mb-3 shadow-sm border-0 rounded-3">
+                    <div class="card-body">
+                        <div class="row mt-3" id="ins_row_${i}">
+                            <div class="col-md-1 mb-3 d-flex align-items-center justify-content-center">
+                                <label class="form-control-plaintext text-center serial-no"></label>
+                                <input type="hidden" name="ins_serial[]" value="">
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <div class="form-group">
+                                    <label>Unit <span class="required_star">*</span></label>
+                                    <select name="ins_unit[]" class="form-control select2">
+                                        <option value="">Select Unit</option>
+                                        @foreach ($units as $value)
+                                            <option value="{{ $value->id }}">{{ $value->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <div class="form-group">
+                                    <label>Range/Size <span class="required_star">*</span></label>
+                                    <input type="text" name="ins_range[]" class="form-control" placeholder="Range/Size">
+                                </div>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <div class="form-group">
+                                    <label>Accuracy <span class="required_star">*</span></label>
+                                    <input type="text" name="ins_accuracy[]" class="form-control" placeholder="Accuracy">
+                                </div>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <div class="form-group">
+                                    <label>Make <span class="required_star">*</span></label>
+                                    <input type="text" name="ins_make[]" class="form-control" placeholder="Make">
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3 mt-4">
+                                <button type="button" class="btn btn-xs del_row dlt_button"><iconify-icon icon="solar:trash-bin-minimalistic-broken"></iconify-icon></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            $(".add_ins").append(newRow);
+            updateSerialLabels();
+        });
+        $(document).on("click", ".del_row", function () {
+            if ($(".add_ins .card").length > 1) {
+                $(this).closest(".card").remove();
+                updateSerialLabels();
+            } else {
+                alert("At least one contact must remain.");
+            }
+        });
+        $('body').on('click', '.ins_range_del', function (e) {
+            e.preventDefault();
+            let inst_range_id = $(this).attr('data-inst_range_id');
+            swal({
+                title: hidden_alert+"!",
+                text: are_you_sure,
+                cancelButtonText:hidden_cancel,
+                confirmButtonText:hidden_ok,
+                confirmButtonColor: '#3c8dbc',
+                showCancelButton: true
+            }, function(isConfirm) {
+                if (isConfirm) {
+                    $.ajax({
+                        type: "POST",
+                        url: hidden_base_url + "instrumentRangeDelete",
+                        data: {
+                            inst_range_id: inst_range_id
+                        },
+                        dataType: "json",
+                        success: function(data) {
+                            let hidden_alert = data.status ? "Success" : "Error";
+                            swal({
+                                title: hidden_alert + "!",
+                                text: data.message,
+                                cancelButtonText: hidden_cancel,
+                                confirmButtonText: hidden_ok,
+                                confirmButtonColor: "#3c8dbc",
+                            }, function() {
+                                location.reload();
+                            });
+                        },
+                        error: function() {
+                            console.error("Failed to fetch product details.");
+                        },
+                    });
+                }
+            });
+        });
+    </script>
 @endsection

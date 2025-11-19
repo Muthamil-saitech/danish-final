@@ -21,9 +21,9 @@
                 </div>
                 <div class="col-md-6">
                     <a href="javascript:void();"  class="btn bg-second-btn print_invoice"
-                        data-id="{{ isset($instruments[0]['code']) ? encrypt_decrypt($instruments[0]['code'], 'encrypt') : '' }}"><iconify-icon icon="solar:printer-broken"></iconify-icon>
+                        data-id="{{ isset($instruments[0]['id']) ? encrypt_decrypt($instruments[0]['id'], 'encrypt') : '' }}"><iconify-icon icon="solar:printer-broken"></iconify-icon>
                         @lang('index.print')</a>
-                    <a href="{{ route('download-instrument-detail', encrypt_decrypt($instruments[0]['code'], 'encrypt')) }}" target="_blank" class="btn bg-second-btn print_btn"><iconify-icon icon="solar:cloud-download-broken"></iconify-icon>@lang('index.download')</a>
+                    <a href="{{ route('download-instrument-detail', encrypt_decrypt($instruments[0]['id'], 'encrypt')) }}" target="_blank" class="btn bg-second-btn print_btn"><iconify-icon icon="solar:cloud-download-broken"></iconify-icon>@lang('index.download')</a>
                     <a class="btn bg-second-btn" href="{{ route('instruments.index') }}"><iconify-icon icon="solar:round-arrow-left-broken"></iconify-icon>@lang('index.back')</a>
                 </div>
             </div>
@@ -59,6 +59,10 @@
                                             {{ $instruments[0]['code'] }}
                                         </p>
                                         <p class="pb-7 rgb-71">
+                                            <span class=""><strong>@lang('index.instrument_name'):</strong></span>
+                                            {{ $instruments[0]['instrument_name'] }}
+                                        </p>
+                                        <p class="pb-7 rgb-71">
                                             <span class=""><strong>@lang('index.type'):</strong></span>
                                             @if($instruments[0]['type'] == 1)
                                             Gauges/Checking Instruments
@@ -90,32 +94,32 @@
                                 <thead>
                                     <tr>
                                         <th>@lang('index.sn')</th>
-                                        <th>@lang('index.instrument_name')</th>
+                                        {{-- <th>@lang('index.instrument_name')</th> --}}
                                         <th>@lang('index.unit')</th>
                                         <th>@lang('index.range/size')</th>
                                         <th>@lang('index.accuracy')</th>
                                         <th>@lang('index.make')</th>
-                                        <th>@lang('index.historycardno')</th>
-                                        <th>@lang('index.location')</th>
-                                        <th>@lang('index.due_date')</th>
-                                        <th>@lang('index.remarks')</th>
+                                        {{-- <th>@lang('index.historycardno')</th> --}}
+                                        {{-- <th>@lang('index.location')</th> --}}
+                                        {{-- <th>@lang('index.due_date')</th> --}}
+                                        {{-- <th>@lang('index.remarks')</th> --}}
                                     </tr>
                                 </thead>
                                 <tbody>
                                 <?php $i = 1; ?>
-                                @if(isset($instruments) && $instruments->count())
-                                    @foreach($instruments as $value)
+                                @if(isset($instrument_ranges) && $instrument_ranges->count())
+                                    @foreach($instrument_ranges as $value)
                                         <tr class="rowCount">
                                             <td><span class="text-bold">{{ $i++ }}</span></td>
-                                            <td>{{ $value->instrument_name }}</td>
-                                            <td>{{ getRMUnitById($value->unit) }}</td>
-                                            <td>{{ $value->range }}</td>
-                                            <td>{{ $value->accuracy }}</td>
-                                            <td>{{ $value->make }}</td>
-                                            <td>{{ $value->history_card_no }}</td>
-                                            <td>{{ $value->location }}</td>
-                                            <td>{{ getDateFormat($value->due_date) }}</td>
-                                            <td title="{{ $value->remarks }}">{{ substr_text(safe($value->remarks),20) }}</td>
+                                            {{-- <td>{{ $value->instrument_name }}</td> --}}
+                                            <td>{{ getRMUnitById($value->ins_unit_id) }}</td>
+                                            <td>{{ $value->ins_range }}</td>
+                                            <td>{{ $value->ins_accuracy }}</td>
+                                            <td>{{ $value->ins_make }}</td>
+                                            {{-- <td>{{ $value->history_card_no }}</td> --}}
+                                            {{-- <td>{{ $value->location }}</td> --}}
+                                            {{-- <td>{{ getDateFormat($value->due_date) }}</td> --}}
+                                            {{-- <td title="{{ $value->remarks }}">{{ substr_text(safe($value->remarks),20) }}</td> --}}
                                         </tr>
                                     @endforeach
                                 @endif

@@ -33,7 +33,7 @@
                                 <th class="w-5 text-start">@lang('index.sn')</th>
                                 <th class="w-20">@lang('index.type')</th>
                                 <th class="w-20">@lang('index.instrument_category')</th>
-                                {{-- <th class="w-20">@lang('index.instrument_name')</th> --}}
+                                <th class="w-20">@lang('index.instrument_name')</th>
                                 <th class="w-20">@lang('index.instrument_code')</th>
                                 {{-- <th class="w-20">@lang('index.unit')</th> --}}
                                 <th class="w-20">@lang('index.owner')</th>
@@ -41,10 +41,10 @@
                                 {{-- <th class="w-20">@lang('index.range/size')</th> --}}
                                 {{-- <th class="w-20">@lang('index.accuracy')</th> --}}
                                 {{-- <th class="w-20">@lang('index.make')</th> --}}
-                                {{-- <th class="w-20">@lang('index.historycardno')</th> --}}
-                                {{-- <th class="w-20">@lang('index.location')</th> --}}
-                                {{-- <th class="w-20">@lang('index.due_date')</th> --}}
-                                {{-- <th class="w-20">@lang('index.remarks')</th> --}}
+                                <th class="w-20">@lang('index.historycardno')</th>
+                                <th class="w-20">@lang('index.location')</th>
+                                <th class="w-20">@lang('index.due_date')</th>
+                                <th class="w-20">@lang('index.remarks')</th>
                                 <th class="w-10 ir_txt_center">@lang('index.actions')</th>
                             </tr>
                         </thead>
@@ -54,8 +54,7 @@
                                 $i = 1;
                                 ?>
                             @endif
-                            @foreach($obj as $code => $items)
-                                @php $value = $items->first();  @endphp
+                            @foreach($obj as $value)
                                 <tr>
                                     <td class="text-start">{{ $i++ }}</td>
                                     <td>
@@ -68,7 +67,7 @@
                                         @endif
                                     </td>
                                     <td>{{ getInstrumentCategoryById($value->category) }}</td>
-                                    {{-- <td>{{ $value->instrument_name }}</td> --}}
+                                    <td>{{ $value->instrument_name }}</td>
                                     <td>{{ $value->code }}</td>
                                     {{-- <td>{{ $value->unit }}</td> --}}
                                     <td>{{ $value->owner_type==1 ? 'Own' : 'Customer' }}</td>
@@ -76,10 +75,10 @@
                                     {{-- <td>{{ $value->range }}</td> --}}
                                     {{-- <td>{{ $value->accuracy }}</td> --}}
                                     {{-- <td>{{ $value->make }}</td> --}}
-                                    {{-- <td>{{ $value->history_card_no }}</td> --}}
-                                    {{-- <td>{{ $value->location }}</td> --}}
-                                    {{-- <td>{{ getDateFormat($value->due_date) }}</td> --}}
-                                    {{-- <td title="{{ $value->remarks }}">{{ substr_text(safe($value->remarks),20) }}</td> --}}
+                                    <td>{{ $value->history_card_no }}</td>
+                                    <td>{{ $value->location }}</td>
+                                    <td>{{ getDateFormat($value->due_date) }}</td>
+                                    <td title="{{ $value->remarks }}">{{ substr_text(safe($value->remarks),20) }}</td>
                                     <td class="ir_txt_center">
                                         @if($value->due_date < date('Y-m-d'))
                                             <a href="#" class="button-warning open-calendar" data-id="{{ $value->id }}"  
@@ -90,7 +89,7 @@
                                         <a href="{{ url('instruments') }}/{{ encrypt_decrypt($value->id, 'encrypt') }}"
                                         class="button-info" data-bs-toggle="tooltip" data-bs-placement="top"
                                         title="View Asset Details"><i class="fa fa-eye tiny-icon"></i></a>
-                                        <a href="{{ url('view-instrument-detail') }}/{{ encrypt_decrypt($value->code, 'encrypt') }}" class="button-info" data-bs-toggle="tooltip" data-bs-placement="top" title="View Details"><i class="fa fa-list tiny-icon"></i></a>
+                                        <a href="{{ url('view-instrument-detail') }}/{{ encrypt_decrypt($value->id, 'encrypt') }}" class="button-info" data-bs-toggle="tooltip" data-bs-placement="top" title="View Details"><i class="fa fa-list tiny-icon"></i></a>
                                         @if (routePermission('instruments.edit'))
                                             <a href="{{ url('instruments') }}/{{ encrypt_decrypt($value->id, 'encrypt') }}/edit"
                                                 class="button-success" data-bs-toggle="tooltip" data-bs-placement="top"

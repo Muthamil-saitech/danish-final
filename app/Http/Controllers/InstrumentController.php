@@ -10,6 +10,7 @@ use Illuminate\Validation\Rule;
 use App\Unit;
 use App\Customer;
 use App\InstrumentAssetEntry;
+use App\InstrumentRangeEntry;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class InstrumentController extends Controller
@@ -20,7 +21,7 @@ class InstrumentController extends Controller
     }
     public function index()
     {
-        $obj = Instrument::orderBy('id','DESC')->where('del_status','Live')->get()->groupBy(['code']);
+        $obj = Instrument::orderBy('id','DESC')->where('del_status','Live')->get();
         // dd($obj);
         $title =  __('index.instruments');
         return view('pages.instruments.index', compact('title','obj'));
@@ -47,12 +48,12 @@ class InstrumentController extends Controller
             'instrument_name' => [
                 'required',
                 'max:50',
-                Rule::unique('tbl_instruments', 'instrument_name')
+                /* Rule::unique('tbl_instruments', 'instrument_name')
                 ->where(function ($query) use ($request) {
                     return $query->where('del_status', 'Live')
                                 ->where('type', $request->type)
                                 ->where('category', $request->category);
-                }),
+                }), */
             ],
             'unit' => 'required',
             'owner_type' => 'required',
@@ -115,6 +116,17 @@ class InstrumentController extends Controller
         $obj->location = escape_output($request->get('location'));
         $obj->remarks = escape_output($request->get('remarks'));
         $obj->save();
+        if (isset($_POST['ins_range']) && is_array($_POST['ins_range']) && !empty($_POST['ins_range'])) {
+            foreach ($_POST['ins_range'] as $row => $value) {
+                $ins_info = new \App\InstrumentRangeEntry();
+                $ins_info->instrument_id = $obj->id;
+                $ins_info->ins_unit_id = escape_output($_POST['ins_unit'][$row] ?? null);
+                $ins_info->ins_range = escape_output($_POST['ins_range'][$row] ?? null);
+                $ins_info->ins_accuracy = escape_output($_POST['ins_accuracy'][$row] ?? null);
+                $ins_info->ins_make = escape_output($_POST['ins_make'][$row] ?? null);
+                $ins_info->save();
+            }
+        }
         return redirect('instruments')->with(saveMessage());
     }
     public function show($id) {
@@ -132,7 +144,8 @@ class InstrumentController extends Controller
         $units = Unit::where('del_status','Live')->get();
         $customers = Customer::where('del_status', 'Live')->orderBy('id', 'DESC')->get();
         $obj = $instrument;
-        return view('pages.instruments.addEditInstrument', compact('title', 'obj','instrument_categories','units','customers'));
+        $instrument_ranges = InstrumentRangeEntry::where('instrument_id',$instrument->id)->where('del_status','Live')->get();
+        return view('pages.instruments.addEditInstrument', compact('title', 'obj','instrument_categories','units','customers','instrument_ranges'));
     }
     public function update(Request $request, Instrument $instrument)
     {
@@ -147,13 +160,13 @@ class InstrumentController extends Controller
             'instrument_name' => [
                 'required',
                 'max:50',
-                Rule::unique('tbl_instruments', 'instrument_name')
+                /* Rule::unique('tbl_instruments', 'instrument_name')
                     ->ignore($instrument->id,'id')
                     ->where(function ($query) use ($request) {
                         return $query->where('del_status', 'Live')
                                     ->where('type', $request->type)
                                     ->where('category', $request->category);
-                    }),
+                    }), */
             ],
             'type' => 'required',
             'category' => 'required',
@@ -213,6 +226,18 @@ class InstrumentController extends Controller
         $instrument->location = escape_output($request->get('location'));
         $instrument->remarks = escape_output($request->get('remarks'));
         $instrument->save();
+        InstrumentRangeEntry::where('instrument_id', $instrument->id)->update(['del_status' => "Deleted"]);
+        if ($request->has('ins_range') && is_array($request->ins_range)) {
+            foreach ($request->ins_range as $row => $value) {
+                $cp_info = new \App\InstrumentRangeEntry();
+                $cp_info->instrument_id = $instrument->id;
+                $cp_info->ins_unit_id = ucwords(escape_output($request->ins_unit[$row] ?? null));
+                $cp_info->ins_range = escape_output($request->ins_range[$row] ?? null);
+                $cp_info->ins_accuracy = escape_output($request->ins_accuracy[$row] ?? null);
+                $cp_info->ins_make = escape_output($request->ins_make[$row] ?? null);
+                $cp_info->save();
+            }
+        }
         return redirect('instruments')->with(saveMessage());
     }
     public function destroy(Instrument $instrument)
@@ -244,6 +269,7 @@ class InstrumentController extends Controller
     }
     public function print($id)
     {
+        $id = encrypt_decrypt($id, 'decrypt');
         $instrument_entries = InstrumentAssetEntry::where('instrument_id',$id)->get();
         $instrument = Instrument::find($id)->first();
         return view('pages.instruments.print_assets', compact('instrument','instrument_entries'));
@@ -251,20 +277,28 @@ class InstrumentController extends Controller
     public function view_instrument_detail($id) {
         $id = encrypt_decrypt($id, 'decrypt');
         $title = "View Instrument Detail";
-        $instruments = Instrument::where('code',$id)->where('del_status','Live')->get();
-        return view('pages.instruments.view_instrument_detail', compact('title','instruments'));
+        $instruments = Instrument::where('id',$id)->where('del_status','Live')->get();
+        $instrument_ranges = InstrumentRangeEntry::where('instrument_id',$id)->where('del_status','Live')->get();
+        return view('pages.instruments.view_instrument_detail', compact('title','instruments','instrument_ranges'));
     }
     public function print_instrument_detail($id)
     {
         $id = encrypt_decrypt($id, 'decrypt');
-        $instruments = Instrument::where('code',$id)->where('del_status','Live')->get();
-        return view('pages.instruments.print_instrument_detail', compact('instruments'));
+        $instruments = Instrument::where('id',$id)->where('del_status','Live')->get();
+        $instrument_ranges = InstrumentRangeEntry::where('instrument_id',$id)->where('del_status','Live')->get();
+        return view('pages.instruments.print_instrument_detail', compact('instruments','instrument_ranges'));
     }
     public function download_instrument_detail($id)
     {
-        $code = encrypt_decrypt($id, 'decrypt');
-        $instruments = Instrument::where('code',$code)->where('del_status','Live')->get();
-        $pdf = PDF::loadView('pages.instruments.print_instrument_detail', compact('instruments'))->setPaper('a4', 'landscape');
-        return $pdf->download($instruments[0]['code'] . '.pdf');
+        $id = encrypt_decrypt($id, 'decrypt');
+        $instruments = Instrument::where('id',$id)->where('del_status','Live')->get();
+        $instrument_ranges = InstrumentRangeEntry::where('instrument_id',$id)->where('del_status','Live')->get();
+        $pdf = PDF::loadView('pages.instruments.print_instrument_detail', compact('instruments','instrument_ranges'))->setPaper('a4', 'landscape');
+        return $pdf->download(str_replace(' ','-',strtolower($instruments[0]['instrument_name'])) . '.pdf');
+    }
+    public function instrumentRangeDelete(Request $request)
+    {
+        InstrumentRangeEntry::where('id',$request->inst_range_id)->update(['del_status'=>'Deleted']);
+        return response()->json(['status' => true, 'message' => 'Deleted Successfully.']);
     }
 }

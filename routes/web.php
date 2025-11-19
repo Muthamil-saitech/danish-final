@@ -170,6 +170,7 @@ Route::group(['middleware' => ['XSS']], function () {
         Route::post('/contactDelete', [App\Http\Controllers\SupplierController::class, 'contactDelete'])->name('contactDelete');
         Route::post('/customerContactDelete', [App\Http\Controllers\CustomerController::class, 'customerContactDelete'])->name('customerContactDelete');
         Route::post('/partnerContactDelete', [App\Http\Controllers\PartnerController::class, 'partnerContactDelete'])->name('partnerContactDelete');
+         Route::post('/instrumentRangeDelete', [App\Http\Controllers\InstrumentController::class, 'instrumentRangeDelete'])->name('instrumentRangeDelete');
         Route::resource('customers', App\Http\Controllers\CustomerController::class)->only(['index', 'create', 'store', 'destroy', 'update', 'show', 'edit']);
         Route::resource('partners', App\Http\Controllers\PartnerController::class)->only(['index', 'create', 'store', 'destroy', 'update', 'show', 'edit']);
         Route::resource('customer_io', App\Http\Controllers\CustomerIOController::class)->only(['index', 'create', 'store', 'destroy', 'update', 'edit']);
