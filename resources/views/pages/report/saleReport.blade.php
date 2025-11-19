@@ -34,7 +34,7 @@
                 'autocomplete' => 'off'
                 ]) !!}
                 @csrf
-                <div class="row mb-3">
+                <div class="row">
                     <div class="col-md-3 col-sm-4">
                         <input type="text" class="form-control" name="search_customer" id="search_customer" placeholder="Search Customer" value="{{ isset($search_customer) ? $search_customer : '' }}">
                         <input type="hidden" name="customer_id" id="sale_customer_id" value="{{ isset($customer_id) ? $customer_id : '' }}">
@@ -42,6 +42,19 @@
                     </div>
                     <div class="col-md-3 col-sm-4">
                         <input type="text" class="form-control" name="search_sale" id="search_sale" placeholder="Search Sales Detail" value="{{ isset($search_sale) ? $search_sale : '' }}">
+                    </div>
+                    <div class="col-md-3 col-sm-4">
+                        <div class="form-group">
+                            <select name="nob" id="nob" class="form-control select2">
+                                <option value="">Select</option>
+                                <option value="Labor" {{ isset($nob) && $nob == "Labor" ? 'selected' : '' }}>
+                                    Labor
+                                </option>
+                                <option value="Sales" {{ isset($nob) && $nob == "Sales" ? 'selected' : '' }}>
+                                    Sales
+                                </option>
+                            </select>
+                        </div>
                     </div>
                     <div class="col-md-3 col-sm-2 mb-3">
                         <div class="form-group">
@@ -52,10 +65,12 @@
                         <div class="form-group">
                             {!! Form::text('endDate', (isset($endDate) && $endDate != '') ? date('d-m-Y', strtotime($endDate)) : '', ['class' => 'form-control', 'readonly' => "", 'placeholder' => "End Date", 'id' => 'sale_complete_date']) !!}
                         </div>
-                    </div>
-                    <div class="col-md-4 d-flex gap-3">
-                        <button type="submit" name="submit" value="submit" class="btn bg-blue-btn"><iconify-icon icon="solar:check-circle-broken"></iconify-icon>Search</button>
-                        <a class="btn bg-second-btn" href="{{ route('report.sales') }}"><iconify-icon icon="solar:round-arrow-left-broken"></iconify-icon>Reset</a>
+                    </div>                    
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6 d-flex gap-3">
+                        <button type="submit" name="submit" value="submit" class="btn btn-sm bg-blue-btn"><iconify-icon icon="solar:check-circle-broken"></iconify-icon>Search</button>
+                        <a class="btn btn-sm bg-second-btn" href="{{ route('report.sales') }}"><iconify-icon icon="solar:round-arrow-left-broken"></iconify-icon>Reset</a>
                     </div>
                 </div>
                 {!! Form::close() !!}

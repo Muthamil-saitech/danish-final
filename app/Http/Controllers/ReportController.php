@@ -649,6 +649,7 @@ class ReportController extends Controller
         $endDate = '';
         $customer_id = escape_output($request->get('customer_id'));
         $search_sale = escape_output($request->get('search_sale'));
+        $nob = escape_output($request->get('nob'));
         $search_customer = escape_output($request->get('search_customer'));
         $startDate = !empty($request->startDate) ? date('Y-m-d', strtotime($request->startDate)) : null;
         $endDate   = !empty($request->endDate)   ? date('Y-m-d', strtotime($request->endDate))   : null;
@@ -667,16 +668,16 @@ class ReportController extends Controller
             $query->where('s.customer_id', $customer_id);
         }
         if (!empty($search_sale)) {
-           $keyword = strtolower(trim($search_sale));
-            if (in_array($keyword, ['sale', 'sales'])) {
+           $query->where(function ($q) use ($search_sale) {
+                $q->where('s.reference_no', 'like', "%{$search_sale}%")
+                ->orWhere('q.challan_no', 'like', "%{$search_sale}%");
+            });
+        }
+        if(!empty($nob)) {
+            if($nob == 'Sales') {
                 $query->where('s.reference_no', 'like', 'S%');
-            } elseif (in_array($keyword, ['labor', 'labour'])) {
-                $query->where('s.reference_no', 'like', 'L%');
             } else {
-                $query->where(function ($q) use ($search_sale) {
-                    $q->where('s.reference_no', 'like', "%{$search_sale}%")
-                    ->orWhere('q.challan_no', 'like', "%{$search_sale}%");
-                });
+                $query->where('s.reference_no', 'like', 'L%');
             }
         }
         $obj = $query->orderBy('s.id', 'DESC')->get()->unique();
@@ -714,7 +715,7 @@ class ReportController extends Controller
         } */
         $customers = Customer::where('del_status','Live')->orderBy('id','DESC')->get();
         $title = __('index.sales_report');
-        return view('pages.report.saleReport',compact('title','obj','startDate','endDate','customer_id','customers','search_sale','search_customer'));
+        return view('pages.report.saleReport',compact('title','obj','startDate','endDate','customer_id','customers','search_sale','search_customer','nob'));
     }
     /**
     * Expense Report
