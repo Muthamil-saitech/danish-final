@@ -254,7 +254,7 @@ class CustomerPaymentController extends Controller
         $total_amount = $request->total_amount;
         $balance_amount = $request->balance_amount;
         $pay_amount = $request->pay_amount;
-        $tds_amount = $request->tds_amount;
+        $tds_amount = $request->tds_amount ?? 0.00;
         $payment_type = $request->payment_type;
         $note = $request->note;
         $orderDetails = CustomerOrderDetails::where('id',$order_id)->where('order_status',1)->where('del_status','Live')->first();
@@ -283,9 +283,10 @@ class CustomerPaymentController extends Controller
         $customer_due->save();
         $order_invoice = CustomerOrderInvoice::where('customer_order_id',$order_id)->where('del_status','Live')->first();
         $order_invoice->paid_amount = $order_invoice->paid_amount + $pay_amount;
-        $order_invoice->due_amount = $order_invoice->amount - $order_invoice->paid_amount - $tds_amount;
+        $order_invoice->due_amount = (float) $order_invoice->amount - (float) $order_invoice->paid_amount - (float) $tds_amount;
+        // dd($tds_amount);
         // $order_invoice->due_amount = $balance_amount - $order_invoice->paid_amount;
-        $order_invoice->tds_amount = $tds_amount;
+        $order_invoice->tds_amount = $tds_amount === "" ? 0 : $tds_amount;
         $order_invoice->save();
         return redirect('customer-payment')->with(saveMessage());
     }
