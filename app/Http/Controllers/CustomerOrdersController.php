@@ -188,6 +188,7 @@ class CustomerOrdersController extends Controller
                     $inv_obj->invoice_type = 'Quotation';
                     $inv_obj->amount = null_check(escape_output($_POST['sub_total'][$row] ?? 0));
                     $inv_obj->invoice_date = null_check(date('Y-m-d', strtotime($request->get('po_date'))));
+                    $inv_obj->tds_amount = 0.00;
                     $inv_obj->paid_amount = 0.00;
                     $inv_obj->due_amount = null_check(escape_output($_POST['sub_total'][$row] ?? 0));
                     // $inv_obj->order_due_amount = null_check($request->invoice_order_due[$key]);
@@ -236,7 +237,7 @@ class CustomerOrdersController extends Controller
         $customers = Customer::orderBy('id', 'DESC')->where('del_status', "Live")->pluck('name', 'id');
         $orderTypes = ['Quotation' => 'Labor', 'Work Order' => 'Sales'];
         $units = Unit::orderBy('name', 'ASC')->where('del_status', "Live")->get();
-        $rawMaterialList = RawMaterial::orderBy('name', 'ASC')->where('del_status', "Live")->where('category', '!=', 1)->get();
+        $rawMaterialList = RawMaterial::orderBy('name', 'ASC')->where('del_status', "Live")->where('mat_type_id', 1)->get();
         $rmaterialcats = RawMaterialCategory::where('del_status', "Live")
             ->where('mat_type_id', 1)
             ->orderBy('name', 'ASC')
@@ -252,6 +253,7 @@ class CustomerOrdersController extends Controller
         $orderInvoice = CustomerOrderInvoice::where('customer_order_id', $customerOrder->id)->where('del_status', "Live")->get();
         $tax_types = TaxItems::where('del_status', 'Live')->where('collect_tax', 'Yes')->get();
         $orderDeliveries = CustomerOrderDelivery::where('customer_order_id', $customerOrder->id)->where('del_status', "Live")->orderBy('id', 'desc')->get();
+        // dd($orderDetails);
         return view('pages.customer_order.edit', compact('title', 'product', 'customerOrder', 'customers', 'orderTypes', 'units', 'productList', 'orderDetails', 'orderInvoice', 'orderDeliveries', 'tax_types', 'rawMaterialList'));
     }
     /**
@@ -392,12 +394,9 @@ class CustomerOrdersController extends Controller
                                 $materialStock->save();
                             }
                         }
-                    }
-                    $existingDetail->update($newData);
-                    $invoiceExists = CustomerOrderInvoice::where('customer_order_id', $existingDetail->id)->exists();
-                    if (!$invoiceExists) {
+                        $existingDetail->update($newData);
                         $inv_obj = new \App\CustomerOrderInvoice();
-                        $inv_obj->customer_order_id = null_check($detail_id);
+                        $inv_obj->customer_order_id = null_check($existingDetail->id);
                         $inv_obj->invoice_type = 'Quotation';
                         $inv_obj->amount = null_check(escape_output($request->get('total_subtotal')));
                         $inv_obj->invoice_date = null_check(date('Y-m-d', strtotime($request->get('po_date'))));
@@ -405,6 +404,17 @@ class CustomerOrdersController extends Controller
                         $inv_obj->due_amount = null_check(escape_output($request->get('total_subtotal')));
                         $inv_obj->save();
                     }
+                    /* $invoiceExists = CustomerOrderInvoice::where('customer_order_id', $existingDetail->id)->exists();
+                    if (!$invoiceExists) {
+                        $inv_obj = new \App\CustomerOrderInvoice();
+                        $inv_obj->customer_order_id = null_check($existingDetail->id);
+                        $inv_obj->invoice_type = 'Quotation';
+                        $inv_obj->amount = null_check(escape_output($request->get('total_subtotal')));
+                        $inv_obj->invoice_date = null_check(date('Y-m-d', strtotime($request->get('po_date'))));
+                        $inv_obj->paid_amount = 0.00;
+                        $inv_obj->due_amount = null_check(escape_output($request->get('total_subtotal')));
+                        $inv_obj->save();
+                    } */
                 } else {
                     $lastEntry = \App\CustomerOrderDetails::orderBy('id', 'desc')->value('so_entry_no');
                     $nextNumber = $lastEntry ? (int)$lastEntry + 1 : 1;
@@ -423,7 +433,7 @@ class CustomerOrdersController extends Controller
                     $invoiceExists = CustomerOrderInvoice::where('customer_order_id', $obj->id)->exists();
                     if (!$invoiceExists) {
                         $inv_obj = new \App\CustomerOrderInvoice();
-                        $inv_obj->customer_order_id = null_check($detail_id);
+                        $inv_obj->customer_order_id = null_check($existingDetail->id);
                         $inv_obj->invoice_type = 'Quotation';
                         $inv_obj->amount = null_check(escape_output($request->get('total_subtotal')));
                         $inv_obj->invoice_date = null_check(date('Y-m-d', strtotime($request->get('po_date'))));

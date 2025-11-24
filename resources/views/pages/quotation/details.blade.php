@@ -132,13 +132,20 @@ if (isset($setting->base_color) && $setting->base_color) {
                     $totalQty += $value->product_quantity;
                     $orderDetail = getOrderDetail($value->customer_order_id, $value->product_id);
                     $totalRate += getOrderPrice($value->price,$orderDetail->sale_price,$orderDetail->tax_type);
-                    $rate = getOrderPrice($value->price,$orderDetail->sale_price,$orderDetail->tax_type);
-                    $taxable_price = $value->product_quantity * $rate;
+                    $product_quantity = (float) $value->product_quantity;
+                    $rate = (float) getOrderPrice($value->price, $orderDetail->sale_price, $orderDetail->tax_type);
+
+                    $cgst = (float) $orderDetail->cgst;
+                    $sgst = (float) $orderDetail->sgst;
+                    $igst = (float) $orderDetail->igst;
+
+                    $taxable_price = $product_quantity * $rate;
                     $totalTaxbleValue += $taxable_price;
-                    if($orderDetail->tax_type == 1) {
-                        $totalPrice += $taxable_price + ($taxable_price * ($orderDetail->cgst + $orderDetail->sgst) / 100);
+
+                    if ($orderDetail->tax_type == 1) {
+                        $totalPrice += $taxable_price + ($taxable_price * ($cgst + $sgst) / 100);
                     } else {
-                        $totalPrice += $taxable_price + ($taxable_price * $orderDetail->igst / 100);
+                        $totalPrice += $taxable_price + ($taxable_price * $igst / 100);
                     }
                     ?>
                     <tr>
@@ -149,30 +156,30 @@ if (isset($setting->base_color) && $setting->base_color) {
                         {{-- <td style="border:1px solid #000; padding:4px; border-bottom: none; text-align:start;">{{ getRMUnitById($value->unit_id) }}</td> --}}
                         <td style="border:1px solid #000; padding:4px; border-bottom: none; text-align:start;">{{ number_format($rate,2) }}</td>
                         <td style="border:1px solid #000; padding:4px; border-bottom: none; text-align:start;">{{ number_format($taxable_price,2) }}</td>
-                        @if($orderDetail->tax_type == 1)
-                            @php $cgst_amount = $taxable_price * $orderDetail->cgst / 100; $sgst_amount = $taxable_price * $orderDetail->sgst / 100; @endphp
+                        @if($orderDetail->tax_type == 1 || $orderDetail->tax_type == "1")
+                            @php $cgst_amount = $taxable_price * $cgst / 100; $sgst_amount = $taxable_price * $sgst / 100; @endphp
                            {{--  <td style="border:1px solid #000; padding:4px; border-bottom:none; text-align:center;">
                                 {{ number_format($orderDetail->cgst, 2) }}
                             </td> --}}
                             <td style="border:1px solid #000; padding:4px; border-bottom:none; text-align:center;">
-                               {{ number_format($taxable_price * $orderDetail->cgst / 100,2) }} <br>
-                                 ({{ number_format($orderDetail->cgst, 2) }}%)
+                               {{ number_format($taxable_price * $cgst / 100,2) }} <br>
+                                 ({{ number_format($cgst, 2) }}%)
                             </td>
                             {{-- <td style="border:1px solid #000; padding:4px; border-bottom:none; text-align:center;">
                                 {{ number_format($orderDetail->sgst, 2) }}
                             </td> --}}
                             <td style="border:1px solid #000; padding:4px; border-bottom:none; text-align:center;">
-                                {{ number_format($taxable_price * $orderDetail->sgst / 100,2) }} <br>
-                                 ({{ number_format($orderDetail->sgst, 2) }}%)
+                                {{ number_format($taxable_price * $sgst / 100,2) }} <br>
+                                 ({{ number_format($sgst, 2) }}%)
                             </td>
                         @else
-                            @php $igst_amount = $taxable_price * $orderDetail->igst / 100;  @endphp
+                            @php $igst_amount = $taxable_price * $igst / 100;  @endphp
                             {{-- <td style="border:1px solid #000; padding:4px; border-bottom:none; text-align:center;">
                                 {{ number_format($orderDetail->igst, 2) }}
                             </td> --}}
                             <td style="border:1px solid #000; padding:4px; border-bottom:none; text-align:center;">
-                                {{ number_format($taxable_price * $orderDetail->igst / 100,2) }} <br>
-                                 ({{ number_format($orderDetail->igst, 2) }}%)
+                                {{ number_format($taxable_price * $igst / 100,2) }} <br>
+                                 ({{ number_format($igst, 2) }}%)
                             </td>
                         @endif
                         <td style="border:1px solid #000; padding:4px; border-bottom: none; text-align:start;">{{ $value->po_no.'/'.$value->line_item_no }}

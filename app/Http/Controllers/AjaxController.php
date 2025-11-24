@@ -1157,16 +1157,9 @@ class AjaxController extends Controller
                 ->orderBy('id','DESC')
                 ->get();
             } */
-            if ($mat_type == "2") {
-                $materials = RawMaterial::where('category', '!=', 1)
-                    ->where('del_status', 'Live')
+            $materials = RawMaterial::where('del_status', 'Live')
                     ->orderBy('id', 'DESC')
                     ->get();
-            } else {
-                $materials = RawMaterial::where('del_status', 'Live')
-                    ->orderBy('id', 'DESC')
-                    ->get();
-            }
             foreach ($materials as $raw) {
                 $html .= "<option value='{$raw->id}|{$raw->name} ({$raw->code})|{$raw->name}|{$raw->insert_type}'>{$raw->name} ({$raw->code})</option>";
             }

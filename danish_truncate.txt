@@ -51,6 +51,7 @@ TRUNCATE TABLE tbl_finished_products_productionstage;
 TRUNCATE TABLE tbl_finished_products_rmaterials;
 TRUNCATE TABLE tbl_finish_products;
 TRUNCATE TABLE tbl_drawers;
+TRUNCATE TABLE tbl_drawing_parameters;
 TRUNCATE TABLE tbl_rawmaterials;
 TRUNCATE TABLE tbl_rmcategory;
 TRUNCATE TABLE tbl_tools;

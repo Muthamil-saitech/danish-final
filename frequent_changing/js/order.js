@@ -558,9 +558,11 @@ $(document).ready(function () {
       tax_type_id = 2;
     }
     $(".errProduct").remove();
-    let firstInterState = $('input[name^="inter_state["]:checked').first().val() || "N";
+    let firstInterState =
+    $('input[name="inter_state[1]"]:checked').val() ||
+    $('input[name="disabled_inter_state[1]"]:checked').val() ||
+    "N";
     console.log("firstInterState", firstInterState);
-
     $(".add_trm").append(
       "<tr>" +
       '<td class="ir_txt_center"><p class="set_sn rowCount">' +
@@ -607,7 +609,7 @@ $(document).ready(function () {
       ']" id="inter_state_yes_' +
       i +
       '" value="Y" ' +
-      (i === 0
+      (i === 1
         ? "checked"
         : firstInterState === "Y"
           ? "checked disabled"
@@ -618,13 +620,13 @@ $(document).ready(function () {
       ']" id="inter_state_no_' +
       i +
       '" value="N" ' +
-      (i === 0
+      (i === 1
         ? "checked"
         : firstInterState === "N"
           ? "checked disabled"
           : "disabled") +
       "> No</label>" +
-      (i !== 0
+      (i !== 1
         ? '<input type="hidden" name="inter_state[' +
         i +
         ']" value="' +
@@ -728,13 +730,15 @@ $(document).ready(function () {
       "X-CSRF-TOKEN": jQuery(`meta[name="csrf-token"]`).attr("content"),
     },
   });
-  $(document).on("change", 'input[name="inter_state[0]"]', function () {
+  $(document).on("change", 'input[name="inter_state[1]"]', function () {
     let newVal = $(this).val();
+    console.log("newVal",newVal);    
     let hidden_base_url = $("#hidden_base_url").val();
     $('input[name^="inter_state["]').each(function () {
       let name = $(this).attr("name");
-      if (name !== "inter_state[0]") {
+      if (name !== "inter_state[1]") {
         let index = name.match(/\d+/)[0];
+        console.log("index",index);        
         $(
           'input[name="inter_state[' + index + ']"][value="' + newVal + '"]'
         ).prop("checked", true);

@@ -33,7 +33,7 @@ class InspectionController extends Controller
         $title =  __('index.add_inspection');
         $categories = RawMaterialCategory::orderBy('id', 'DESC')->where('del_status', "Live")->get();
         $material_types = MaterialType::where('del_status','Live')->orderBy('id','DESC')->get();
-        $materials = RawMaterial::where('category', '!=', 1)->where('del_status', 'Live')->orderBy('id', 'DESC')->get();
+        $materials = RawMaterial::where('mat_type_id', 1)->where('del_status', 'Live')->orderBy('id', 'DESC')->get();
         $drawers = Drawer::where('del_status', 'Live')->get();
         return view('pages.inspection.addEditInspection', compact('title', 'materials', 'drawers', 'categories', 'material_types'));
     }
@@ -85,7 +85,7 @@ class InspectionController extends Controller
         $categories = RawMaterialCategory::orderBy('id', 'DESC')->where('del_status', "Live")->get();
         $material_types = MaterialType::where('del_status','Live')->orderBy('id','DESC')->get();
         $inspectParams = InspectionParam::where('inspect_id', $inspection->id)->where('del_status', 'Live')->get();
-        $materials = RawMaterial::where('category', '!=', 1)->where('del_status', 'Live')->orderBy('id', 'DESC')->get();
+        $materials = RawMaterial::where('mat_type_id', 1)->where('del_status', 'Live')->orderBy('id', 'DESC')->get();
         $drawers = Drawer::where('del_status', 'Live')->get();
         return view('pages.inspection.addEditInspection', compact('title', 'obj', 'materials', 'drawers', 'inspectParams', 'categories', 'material_types'));
     }
