@@ -1630,4 +1630,11 @@ class AjaxController extends Controller
         $data_arr['html'] = $htmlstages;
         echo json_encode($data_arr);
     }
+    public function getRevByDrawingNo(Request $request)
+    {
+        $drawer_no = escape_output($request->post('drawer_no'));
+        $revision = Drawer::where('drawer_no', $drawer_no)->where('del_status', 'Live')->value('revision_no');
+        $data_arr['revision'] = $revision;
+        echo json_encode($data_arr);
+    }
 }

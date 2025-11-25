@@ -129,6 +129,7 @@ Route::group(['middleware' => ['XSS']], function () {
         Route::post('getFinishProductNONI', [App\Http\Controllers\AjaxController::class, 'getFinishProductNONI'])->name('getFinishProductNONI.post');
         Route::post('getFinishProductStages', [App\Http\Controllers\AjaxController::class, 'getFinishProductStages'])->name('getFinishProductStages.post');
         Route::post('getDrawerProductStages', [App\Http\Controllers\AjaxController::class, 'getDrawerProductStages'])->name('getDrawerProductStages.post');
+        Route::post('getRevByDrawingNo', [App\Http\Controllers\AjaxController::class, 'getRevByDrawingNo'])->name('getRevByDrawingNo.post');
         Route::post('getProductionStages', [App\Http\Controllers\AjaxController::class, 'getProductionStages'])->name('getProductionStages.post');
         Route::post('getQCEndDate', [App\Http\Controllers\AjaxController::class, 'getQCEndDate'])->name('getQCEndDate.post');
         Route::get('/getLowRMStock', [App\Http\Controllers\AjaxController::class, 'getLowRMStock'])->name('getLowRMStock');

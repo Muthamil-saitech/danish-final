@@ -98,7 +98,7 @@
                         <div class="col-sm-12 mb-2 col-md-4">
                             <div class="form-group">
                                 <label>Rev </label>
-                                <input type="text" name="rev" class="form-control" placeholder="Rev" value="{{ isset($obj) ? $obj->rev : old('rev') }}">
+                                <input type="text" name="rev" id="rev" class="form-control" placeholder="Rev" value="{{ isset($obj) ? $obj->rev : old('rev') }}" readonly>
                                 <div class="text-danger d-none"></div>
                                 @error('rev')
                                     <div class="text-danger">{{ $message }}</div>

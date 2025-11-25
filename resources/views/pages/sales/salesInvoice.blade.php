@@ -112,10 +112,9 @@
                         {{-- {{ getRMUnitById($unit_id) }} --}}
                     </td>
                     <td class="text-start" style="font-family: DejaVu Sans, sans-serif;">
-                        {{-- {{ getCurrency(getOrderPrice($quote_price,$orderInfo->sale_price,$orderInfo->tax_type))  }} --}}
-                        ₹ {{ numberFormat(getOrderPrice($quote_price,$orderInfo->sale_price,$orderInfo->tax_type)) }}
+                        ₹ {{ numberFormat($orderInfo->sale_price) }}
                     </td>
-                    <?php $sale_rate = getOrderPrice($quote_price,$orderInfo->sale_price,$orderInfo->tax_type);  /* $sale_rate = $orderInfo->sale_price; */
+                    <?php $sale_rate = $orderInfo->sale_price;
                     ?>
                     <td class="text-right pr-10" style="font-family: DejaVu Sans, sans-serif;">
                         ₹ {{ getSalePrice($sale_rate,$value->product_quantity) }}

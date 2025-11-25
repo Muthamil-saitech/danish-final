@@ -416,6 +416,16 @@ $(document).ready(function () {
             },
             error: function () { },
         });
+        $.ajax({
+            type: "POST",
+            url: hidden_base_url + "getRevByDrawingNo",
+            data: { drawer_no: drawer_no },
+            dataType: "json",
+            success: function (data) {
+                $("#rev").val(data.revision);
+            },
+            error: function () { },
+        });
     });
 
     $("#product_form").submit(function () {
