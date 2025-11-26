@@ -166,7 +166,7 @@ class MaterialStockController extends Controller
                 ->orderBy('id', 'DESC')
                 ->get();
         } else if($materialStock->stock_type == "customer") {
-            $customer_order_id = CustomerOrder::where('reference_no',$materialStock->reference_no)->where('del_status','Live')->pluck('id');
+            $customer_order_id = CustomerOrder::where('reference_no', $materialStock->reference_no)->where('del_status', 'Live')->value('id');
             $purchases = CustomerOrderDetails::where('customer_order_id', $customer_order_id)->where('line_item_no', $materialStock->line_item_no)->where('raw_material_id', $materialStock->mat_id)->where('del_status', 'Live')->get();
         } else {
             $purchases = [];

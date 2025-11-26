@@ -213,25 +213,26 @@ $(document).ready(function () {
       }
     }
   });
-  let product_id = $("#fproduct_id").val();
-  let customer_order_id = $("#customer_order_id").val();
-  let hidden_base_url = $("#hidden_base_url").val();
-  let customer_reorder_id = $("#customer_reorder_id").val();
-  let order_type = $("#order_type").val();
-  cal_row();
-  $.ajax({
+  // let product_id = $("#fproduct_id").val();
+  // let customer_order_id = $("#customer_order_id").val();
+  // let hidden_base_url = $("#hidden_base_url").val();
+  // let customer_reorder_id = $("#customer_reorder_id").val();
+  // let order_type = $("#order_type").val();
+  // cal_row();
+  /* $.ajax({
     type: "POST",
     url: hidden_base_url + "getProductQty",
     data: { product_id: product_id, customer_order_id: customer_order_id, order_type: order_type, reorderid: customer_reorder_id },
     success: function (data) {
       let response = typeof data === "string" ? JSON.parse(data) : data;
       $("#product_quantity").val(response.quantity);
+      $("#org_prod_qty").val(response.quantity);
       $("#profit_margin").val(response.profit);
       $("#mtax_type").val(response.tax_type);
       $("#mtax_value").val(response.tax_value.toFixed(2));
     },
     error: function () {},
-  });
+  }); */
   /* $.ajax({
         type: "POST",
         url: hidden_base_url + "getCustomerOrderProducts",
@@ -867,9 +868,9 @@ $(document).ready(function () {
   });
 
   $(document).on("keyup", ".qty_c", function (e) {
-    let quantity = $(this).val();
-    let material_id = $(this).parent().parent().parent().find(".rm_id").val();
-    checkSingleMaterialStock(material_id, quantity);
+      let quantity = $(this).val();
+      let material_id = $(this).parent().parent().parent().find(".rm_id").val();
+      checkSingleMaterialStock(material_id, quantity);
   });
 
   /**
@@ -1263,6 +1264,8 @@ $(document).ready(function () {
       success: function (data) {
         let response = typeof data === "string" ? JSON.parse(data) : data;
         $("#product_quantity").val(response.quantity);
+        $("#product_quantity").attr("max", response.quantity);
+        $("#org_prod_qty").val(response.quantity);
         $("#customer_reorder_id").val(response.customer_reorder_id);
         $("#profit_margin").val(response.profit);
         $("#mtax_type").val(response.tax_type);
@@ -1277,6 +1280,21 @@ $(document).ready(function () {
   $(document).on("click", ".print_class", function (e) {
     window.print();
   });
+  $("#product_quantity").on("input", function () {
+    let max = parseInt($(this).attr("max"));
+    let val = parseInt($(this).val());
+    if (val > max) {
+      $(this).val(max);
+    }
+  });
+  /* $(document).on('input', '.qty_c', function () {
+    let max = parseInt($(this).data('max'));
+    let val = parseInt($(this).val()) || 0;
+
+    if (val > max) {
+      $(this).val(max);
+    }
+  }); */
 
   // Date Month Calculate
   $(document).on("change", "#month_limit", function (e) {

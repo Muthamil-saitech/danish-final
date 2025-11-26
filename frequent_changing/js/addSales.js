@@ -541,6 +541,8 @@ $(document).ready(function () {
             success: function (data) {  
                 let main = data[0];
                 let products = main.products;
+                console.log("products",products);
+                
                 let customer_id = main.customer_id;
                 $("#customer_id").val(customer_id);
                 let customer_data = main.customer_name+'('+main.customer_code+')';
@@ -1047,9 +1049,11 @@ $(document).ready(function () {
                         }
                         if(data.nob === 1) {
                             finalPrice = data.material_price + data.sale_price;
+							finalPrice = parseFloat(finalPrice).toFixed(2);
                             disabled = 'readonly';
                         } else {
                             finalPrice = data.sale_price;
+							finalPrice = parseFloat(finalPrice).toFixed(2);
                             disabled = 'readonly';
                         }
 

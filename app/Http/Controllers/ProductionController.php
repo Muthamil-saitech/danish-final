@@ -183,12 +183,17 @@ class ProductionController extends Controller
             $drawer_no = $request->get('drawer_no');
             $drawer = explode('|', $drawer_no);
             $obj = new \App\Manufacture();
+            $product_quantity = $request->get('product_quantity');
+            $org_prod_qty = $request->get('org_prod_qty');
+            $remaining_qty = $org_prod_qty - $product_quantity;
             // $obj->manufacture_type = escape_output($request->get('manufacture_type'));
             $obj->manufacture_status = escape_output($request->get('manufacture_status'));
             $obj->product_id = null_check(escape_output($p_id[0]));
             $obj->drawer_id = null_check(escape_output($drawer[0]));
             $obj->drawer_no = null_check(escape_output($drawer[1]));
             $obj->product_quantity = null_check(escape_output($request->get('product_quantity')));
+            $obj->org_prod_qty = null_check(escape_output($request->get('org_prod_qty')));
+            $obj->remaining_qty = $remaining_qty;
             $obj->customer_reorder_id = null_check(escape_output($request->get('customer_reorder_id')));
             $obj->tax_type = null_check(escape_output($request->get('tax_type')));
             $obj->tax_value = null_check(escape_output($request->get('tax_value')));
@@ -260,12 +265,15 @@ class ProductionController extends Controller
                 $obj->stock_id = null_check($_POST['stock_id'][$row]);
                 $obj->stock = null_check($_POST['stock'][$row]);
                 $obj->consumption = null_check($_POST['quantity_amount'][$row]);
+                $mat_stock = $_POST['stock'][$row];
+                $quantity_amount = $_POST['quantity_amount'][$row];
+                $obj->remain_qty = $mat_stock >= $quantity_amount ? $mat_stock - $quantity_amount : 0;
                 $obj->manufacture_id = null_check($last_id);
                 $obj->save();
 
                 $stock = MaterialStock::find($_POST['stock_id'][$row]);
                 $stock->current_stock = $stock->current_stock - $_POST['quantity_amount'][$row];
-                $stock->float_stock = $_POST['quantity_amount'][$row];
+                $stock->float_stock = $stock->float_stock + $_POST['quantity_amount'][$row];
                 $stock->save();
             }
             $noniitem_id = $request->get('noniitem_id');
@@ -491,9 +499,14 @@ class ProductionController extends Controller
         // $manufacture->manufacture_type = escape_output($request->get('manufacture_type'));
         $drawer_no = $request->get('drawer_no');
         $drawer = explode('|', $drawer_no);
+        $product_quantity = $request->get('product_quantity');
+        $org_prod_qty = $request->get('org_prod_qty');
+        $remaining_qty = $org_prod_qty - $product_quantity;
         $manufacture->manufacture_status = escape_output($request->get('manufacture_status'));
         $manufacture->product_id = null_check(escape_output($request->get('product_id')));
         $manufacture->product_quantity = null_check(escape_output($request->get('product_quantity')));
+        $manufacture->org_prod_qty = null_check(escape_output($request->get('org_prod_qty')));
+        $manufacture->remaining_qty = $remaining_qty;
         $manufacture->customer_reorder_id = null_check(escape_output($request->get('customer_reorder_id')));
         $manufacture->drawer_id = null_check(escape_output($drawer[0]));
         $manufacture->drawer_no = null_check(escape_output($drawer[1]));
@@ -550,6 +563,9 @@ class ProductionController extends Controller
             $obj->stock_id = null_check($_POST['stock_id'][$row]);
             $obj->stock = null_check($_POST['stock'][$row]);
             $obj->consumption = null_check($_POST['quantity_amount'][$row]);
+            $mat_stock = $_POST['stock'][$row];
+            $quantity_amount = $_POST['quantity_amount'][$row];
+            $obj->remain_qty = $mat_stock >= $quantity_amount ? $mat_stock - $quantity_amount : 0;
             $obj->manufacture_id = null_check($last_id);
             $obj->save();
         }

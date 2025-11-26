@@ -259,7 +259,7 @@
                         <div class="col-sm-12 mb-2 col-md-4">
                             <div class="form-group">
                                 <label>@lang('index.stock') <span class="required_star">*</span></label>
-                                <input type="text" class="form-control @error('current_stock') is-invalid @enderror" name="current_stock" id="current_stock" value="{{ isset($obj->current_stock) ? $obj->current_stock : old('current_stock') }}" placeholder="@lang('index.stock')" min="0" {{ isset($obj) ? 'readonly' : '' }}>
+                                <input type="text" class="form-control @error('current_stock') is-invalid @enderror" name="current_stock" id="current_stock" value="{{ isset($obj->current_stock) ? $obj->current_stock : old('current_stock') }}" placeholder="@lang('index.stock')" min="0" readonly>
                                 <div class="text-danger d-none"></div>
                                 @error('current_stock')
                                     <div class="text-danger">{{ $message }}</div>

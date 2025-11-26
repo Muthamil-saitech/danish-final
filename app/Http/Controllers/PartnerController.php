@@ -55,10 +55,10 @@ class PartnerController extends Controller
             ],
             'ecc_no' => [
                 'nullable',
-                'regex:/^\d{1,9}$/',
+                /* 'regex:/^\d{1,9}$/',
                 Rule::unique('tbl_partners', 'ecc_no')->where(function ($query) {
                     return $query->where('del_status', 'Live');
-                }),
+                }), */
             ],
             'address' => 'max:250',
             'area' => 'max:50',
@@ -135,10 +135,10 @@ class PartnerController extends Controller
             ],
             'ecc_no' => [
                 'nullable',
-                'regex:/^\d{1,9}$/',
+                /* 'regex:/^\d{1,9}$/',
                 Rule::unique('tbl_partners', 'ecc_no')->ignore($partner->id, 'id')->where(function ($query) {
                     return $query->where('del_status', 'Live');
-                }),
+                }), */
             ],
             'area' => 'max:50',
             'note' => 'max:250'

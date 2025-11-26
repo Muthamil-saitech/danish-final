@@ -302,10 +302,8 @@ class AjaxController extends Controller
         echo json_encode($html);
     }
 
-    public function getFinishProductRMForManufacture(Request $request)
-    {
+    public function getFinishProductRMForManufacture(Request $request) {
         $fproduct_id = escape_output($request->post('id'));
-        // $stk_mat_type = escape_output($request->post('stk_mat_type'));
         $owner_type = escape_output($request->post('owner_type'));
         $selected_customer_id = escape_output($request->post('selected_customer_id'));
         $customer_order_id = escape_output($request->post('customer_order_id'));
@@ -313,76 +311,97 @@ class AjaxController extends Controller
         $product_quantity = escape_output($request->post('value'));
         $setting = getSettingsInfo();
         if($customer_reorder_id) {
-            $material_qty = CustomerPoReorder::where('id', $customer_reorder_id)->where('product_id', $fproduct_id)->where('del_status', 'Live')->first()->mat_qty;
+            $original_mat_qty = CustomerPoReorder::where('id', $customer_reorder_id)
+                ->where('product_id', $fproduct_id)
+                ->where('del_status', 'Live')
+                ->first()->mat_qty;
         } else {
-            $material_qty = CustomerOrderDetails::where('id', $customer_order_id)->where('product_id', $fproduct_id)->where('del_status', 'Live')->first()->raw_qty;
-        }        
+            $original_mat_qty = CustomerOrderDetails::where('id', $customer_order_id)
+                ->where('product_id', $fproduct_id)
+                ->where('del_status', 'Live')
+                ->first()->raw_qty;
+        }
+        if($customer_reorder_id) {
+            $totalConsumption = DB::table('tbl_manufactures_rmaterials as mm')
+                ->join('tbl_manufactures as m', 'm.id', '=', 'mm.manufacture_id')
+                ->where('m.customer_reorder_id', $customer_reorder_id)
+                ->where('m.product_id', $fproduct_id)
+                ->where('m.del_status', 'Live')
+                ->where('mm.del_status', 'Live')
+                ->sum('mm.consumption');
+        } else {
+            $totalConsumption = DB::table('tbl_manufactures_rmaterials as mm')
+                ->join('tbl_manufactures as m', 'm.id', '=', 'mm.manufacture_id')
+                ->where('m.customer_order_id', $customer_order_id)
+                ->where('m.product_id', $fproduct_id)
+                ->where(function($q) {
+                    $q->whereNull('m.customer_reorder_id')
+                    ->orWhere('m.customer_reorder_id', 0);
+                })
+                ->where('m.del_status', 'Live')
+                ->where('mm.del_status', 'Live')
+                ->sum('mm.consumption');
+        }
+        $material_qty = $original_mat_qty - ($totalConsumption ?? 0);
         $obj2 = new FPrmitem();
         $finishProductRM = $obj2->getOrderProductRM($fproduct_id, $selected_customer_id, $customer_order_id, $owner_type);
         $html = '';
         if (!empty($finishProductRM) && count($finishProductRM) > 0) {
             $value = $finishProductRM[0];
             if ($value->owner_type == 1) {
-                // Supplier material → grouped suppliers
                 $customer_name = '<td class="width_1_p">
                     <select class="form-select supplier_select">
                         <option value="">Select Supplier</option>';
-
                 $supplierNames  = explode(',', $value->supplier_names);
                 $supplierCodes  = explode(',', $value->supplier_codes);
-                $supplierIds    = explode(',', $value->supplier_ids);     // add in your query
-                $supplierStocks = explode(',', $value->supplier_stocks);  // add in your query
-                $stockIds = explode(',', $value->stock_ids);  // add in your query
-
+                $supplierIds    = explode(',', $value->supplier_ids);
+                $supplierStocks = explode(',', $value->supplier_stocks);
+                $stockIds = explode(',', $value->stock_ids);
                 foreach ($supplierNames as $index => $name) {
                     $code     = $supplierCodes[$index]  ?? '';
                     $id       = $supplierIds[$index]    ?? '';
                     $stock    = $supplierStocks[$index] ?? 0;
-                    $stockid    = $stockIds[$index] ?? 0;
+                    $stockid  = $stockIds[$index] ?? 0;
                     $unit = getStockUnitById($stockid);
-
                     $customer_name .= '<option value="' . trim($id) . '" 
                                             data-stock-id="'.trim($stockid).'" 
                                             data-stock="' . trim($stock) . '"
                                             data-uom="' . trim($unit) . '">'
                                         . trim($name) . ' (' . trim($code) . ')</option>';
                 }
-
                 $customer_name .= '</select></td>';
                 $displayStock = 0;
                 $stockId = '';
                 $uom = 'KG';
             } elseif ($value->owner_type == 2) {
-                // Customer material → always single
                 $customer_name = '<td><input type="hidden" name="stk_customer_id" value="'.$value->customer_id.'">' . $value->customer_name . ' (' . $value->customer_code . ')</td>';
                 $displayStock = $value->current_stock ?? 0;
                 $stockId = $value->id ?? '';
                 $uom = getStockUnitById($stockId);
             }
             $html = '<tr class="rowCount">
-                        <td class="width_1_p text-start"><p class="set_sn"></p></td>
-                        ' . $customer_name . '
-                        <td>
-                            <input type="hidden" name="stock_id[]" class="stock_id" value="'.$stockId.'">
-                            <input type="hidden" value="' . $value->mat_id . '" name="rm_id[]" class="rm_id"> 
-                            <span>' . getRMName($value->mat_id) . '</span>
-                        </td>
-                        <td>
-                            <p class="show_stock"><input type="hidden" value="'.$displayStock.'" name="stock[]" class="stock"><span>'.$displayStock.' '.$uom.'</span></p>
-                        </td>
-                        <td>
-                            <div class="input-group">
-                                <input type="text" data-countid="1" tabindex="51" id="qty_1" 
-                                    name="quantity_amount[]" onfocus="this.select();" 
-                                    class="check_required form-control integerchk input_aligning qty_c cal_row" 
-                                    value="' . $material_qty . '" placeholder="Consumption" 
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57">
-                                <span class="input-group-text show_uom"><span>'.$uom.'</span></span>
-                            </div>
-                            <div class="text-danger quantityErr d-none"></div>
-                        </td>
-                    </tr>';
-
+                <td class="width_1_p text-start"><p class="set_sn"></p></td>
+                ' . $customer_name . '
+                <td>
+                    <input type="hidden" name="stock_id[]" class="stock_id" value="'.$stockId.'">
+                    <input type="hidden" value="' . $value->mat_id . '" name="rm_id[]" class="rm_id"> 
+                    <span>' . getRMName($value->mat_id) . '</span>
+                </td>
+                <td>
+                    <p class="show_stock"><input type="hidden" value="'.$displayStock.'" name="stock[]" class="stock"><span>'.$displayStock.' '.$uom.'</span></p>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <input type="text" data-countid="1" tabindex="51" id="qty_1" 
+                            name="quantity_amount[]" onfocus="this.select();" 
+                            class="check_required form-control integerchk input_aligning qty_c cal_row" 
+                            value="' . $material_qty . '" placeholder="Consumption" 
+                            onkeypress="return event.charCode >= 48 && event.charCode <= 57" max="' . $material_qty . '">
+                        <span class="input-group-text show_uom"><span>'.$uom.'</span></span>
+                    </div>
+                    <div class="text-danger quantityErr d-none"></div>
+                </td>
+            </tr>';
             return response()->json(['result' => 'true', 'html' => $html]);
         } else {
             if ($owner_type == "2") {
@@ -688,8 +707,7 @@ class AjaxController extends Controller
         echo json_encode($materialList);
     }
 
-    public function getProductQty(Request $request)
-    {
+    public function getProductQty(Request $request) {
         $product_id = escape_output($request->post('product_id'));
         $order_type = escape_output($request->post('order_type'));
         $reorderid = escape_output($request->post('reorderid'));
@@ -701,13 +719,19 @@ class AjaxController extends Controller
                 ->where('del_status', 'Live')
                 ->first();
             if ($reorderDetail) {
-                $data_arr['quantity'] = $reorderDetail->prod_qty;
+                $manufacture = \App\Manufacture::where('customer_reorder_id', $reorderid)
+                    ->where('product_id', $product_id)
+                    ->where('del_status', 'Live')
+                    ->orderBy('id','DESC')
+                    ->first();
+                $data_arr['quantity'] = $manufacture ? $manufacture->remaining_qty : $reorderDetail->prod_qty;
                 $data_arr['customer_reorder_id'] = $reorderid;
                 $data_arr['profit'] = 0;
                 $data_arr['tax_type'] = \App\TaxItems::where('id', $reorderDetail->tax_type)
                     ->where('collect_tax', 'Yes')
                     ->first()
                     ->tax_type ?? '';
+                    
                 if ($reorderDetail->inter_state == 'Y') {
                     $tax_percent = (float)$reorderDetail->igst;
                 } else {
@@ -722,13 +746,23 @@ class AjaxController extends Controller
                 ->where('del_status', "Live")
                 ->first();
             if ($orderDetail) {
+                $manufacture = \App\Manufacture::where('customer_order_id', $customer_order_id)
+                    ->where('product_id', $product_id)
+                    ->where(function ($q) {
+                        $q->whereNull('customer_reorder_id')
+                        ->orWhere('customer_reorder_id', 0);
+                    })
+                    ->where('del_status', 'Live')
+                    ->orderBy('id','DESC')
+                    ->first();
                 $data_arr['customer_reorder_id'] = '';
-                $data_arr['quantity'] = $orderDetail->quantity;
+                $data_arr['quantity'] = $manufacture ? $manufacture->remaining_qty : $orderDetail->quantity;
                 $data_arr['profit'] = $orderDetail->profit;
                 $data_arr['tax_type'] = \App\TaxItems::where('id', $orderDetail->tax_type)
                     ->where('collect_tax', 'Yes')
                     ->first()
                     ->tax_type ?? '';
+                    
                 if ($orderDetail->inter_state == 'Y') {
                     $tax_percent = (float)$orderDetail->igst;
                 } else {
@@ -832,16 +866,20 @@ class AjaxController extends Controller
                         ->orWhere('customer_reorder_id', 0);
                     })
                     ->where('del_status', 'Live')
-                    ->exists();
+                    ->orderBy('id','DESC')
+                    ->first();
+                $shouldShow = !$manufactExists || $manufactExists->remaining_qty > 0;
             } else {
 
                 /** REORDER → Check manufacture.customer_reorder_id **/
                 $manufactExists = \App\Manufacture::where('customer_reorder_id', $order->reorder_id)
                     ->where('product_id', $order->product_id)
                     ->where('del_status', 'Live')
-                    ->exists();
+                    ->orderBy('id','DESC')
+                    ->first();
+                $shouldShow = !$manufactExists || $manufactExists->remaining_qty > 0;
             }
-            if (!$manufactExists) {
+            if ($shouldShow) {
                 $ref = $order->reference_no . '/' . $order->line_item_no;
                 $html .= '<option value="' . $order->codid . '" 
                             data-ordertype="' . $order->source_type . '" 
@@ -1377,8 +1415,23 @@ class AjaxController extends Controller
                     ->first();
                 if (!$order) continue;
                 $order_id_for_response = $orderDetail->customer_order_detail_id;
-                $quantity = $orderDetail->prod_qty;
-                $sale_price = $orderDetail->subtotal;
+                $totalManufacturedQty = Manufacture::where('customer_reorder_id', $manufacture->customer_reorder_id)
+                ->where('product_id', $detail->product_id)
+                ->where('manufacture_status', 'done')
+                ->where('del_status', 'Live')
+                ->sum('product_quantity');
+                // $sale_price = $orderDetail->subtotal;
+                $unit_price = $orderDetail->sale_price;
+                $tax_type = $orderDetail->tax_type;
+                if($tax_type == 1 || $tax_type == "1") {
+                    $tax_per = $orderDetail->cgst + $orderDetail->sgst;
+                } else {
+                    $tax_per = $orderDetail->igst;
+                }
+                $sale_price_before = $unit_price * $totalManufacturedQty;
+                $tax_amt = $sale_price_before * $tax_per/100;
+                $sale_price = $sale_price_before + $tax_amt;
+                $key = $order_id_for_response . '_' . $product->id;
             } else {
                 $orderDetail = CustomerOrderDetails::where('id', $manufacture->customer_order_id)
                     ->where('del_status', 'Live')
@@ -1389,28 +1442,58 @@ class AjaxController extends Controller
                     ->first();
                 if (!$order) continue;
                 $order_id_for_response = $orderDetail->id;
-                $quantity = $orderDetail->quantity;
-                $sale_price = $orderDetail->sub_total;
+                $totalManufacturedQty = Manufacture::where('customer_order_id', $manufacture->customer_order_id)
+                ->where('product_id', $detail->product_id)
+                ->where('manufacture_status', 'done')
+                ->where('del_status', 'Live')
+                ->sum('product_quantity');
+                // $sale_price = $orderDetail->sub_total;
+                $unit_price = $orderDetail->sale_price;
+                $tax_type = $orderDetail->tax_type;
+                if($tax_type == 1 || $tax_type == "1") {
+                    $tax_per = $orderDetail->cgst + $orderDetail->sgst;
+                } else {
+                    $tax_per = $orderDetail->igst;
+                }
+                $sale_price_before = $unit_price * $totalManufacturedQty;
+                $tax_amt = $sale_price_before * $tax_per/100;
+                $sale_price = $sale_price_before + $tax_amt;
+                $key = $order_id_for_response . '_' . $product->id;
             }
-            $products[] = [
+            /* $products[] = [
                 'product_id'      => $product->id,
                 'product_name'    => $product->name,
                 'product_code'    => $product->code,
                 'order_id'        => $order_id_for_response,
                 'order_no'        => $order->reference_no,
-                'quantity'        => $quantity,
+                'quantity'        => $totalManufacturedQty,
                 'sale_price'      => $sale_price,
                 'unit'            => getRMUnitById($detail->unit_id),
                 'manufacture_id'  => $manufacture->id,
                 'reorder'         => $isReorder,
-            ];
+            ]; */
+            if (!isset($products[$key])) {
+                // First entry for this product/order
+                $products[$key] = [
+                    'product_id'      => $product->id,
+                    'product_name'    => $product->name,
+                    'product_code'    => $product->code,
+                    'order_id'        => $order_id_for_response,
+                    'order_no'        => $order->reference_no,
+                    'quantity'        => $totalManufacturedQty,
+                    'sale_price'      => $sale_price,
+                    'unit'            => getRMUnitById($detail->unit_id),
+                    'manufacture_id'  => $manufacture->id,
+                    'reorder'         => $isReorder,
+                ];
+            }
         }
         return response()->json([
             [
                 'customer_id'   => $customer->id,
                 'customer_name' => $customer->name,
                 'customer_code' => $customer->customer_id,
-                'products'      => $products
+                'products'      => array_values($products)
             ]
         ]);
     }

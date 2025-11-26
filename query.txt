@@ -1,6 +1,4 @@
-
-//19-11
-INSERT INTO `tbl_menu_activities` (`id`, `menu_id`, `activity_name`, `route_name`, `is_dependant`, `auto_select`, `created_at`, `updated_at`) VALUES (NULL, '11', 'View Reorder Logs', 'view-reorder-logs', 'No', 'No', NULL, NULL);
-INSERT INTO `tbl_menu_activities` (`id`, `menu_id`, `activity_name`, `route_name`, `is_dependant`, `auto_select`, `created_at`, `updated_at`) VALUES (NULL, '11', 'Print Reorder Logs', 'print-reorder-logs', 'No', 'No', NULL, NULL);
-INSERT INTO `tbl_menu_activities` (`id`, `menu_id`, `activity_name`, `route_name`, `is_dependant`, `auto_select`, `created_at`, `updated_at`) VALUES (NULL, '11', 'Download Reorder Logs', 'download-reorder-logs', 'No', 'No', NULL, NULL);
-INSERT INTO `tbl_menu_activities` (`id`, `menu_id`, `activity_name`, `route_name`, `is_dependant`, `auto_select`, `created_at`, `updated_at`) VALUES (NULL, '26', 'View Instrument Detail', 'view-instrument-detail', 'No', 'No', NULL, NULL);
+ALTER TABLE `tbl_manufactures` ADD `org_prod_qty` INT NULL DEFAULT NULL AFTER `stage_name`;
+ALTER TABLE `tbl_manufactures` ADD `remaining_qty` INT NULL DEFAULT NULL AFTER `product_quantity`;
+ALTER TABLE `tbl_manufactures_rmaterials` ADD `material_qty` FLOAT(10,2) NOT NULL AFTER `unit_price`;
+ALTER TABLE `tbl_manufactures_rmaterials` CHANGE `material_qty` `remain_qty` FLOAT(10,2) NOT NULL;

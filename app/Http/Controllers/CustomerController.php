@@ -109,10 +109,10 @@ class CustomerController extends Controller
                 ],
                 'ecc_no' => [
                     'nullable',
-                    'regex:/^\d{1,9}$/',
+                    /* 'regex:/^\d{1,9}$/',
                     Rule::unique('tbl_customers', 'ecc_no')->where(function ($query) {
                         return $query->where('del_status', 'Live');
-                    }),
+                    }), */
                 ],
                 'area' => 'max:50',
                 'note' => 'max:250',
@@ -236,10 +236,10 @@ class CustomerController extends Controller
                 ],
                 'ecc_no' => [
                     'nullable',
-                    'regex:/^\d{1,9}$/',
+                    /* 'regex:/^\d{1,9}$/',
                     Rule::unique('tbl_customers', 'ecc_no')->ignore($customer->id, 'id')->where(function ($query) {
                         return $query->where('del_status', 'Live');
-                    }),
+                    }), */
                 ],
                 'area' => 'max:50',
                 'note' => 'max:250',

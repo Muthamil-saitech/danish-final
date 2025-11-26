@@ -248,7 +248,6 @@ class StockController extends Controller
 
     public function checkSingleMaterialStock(Request $request)
     {
-        // dd($request->all());
         $rm_id = escape_output($request->material_id);
         $quantity = escape_output($request->quantity);
         $owner_type = escape_output($request->owner_type);
@@ -257,14 +256,13 @@ class StockController extends Controller
         $customer_order_id = escape_output($request->customer_order_id);
         $selected_customer_id = escape_output($request->selected_customer_id);
         $customer_reorder_id = escape_output($request->customer_reorder_id);
-
         $rm = RawMaterial::find($rm_id);
         if ($customer_reorder_id) {
-            $order_material = CustomerPoReorder::where('id', $customer_reorder_id)
+            $orderDetail = CustomerPoReorder::where('id', $customer_reorder_id)
                 ->where('del_status', 'Live')
                 ->where('product_id', $fproduct_id)
                 ->first();
-            $orderDetail = CustomerOrderDetails::where('id', $customer_order_id)
+            $order_material = CustomerOrderDetails::where('id', $orderDetail->customer_order_detail_id)
                 ->where('product_id', $fproduct_id)
                 ->where('del_status', 'Live')
                 ->first();
@@ -274,73 +272,93 @@ class StockController extends Controller
                 ->where('del_status', 'Live')
                 ->first();
         }
-        $order = CustomerOrder::where('id',$order_material->customer_order_id)->where('del_status','Live')->first();
-        // dd($orderDetail);
-        if($owner_type=="1") {
-            $ms = MaterialStock::where('mat_cat_id', $rm->category)
-            ->where('mat_id', $order_material->raw_material_id)
-            ->where('owner_type', $owner_type)
-            ->where('supplier_id', $supplier_id)
+        $order = CustomerOrder::where('id', $order_material->customer_order_id)
             ->where('del_status', 'Live')
             ->first();
+        if ($customer_reorder_id) {
+            $totalConsumption = DB::table('tbl_manufactures_rmaterials as mm')
+                ->join('tbl_manufactures as m', 'm.id', '=', 'mm.rmaterials_id')
+                ->where('m.customer_reorder_id', $customer_reorder_id)
+                ->where('m.product_id', $fproduct_id)
+                ->where('m.del_status', 'Live')
+                ->where('mm.rmaterials_id', $rm_id)
+                ->sum('mm.consumption');
+        } else {
+            $totalConsumption = DB::table('tbl_manufactures_rmaterials as mm')
+                ->join('tbl_manufactures as m', 'm.id', '=', 'mm.rmaterials_id')
+                ->where('m.customer_order_id', $customer_order_id)
+                ->where('m.product_id', $fproduct_id)
+                ->where(function($q) {
+                    $q->whereNull('m.customer_reorder_id')
+                    ->orWhere('m.customer_reorder_id', 0);
+                })
+                ->where('m.del_status', 'Live')
+                ->where('mm.rmaterials_id', $rm_id)
+                ->sum('mm.consumption');
+        }
+        $originalRequired = $customer_reorder_id ? $order_material->mat_qty : $order_material->raw_qty;
+        $remainingRequired = $originalRequired - ($totalConsumption ?? 0);
+        if ($owner_type == "1") {
+            $ms = MaterialStock::where('mat_cat_id', $rm->category)
+                ->where('mat_id', $order_material->raw_material_id ?? $order_material->mat_id)
+                ->where('owner_type', $owner_type)
+                ->where('supplier_id', $supplier_id)
+                ->where('del_status', 'Live')
+                ->first();         
             $stock = [
                 'id' => $rm->id,
                 'name' => $rm->name,
                 'stock' => $ms->current_stock,
-                'required' => $quantity,
-                // 'consumption' => $consumptionQuantity,
-                // 'status' => $rm->current_stock >= $consumptionQuantity ? 'in_stock' : 'need_purchase'
+                'required' => $remainingRequired,
                 'consumption' => $quantity,
                 'status' => $ms->current_stock >= $quantity ? 'in_stock' : 'need_purchase',
             ];
             return response()->json($stock);
+            
         } else {
             if ($customer_reorder_id) {
                 $ms = MaterialStock::where('mat_cat_id', $rm->category)
-                ->where('mat_id', $order_material->mat_id)
-                ->where('owner_type', $owner_type)
-                ->where('customer_id', $selected_customer_id)
-                ->where('reference_no', $order->reference_no)
-                ->where('line_item_no', $orderDetail->line_item_no)
-                ->where('del_status', 'Live')
-                ->first();
-                $remainingStock = $ms->current_stock;
-            } else {
-                $ms = MaterialStock::where('mat_cat_id', $rm->category)
-                ->where('mat_id', $order_material->raw_material_id)
-                ->where('owner_type', $owner_type)
-                ->where('customer_id', $selected_customer_id)
-                ->where('reference_no', $order->reference_no)
-                ->where('line_item_no', $order_material->line_item_no)
-                ->where('del_status', 'Live')
-                ->first();
+                    ->where('mat_id', $orderDetail->mat_id)
+                    ->where('owner_type', $owner_type)
+                    ->where('customer_id', $selected_customer_id)
+                    ->where('reference_no', $order->reference_no)
+                    ->where('line_item_no', $order_material->line_item_no)
+                    ->where('del_status', 'Live')
+                    ->first();
                 $logsQuery = DB::table('tbl_stock_adjust_logs as logs')
-                ->join('tbl_material_stocks as ms', 'logs.mat_stock_id', '=', 'ms.id')
-                ->where('logs.del_status', 'Live')
-                ->where('logs.stock_type', 'customer')
-                ->where('ms.mat_id', $order_material->raw_material_id)
-                ->where('ms.customer_id', $selected_customer_id)
-                ->where('ms.owner_type', $owner_type)
-                ->select('logs.quantity')
-                ->first();
-                // dd($logsQuery);
+                    ->join('tbl_material_stocks as ms', 'logs.mat_stock_id', '=', 'ms.id')
+                    ->where('logs.del_status', 'Live')
+                    ->where('logs.stock_type', 'customer')
+                    ->where('ms.mat_id', $order_material->mat_id)
+                    ->where('ms.customer_id', $selected_customer_id)
+                    ->where('ms.owner_type', $owner_type)
+                    ->select('logs.quantity')
+                    ->first();
                 $adjustedQty = $logsQuery->quantity ?? 0;
                 if ($ms->float_stock > 0) {
                     $remainingStock = $adjustedQty;
                 } else {
                     $remainingStock = ($ms->current_stock ?? 0) - $adjustedQty;
                 }
-            }           
-            // dd($ms);
+            } else {
+                $ms = MaterialStock::where('mat_cat_id', $rm->category)
+                    ->where('mat_id', $order_material->raw_material_id)
+                    ->where('owner_type', $owner_type)
+                    ->where('customer_id', $selected_customer_id)
+                    ->where('reference_no', $order->reference_no)
+                    ->where('line_item_no', $order_material->line_item_no)
+                    ->where('del_status', 'Live')
+                    ->first();
+                $remainingStock = $ms->current_stock;
+            }     
             $stock = [
                 'id'           => $rm->id,
                 'name'         => $rm->name,
                 'stock'        => $remainingStock,
-                'required'     => $quantity,
+                'required'     => $remainingRequired,
                 'consumption'  => $quantity,
                 'status'       => $remainingStock >= $quantity ? 'in_stock' : 'need_purchase',
             ];
-
             return response()->json($stock);      
         }
     }

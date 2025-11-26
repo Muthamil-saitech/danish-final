@@ -70,8 +70,8 @@ class SupplierController extends Controller
     {
         request()->validate(
             [
-                'name' => 'required|max:50|regex:/^[\pL\s]+$/u',
-                'contact_person' => 'max:50|regex:/^[\pL\s]+$/u',
+                'name' => 'required|max:50',
+                'contact_person' => 'max:50',
                 'phone' => [
                     'required',
                     'max:50',
@@ -94,10 +94,10 @@ class SupplierController extends Controller
                 ],
                 'ecc_no' => [
                     'nullable',
-                    'regex:/^\d{1,9}$/',
+                    /* 'regex:/^\d{1,9}$/',
                     Rule::unique('tbl_suppliers', 'ecc_no')->where(function ($query) {
                         return $query->where('del_status', 'Live');
-                    }),
+                    }), */
                 ],
                 'address' => 'max:250',
                 'area' => 'max:50',
@@ -172,8 +172,8 @@ class SupplierController extends Controller
     public function update(Request $request, Supplier $supplier)
     {
         request()->validate([
-            'name' => 'required|max:50|regex:/^[\pL\s]+$/u',
-            'contact_person' => 'max:50|regex:/^[\pL\s]+$/u',
+            'name' => 'required|max:50',
+            'contact_person' => 'max:50',
             'phone' => [
                 'required',
                 'max:50',
@@ -197,10 +197,10 @@ class SupplierController extends Controller
             ],
             'ecc_no' => [
                 'nullable',
-                'regex:/^\d{1,9}$/',
+                /* 'regex:/^\d{1,9}$/',
                 Rule::unique('tbl_suppliers', 'ecc_no')->ignore($supplier->id, 'id')->where(function ($query) {
                     return $query->where('del_status', 'Live');
-                }),
+                }), */
             ],
             'area' => 'max:50',
             'note' => 'max:250'
