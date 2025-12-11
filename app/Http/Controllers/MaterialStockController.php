@@ -37,9 +37,11 @@ class MaterialStockController extends Controller
                 ->get()
                 ->map(function ($stock) {
                     $materialItem = Mrmitem::where('stock_id', $stock->id)->exists();
-                    // $materialReturn = StockReturnEntry::where('stock_id', $stock->id)->exists();
+                    $materialReturn = StockReturnEntry::where('stock_id', $stock->id)->exists();
+                    $returnedQty = StockReturnEntry::where('stock_id', $stock->id)->sum('qty');
                     $stock->used_in_manufacture = $materialItem;
-                    // $stock->used_in_return = $materialReturn;
+                    $stock->used_in_return = $materialReturn;
+                    $stock->returned_qty = $returnedQty;
                     return $stock;
                 });
             $tot_mat = (clone $commonQuery)
@@ -79,9 +81,11 @@ class MaterialStockController extends Controller
                 return $query->where('ins_type', $ins_type);
             })->get()->map(function ($stock) {
                 $materialItem = Mrmitem::where('stock_id', $stock->id)->exists();
-                // $materialReturn = StockReturnEntry::where('stock_id', $stock->id)->exists();
+                $materialReturn = StockReturnEntry::where('stock_id', $stock->id)->exists();
+                $returnedQty = StockReturnEntry::where('stock_id', $stock->id)->sum('qty');
                 $stock->used_in_manufacture = $materialItem;
-                // $stock->used_in_return = $materialReturn;
+                $stock->used_in_return = $materialReturn;
+                $stock->returned_qty = $returnedQty;
                 return $stock;
             });
             $tot_mat = MaterialStock::where('mat_type', 1)->where('del_status', "Live")->count();
@@ -140,7 +144,8 @@ class MaterialStockController extends Controller
         $obj->ins_type = null;
         $obj->customer_id = ($request->owner_type == '2') ? $request->customer_id : ($request->customer_id ?: null);
         $obj->supplier_id = ($request->owner_type == '1') ? $request->supplier_id : ($request->supplier_id ?: null);
-        $obj->current_stock = $request->current_stock ? $request->current_stock : 0; //stock
+        $obj->mat_qty = $request->mat_qty ? $request->mat_qty : 0;
+        $obj->current_stock = $request->current_stock ? $request->current_stock : 0;
         $obj->close_qty = $request->close_qty ? $request->close_qty : 0;
         $obj->float_stock = 0;
         $obj->dc_inward_price = 0.00;
@@ -206,6 +211,7 @@ class MaterialStockController extends Controller
         $material_stock->customer_id = ($request->owner_type == '2') ? $request->customer_id : ($request->customer_id ?: null);
         $material_stock->supplier_id = ($request->owner_type == '1') ? $request->supplier_id : ($request->supplier_id ?: null);
         $material_stock->unit_id = $request->unit_id;
+        $material_stock->mat_qty = $request->mat_qty ? $request->mat_qty : 0;
         $material_stock->current_stock = $request->current_stock ? $request->current_stock : 0;
         $material_stock->close_qty = $request->close_qty ? $request->close_qty : 0;
         $material_stock->dc_inward_price = 0.00;
@@ -339,7 +345,7 @@ class MaterialStockController extends Controller
         $obj->mat_id = $mat_id;
         $obj->reference_no = $reference_no;
         $obj->line_item_no = $line_item_no;
-        $obj->float_stock = $float_stock;
+        $obj->float_stock = $float_stock - $qty;
         $obj->qty = $qty;
         $obj->save();
         return redirect('material_stocks')->with(saveMessage());

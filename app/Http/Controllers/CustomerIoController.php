@@ -66,7 +66,7 @@ class CustomerIoController extends Controller
         return view('pages.customer_io.addEditCustomerIO', compact('title','customer_orders'));
     }
     public function store(Request $request){
-        // dd($request->all());
+        
         request()->validate([
             'po_no' => 'required|max:50',
             'del_challan_no' => 'required',
@@ -93,11 +93,13 @@ class CustomerIoController extends Controller
         $customer_io->del_challan_no = null_check(escape_output($request->get('del_challan_no')));
         $customer_io->po_no = null_check(escape_output($request->get('po_no')));
         $customer_io->line_item_no = null_check(escape_output($request->get('line_item_no')));
+        // dd($request->all());
         $customer_io->customer_id = null_check(escape_output($request->get('customer_id')));
         $customer_io->date =  date('Y-m-d', strtotime($request->get('date')));
         $customer_io->return_due_date =  date('Y-m-d', strtotime($request->get('return_due_date')));
         $customer_io->total_amount = null_check(escape_output($request->get('total_amount')));
         $customer_io->d_address = escape_output($request->get('d_address'));
+        $customer_io->inward_type = $request->get('inward_type');
         $customer_io->save();
 
         if(isset($_POST['type']) && is_array($_POST['type'])) {
@@ -117,6 +119,7 @@ class CustomerIoController extends Controller
                 $obj->tax_rate = null_check(escape_output($_POST['tax_rate'][$row] ?? 0));
                 $obj->tax_amount = null_check(escape_output($_POST['tax_amount'][$row] ?? 0));
                 $obj->subtotal = null_check(escape_output($_POST['subtotal'][$row] ?? 0));
+                $obj->line_item_no = $_POST['ins_line_item_no'][$row] ?? '';
                 $obj->remarks = escape_output($_POST['remarks'][$row] ?? ''); 
                 $obj->save();
             }
@@ -171,6 +174,7 @@ class CustomerIoController extends Controller
         $customer_io->return_due_date =  date('Y-m-d', strtotime($request->get('return_due_date')));
         $customer_io->total_amount = null_check(escape_output($request->get('total_amount')));
         $customer_io->d_address = escape_output($request->get('d_address'));
+        $customer_io->inward_type = $request->get('inward_type');
         $customer_io->save();
         $last_id = $customer_io->id;
         $detail_id = $request->get('detail_id');
@@ -192,6 +196,7 @@ class CustomerIoController extends Controller
                 $obj->tax_rate = null_check(escape_output($_POST['tax_rate'][$row] ?? 0));
                 $obj->tax_amount = null_check(escape_output($_POST['tax_amount'][$row] ?? 0));
                 $obj->subtotal = null_check(escape_output($_POST['subtotal'][$row] ?? 0));
+                $obj->line_item_no = $_POST['ins_line_item_no'][$row] ?? '';
                 $obj->remarks = escape_output($_POST['remarks'][$row] ?? ''); 
                 $obj->save();
             }

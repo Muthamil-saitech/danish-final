@@ -25,7 +25,11 @@ $baseURL = getBaseURL();
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #000;">
                     <div style="flex: 1; text-align: center;  padding: 5px 0px">
                         <h5 style="font-size: 18px; font-weight: 600; letter-spacing: 1px; margin-bottom: 3px ">
-                            {{ $partner_io_detail->outward_type=="RGP" ? 'Returnable Gate Pass' : 'Non Returnable Gate Pass' }}
+                            @if(isset($status) && $status == "Inward")
+                                {{ $partner_io->inward_type=="RGP" ? 'Returnable Gate Pass' : 'Non Returnable Gate Pass' }}
+                            @else 
+                                {{ $partner_io_detail->outward_type=="RGP" ? 'Returnable Gate Pass' : 'Non Returnable Gate Pass' }}
+                            @endif
                         </h5>
                         <p style="font-size: 18px; font-weight: 600;">
                             (Rule 55 of CGST Rules 2017)
@@ -45,10 +49,13 @@ $baseURL = getBaseURL();
                         </div>
                     </div>
                     <div style="width: 50%; border-bottom: 1px solid #000; padding: 8px 10px; font-size: 14px; display: grid; grid-template-columns: 50% 50%; grid-auto-rows: min-content; row-gap: 4px; align-items: start; word-break: break-word;">
-                        <span>Reference PO Number</span>
-                        : {{ $partner_io->reference_no . '/' . $partner_io_detail->line_item_no }}
+                        @if($status=="Outward")
+                            <span>Partner DC Number</span>
+                            <b>: {{ $partner_io->del_challan_no . '/' . $partner_io_detail->line_item_no }}</b>
+                        @else  
+                        @endif  
                         <span>Delivery Challan Number</span>
-                        : {{ $partner_io->del_challan_no }}
+                        <b>: {{ $status=="Outward" ? $partner_io_detail->outward_challan_no.'/'.$partner_io_detail->line_item_no : $partner_io->del_challan_no.'/'.$partner_io_detail->line_item_no }}</b>
                         <span>Delivery Challan Date</span>
                         : {{ date('d-m-Y', strtotime($partner_io->io_date)) }}
                         <span>Place of Supply</span>

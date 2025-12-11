@@ -210,7 +210,7 @@
                                                         <span>{{ $productInfo->name }} ({{ $productInfo->code }})</span>
                                                     </td>
                                                     <td>
-                                                        <span>{{ $value->product_quantity }} {{ getRMUnitById($value->unit_id) }}</span>
+                                                        <span>{{ $value->product_quantity }} {{-- {{ getRMUnitById($value->unit_id) }} --}}</span>
                                                     </td>
                                                     {{-- <td>
                                                         <span>{{ $value->raw_qty }}</span>

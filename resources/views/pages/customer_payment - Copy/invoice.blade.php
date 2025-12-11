@@ -60,30 +60,26 @@ if (isset($setting->base_color) && $setting->base_color) {
                                     <p class="pb-7 rgb-71 arabic">{{ $obj->customer->phone }}</p>
                                 </td>
                                 <td class="w-50 text-right">
-                                    <h4 class="pb-7">Invoice Info:</h4>
+                                    <h4 class="pb-7">@lang('index.order_info'):</h4>
                                     <p class="pb-7">
-                                        <span class="">Invoice No:</span>
-                                        {{ isset($obj) ? $obj->reference_no : ''  }}
+                                        <span class="">@lang('index.po_no'):</span>
+                                        {{ isset($obj) && isset($order_details) ? $obj->reference_no.'/'.$order_details->line_item_no : ''  }}
                                     </p>
                                     <p class="pb-7 rgb-71">
-                                        <span class="">@lang('index.sale_date'):</span>
-                                        {{ getDateFormat($obj->sale_date) }}
+                                        <span class="">@lang('index.po_date'):</span>
+                                        {{ getDateFormat($obj->po_date) }}
                                     </p>
                                     <p class="pb-7 rgb-71">
                                         <span class="">@lang('index.total_amount'):</span>
-                                        {{ getAmtCustom($obj->grand_total) }}
-                                    </p>
-                                    <p class="pb-7 rgb-71">
-                                        <span class="">Credit / Debit Amount:</span>
-                                        {{ getAmtCustom($sale_note_entry->grand_total) }}
+                                        {{ getAmtCustom($customer_inv->amount) }}
                                     </p>
                                     <p class="pb-7 rgb-71">
                                         <span class="">TDS Amount:</span>
-                                        {{ getAmtCustom($obj->tds_amount) }}
+                                        {{ getAmtCustom($customer_inv->tds_amount) }}
                                     </p>
                                     <p class="pb-7 rgb-71">
                                         <span class="">Amount:</span>
-                                        {{ getAmtCustom($obj->grand_total - $sale_note_entry->grand_total - $obj->tds_amount) }}
+                                        {{ getAmtCustom($customer_inv->amount - $customer_inv->tds_amount) }}
                                     </p>
                                 </td>
                             </tr>
@@ -93,7 +89,9 @@ if (isset($setting->base_color) && $setting->base_color) {
                                 <tr>
                                     <th class="w-5 text-start">@lang('index.sn')</th>
                                     <th class="w-15 text-start">@lang('index.payment_date')</th>
+                                    {{-- <th class="w-20 text-start">@lang('index.customer_name')<br>(@lang('index.code'))</th> --}}
                                     <th class="w-15 text-start">@lang('index.paid_amount')</th>
+                                    {{-- <th class="w-15 text-start">@lang('index.balance_amount')</th> --}}
                                     <th class="w-15 text-start">@lang('index.payment_type')</th>
                                     <th class="w-15 text-start">@lang('index.payment_img')</th>
                                     <th class="w-15 text-start">@lang('index.note')</th>
@@ -112,12 +110,22 @@ if (isset($setting->base_color) && $setting->base_color) {
                                     <td class="text-start">
                                         {{ getDateFormat($customer_due->created_at) }}
                                     </td>
+                                    {{-- <td class="text-start arabic">{{ $customer_due->customerName->name }}<br><small>({{ getCustomerCodeById($customer_due->customerName->id) }})</small></td> --}}
                                     <td class="text-start">{{ getAmtCustom($customer_due->pay_amount) }}
                                     </td>
+                                    {{-- <td class="text-start">{{ getAmtCustom($customer_due->balance_amount) }}
+                                    </td> --}}
                                     <td class="text-start">{{ $customer_due->payment_type }}
                                     </td>
                                     <td class="text-start">
                                         @if($customer_due->payment_proof)
+                                        {{-- <a class="text-decoration-none"
+                                                        href="{{ $baseURL }}uploads/customer_due/{{ $customer_due->payment_proof }}"
+                                        target="_blank">
+                                        <img src="{{ $baseURL }}uploads/customer_due/{{ $customer_due->payment_proof }}"
+                                            alt="File Preview" class="img-thumbnail mx-2"
+                                            width="100px">
+                                        </a> --}}
                                         <a class="text-decoration-none"
                                             href="{{ $baseURL }}uploads/customer_due/{{ $customer_due->payment_proof }}"
                                             data-lightbox="payment-proof"
@@ -139,6 +147,54 @@ if (isset($setting->base_color) && $setting->base_color) {
                                 @endif
                             </tbody>
                         </table>
+                        {{-- <table>
+                                <tr>
+                                    <td valign="top" class="w-50">
+                                        
+                                    </td>
+                                    <td class="w-50">
+                                        <table>
+                                            <tr>
+                                                <td class="w-50">
+                                                    <p class="f-w-600">Total Amount</p>
+                                                </td>
+                                                <td class="w-50 text-right pr-0">
+                                                    <p>{{ getAmtCustom($customer_inv->amount) }}</p>
+                        </td>
+                        </tr>
+                        </table>
+                        <table>
+                            <tr>
+                                <td class="w-50">
+                                    <p class="f-w-600">Paid Amount</p>
+                                </td>
+                                <td class="w-50 text-right pr-0">
+                                    <p>{{ getAmtCustom($customer_inv->paid_amount) }}</p>
+                                </td>
+                            </tr>
+                        </table>
+                        <table>
+                            <tr>
+                                <td class="w-50">
+                                    <p class="f-w-600">Balance Amount</p>
+                                </td>
+                                <td class="w-50 text-right pr-0">
+                                    <p>{{ getAmtCustom($customer_inv->due_amount) }}</p>
+                                </td>
+                            </tr>
+                        </table>
+                        </td>
+                        </tr>
+                        </table>
+                        <table class="mt-50">
+                            <tr>
+                                <td class="w-50">
+                                </td>
+                                <td class="w-50 text-right">
+                                    <p class="rgb-71 d-inline border-top-e4e5ea pt-10">@lang('index.authorized_signature')</p>
+                                </td>
+                            </tr>
+                        </table> --}}
                     </div>
                 </div>
             </div>

@@ -431,6 +431,7 @@
                                     <tr>
                                         <th class="width_1_p">@lang('index.sn')</th>
                                         <th class="width_10_p">@lang('index.po_no')</th>
+                                        <th class="width_10_p">Delivery Challan Number</th>
                                         <th class="width_10_p">@lang('index.customer_name')(Code)</th>
                                         <th class="width_10_p">@lang('index.date')</th>
                                         <th class="width_10_p">@lang('index.status')</th>
@@ -441,6 +442,7 @@
                                         <tr>
                                             <td>{{ $loop->iteration }}</td> 
                                             <td>{{ $value->po_no .'/'. $value->line_item_no }}</td>
+                                            <td>{{ $value->del_challan_no }}</td>
                                             <td>{{ $value->customer->name }}<br> ({{ $value->customer->customer_id }})</td>
                                             <td>{{  date('d-m-Y', strtotime($value->date)) }}</td>
                                             <td>
@@ -472,7 +474,7 @@
                                 <thead>
                                     <tr>
                                         <th class="width_1_p">@lang('index.sn')</th>
-                                        <th class="width_10_p">@lang('index.reference_no')</th>
+                                        <th class="width_10_p">Delivery Challan Number</th>
                                         <th class="width_10_p">@lang('index.partners')(Code)</th>
                                         <th class="width_10_p">@lang('index.date')</th>
                                         <th class="width_10_p">@lang('index.type')</th>
@@ -492,7 +494,7 @@
                                         @foreach ($value->details as $detail)
                                         <tr>
                                             <td>{{ $j++ }}</td>
-                                            <td>{{ $value->reference_no .'/'. $detail->line_item_no }}</td>
+                                            <td>{{ $value->del_challan_no .'/'. $detail->line_item_no }}</td>
                                             <td>{{ $value->partner->name . '(' . $value->partner->partner_id . ')' }}</td>
                                             <td>{{  date('d-m-Y', strtotime($value->io_date)) }}</td>
                                             @if($detail->type == '1')

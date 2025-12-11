@@ -237,6 +237,7 @@
                     $("#inp_ref_no_div").addClass("d-none");
                     $("#inp_ref_no").val("");
                     $("#line_item_no_hidden").val("");
+                    $("#mat_qty").val("");
                     $("#current_stock").val("");
                     $("#supplier_div").removeClass("d-none");
                     $("#supplier").val("");
@@ -250,6 +251,7 @@
                     $("#select_ref_no").addClass("d-none");
                     $("#inp_ref_no_div").removeClass("d-none");
                     $("#inp_ref_no").html(data.html);
+                    $("#mat_qty").val("");
                     $("#current_stock").val("");
                     // $("#line_no_wo_hidden").val(data.html);
                     // $("#inp_ref_no").val(line_item_no);
@@ -269,8 +271,10 @@
     $(document).on("change", "#reference_no", function (e) {
         let selected = $(this).val();
         let split = selected.split('|');
-        $("#current_stock").val(split[1]);
-        $("#current_stock").attr("max", split[1]);
+        let bal_stock = split[2];        
+        $("#mat_qty").val(split[1]);
+        $("#current_stock").val(bal_stock);
+        $("#current_stock").attr("max", bal_stock);
         let hidden_base_url = $("#hidden_base_url").val();
         $("#supplier").val("");
         $("#supplier_id").val(""); 
@@ -300,8 +304,10 @@
         let reference_no = split_ref[0];
         let line_item_no = split_ref[1];
         let current_stock = split[1];        
-        $("#current_stock").val(current_stock);
-        $("#current_stock").attr("max", current_stock);
+        let bal_stock = split[2];        
+        $("#mat_qty").val(current_stock);
+        $("#current_stock").val(bal_stock);
+        $("#current_stock").attr("max", bal_stock);
         $("#inp_ref_no").val(line_item_no);
         $("#line_item_no_hidden").val(line_item_no);
         $("#line_no_wo_hidden").val(reference_no);

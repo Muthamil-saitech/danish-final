@@ -41,30 +41,14 @@ $baseURL = getBaseURL();
                     <p class="pb-7 rgb-71 arabic">{{ $obj->customer->phone }}</p>
                 </td>
                 <td class="w-50 text-right">
-                    <h4 class="pb-7">Invoice Info:</h4>
+                    <h4 class="pb-7">@lang('index.customer_payment_invoice'):</h4>
                     <p class="pb-7">
-                        <span class="">Invoice No:</span>
-                        {{ isset($obj) ? $obj->reference_no : ''  }}
+                        <span class="">@lang('index.order_no'):</span>
+                        {{ $obj->reference_no }}
                     </p>
                     <p class="pb-7 rgb-71">
-                        <span class="">@lang('index.sale_date'):</span>
-                        {{ getDateFormat($obj->sale_date) }}
-                    </p>
-                    <p class="pb-7 rgb-71">
-                        <span class="">@lang('index.total_amount'):</span>
-                        {{ getAmtCustom($obj->grand_total) }}
-                    </p>
-                    <p class="pb-7 rgb-71">
-                        <span class="">Credit / Debit Amount:</span>
-                        {{ getAmtCustom($sale_note_entry->price) }}
-                    </p>
-                    <p class="pb-7 rgb-71">
-                        <span class="">TDS Amount:</span>
-                        {{ getAmtCustom($obj->tds_amount) }}
-                    </p>
-                    <p class="pb-7 rgb-71">
-                        <span class="">Amount:</span>
-                        {{ $sale_note_entry->type=="Debit" ? getAmtCustom($obj->grand_total - $sale_note_entry->price - $obj->tds_amount) : getAmtCustom($obj->grand_total - $obj->tds_amount) }}
+                        <span class="">@lang('index.invoice_date'):</span>
+                        {{ getDateFormat($customer_inv->invoice_date) }}
                     </p>
                 </td>
             </tr>
@@ -132,7 +116,7 @@ $baseURL = getBaseURL();
                                 <p class="f-w-600">Total Amount</p>
                             </td>
                             <td class="w-50 text-right pr-0">
-                                {{-- <p>{{ getAmtCustom($customer_inv->amount) }}</p> --}}
+                                <p>{{ getAmtCustom($customer_inv->amount) }}</p>
                             </td>
                         </tr>
                     </table>
@@ -142,7 +126,7 @@ $baseURL = getBaseURL();
                                 <p class="f-w-600">Paid Amount</p>
                             </td>
                             <td class="w-50 text-right pr-0">
-                                {{-- <p>{{ getAmtCustom($customer_inv->paid_amount) }}</p> --}}
+                                <p>{{ getAmtCustom($customer_inv->paid_amount) }}</p>
                             </td>
                         </tr>
                     </table>
@@ -152,7 +136,7 @@ $baseURL = getBaseURL();
                                 <p class="f-w-600">Balance Amount</p>
                             </td>
                             <td class="w-50 text-right pr-0">
-                                {{-- <p>{{ getAmtCustom($customer_inv->due_amount) }}</p> --}}
+                                <p>{{ getAmtCustom($customer_inv->due_amount) }}</p>
                             </td>
                         </tr>
                     </table>

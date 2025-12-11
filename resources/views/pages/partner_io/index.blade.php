@@ -29,7 +29,7 @@ if (isset($setting->base_color) && $setting->base_color) {
                     <thead>
                         <tr>
                             <th>@lang('index.sn')</th>
-                            <th>@lang('index.reference_no')</th>
+                            <th>Delivery Challan Number</th>
                             <th>@lang('index.partners')(Code)</th>
                             <th>@lang('index.date')</th>
                             <th>@lang('index.type')</th>
@@ -50,7 +50,7 @@ if (isset($setting->base_color) && $setting->base_color) {
                             @foreach ($value->details as $detail)
                             <tr>
                                 <td>{{ $j++ }}</td>
-                                <td>{{ $value->reference_no .'/'. $detail->line_item_no }}</td>
+                                <td>{{ $value->del_challan_no .'/'. $detail->line_item_no }}</td>
                                 <td>{{ $value->partner->name . '(' . $value->partner->partner_id . ')' }}</td>
                                 <td>{{  date('d-m-Y', strtotime($value->io_date)) }}</td>
                                 @if($detail->type == '1')

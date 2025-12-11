@@ -375,8 +375,9 @@ if (isset($setting->base_color) && $setting->base_color) {
                                             <tr>
                                                 <th>@lang('index.sn')</th>
                                                 <th>@lang('index.po_no')</th>
+                                                <th>Delivery Challan Number</th>
+                                                <th>Delivery Challan Date</th>
                                                 <th>@lang('index.customer_name')<br>(@lang('index.code'))</th>
-                                                <th>@lang('index.date')</th>
                                                 <th>@lang('index.status')</th>
                                             </tr>
                                         </thead>
@@ -390,8 +391,9 @@ if (isset($setting->base_color) && $setting->base_color) {
                                                 <tr>
                                                     <td>{{ $loop->iteration }}</td> 
                                                     <td>{{ $value->po_no .'/'. $value->line_item_no }}</td>
-                                                    <td>{{ $value->customer->name }}<br> ({{ $value->customer->customer_id }})</td>
+                                                    <td>{{ $value->del_challan_no }}</td>
                                                     <td>{{  date('d-m-Y', strtotime($value->date)) }}</td>
+                                                    <td>{{ $value->customer->name }}<br> ({{ $value->customer->customer_id }})</td>
                                                     <td>
                                                         @if($value->status == 'Inward')
                                                         <span class="badge bg-secondary">Inward</span>

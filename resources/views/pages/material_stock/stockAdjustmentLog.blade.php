@@ -39,12 +39,13 @@
                                         <table class="table table-striped">
                                             <thead class="b-r-3 bg-color-000000">
                                                 <tr>
-                                                    <th class="w-50 text-start">@lang('index.raw_material_name')<br>(@lang('index.code'))</th>
-                                                    <th class="w-20 text-start">Heat No</th>
-                                                    <th class="w-30 text-start">@lang('index.challan_no')<br>(DC Date)</th>
-                                                    <th class="w-30 text-start">@lang('index.doc_no')</th>
+                                                    <th class="w-25 text-start">@lang('index.raw_material_name')<br>(@lang('index.code'))</th>
+                                                    <th class="w-10 text-start">Heat No</th>
+                                                    <th class="w-20 text-start">@lang('index.challan_no')<br>(DC Date)</th>
+                                                    <th class="w-20 text-start">@lang('index.doc_no')</th>
                                                     <th class="w-20 text-start">@lang('index.stock_type')</th>
                                                     <th class="w-20 text-start">@lang('index.po_no')</th>
+                                                    <th class="w-20 text-start">Material Quantity</th>
                                                     <th class="w-20 text-start">@lang('index.stock')</th>
                                                     <th class="w-20 text-start">@lang('index.alter_level')</th>
                                                     <th class="w-20 text-start">@lang('index.floating_stock')</th>
@@ -69,6 +70,7 @@
                                                     ? $material_stock->stock_type . '<br><small>(' . getCustomerNameById($material_stock->customer_id) . ')</small>'
                                                     : $material_stock->stock_type. '<br><small>(' . getSupplierNameCode($material_stock->supplier_id) . ')</small>' !!}</td>
                                                     <td class="text-start">{{$material_stock->line_item_no!='' ? $material_stock->reference_no.'/'.$material_stock->line_item_no : $material_stock->reference_no }}</td>
+                                                    <td class="text-start">{{ $material_stock->mat_qty }} {{ getRMUnitById($material_stock->unit_id) }}</td>
                                                     <td class="text-start">{{ $material_stock->current_stock }} {{ getRMUnitById($material_stock->unit_id) }}</td>
                                                     <td class="text-start">{{ $material_stock->close_qty }} {{ getRMUnitById($material_stock->unit_id) }}</td>
                                                     <td class="text-start">{{ $material_stock->float_stock }} {{ getRMUnitById($material_stock->unit_id) }}</td>

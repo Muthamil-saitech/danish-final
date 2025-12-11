@@ -122,8 +122,8 @@ if (isset($setting->base_color) && $setting->base_color) {
                             </div> --}}
                             <div class="col-sm-12 col-md-4 mb-2">
                                 <div class="form-group">
-                                    <label class="control-label">@lang('index.price') <small>(per qty)</small><span class="required_star">*</span></label>
-                                    <input type="number" class="form-control" name="price" id="price" min="1" placeholder="Price">
+                                    <label class="control-label">Credit/Debit Amount<span class="required_star">*</span></label>
+                                    <input type="number" class="form-control" name="price" id="price" min="1" placeholder="Credit/Debit Amount">
                                     <p class="text-danger price_err"></p>
                                 </div>
                             </div>
@@ -295,7 +295,7 @@ if (isset($setting->base_color) && $setting->base_color) {
             $(".product_err").text("");
         }
         if (price == "") {
-            $(".price_err").text("The Price field is required.");
+            $(".price_err").text("The Credit/Debit Amount field is required.");
             status = false;
         } else {
             $(".price_err").text("");

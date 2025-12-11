@@ -583,6 +583,7 @@ $(document).ready(function () {
             let order_id = product_arr[1];
             let product_name = product_arr[2];
             let sale_price = product_arr[3];
+            let salePrice = parseFloat(sale_price).toFixed(2);
             let quantity = product_arr[4];
             let product_code = product_arr[5];
             let unit = product_arr[6];
@@ -645,14 +646,14 @@ $(document).ready(function () {
                 </td>
                 <td>
                     <div class="input-group">
-                        <input type="hidden" name="sale_price[]" class="check_required form-control integerchk input_aligning sale_price_c cal_sale_row" value="${sale_price}" placeholder="Unit Price">
-                        <p>₹${sale_price}</p>
+                        <input type="hidden" name="sale_price[]" class="check_required form-control integerchk input_aligning sale_price_c cal_sale_row" value="${salePrice}" placeholder="Unit Price">
+                        <p>₹${salePrice}</p>
                     </div>
                 </td>
                 <td>
                     <div class="input-group">
                         <input type="hidden" name="quantity[]" class="check_required form-control integerchk input_aligning qty_c cal_sale_row" value="${quantity}" placeholder="Qty">
-                        <p>${quantity}${unit}</p>
+                        <p>${quantity}</p>
                     </div>
                 </td>
                 <td class="ir_txt_center">
@@ -1063,7 +1064,7 @@ $(document).ready(function () {
                                 <td class="w-10">${product.code}<input type="hidden" name="part_no[]" value="${product.code}"></td>           
                                 <td class="w-30"><input type="hidden" name="price[]" class="form-control" value="${finalPrice}" placeholder="Rate" ${disabled} style="min-width: 120px;" id="finalPrice">${finalPrice}</td>                       
                                 <td class="w-20">${product.name} (${product.code})</td>                                
-                                <td class="w-5">${data.product_quantity} ${data.unit_name}<input type="hidden" name="product_quantity[]" value="${data.product_quantity}"><input type="hidden" name="unit_id[]" value="${data.unit_id}"><input type="hidden" name="po_no[]" value="${data.reference_no}"><input type="hidden" name="line_item_no[]" value="${data.line_item_no}"><input type="hidden" name="po_date[]" value="${data.po_date}"></td>
+                                <td class="w-5">${data.product_quantity} <input type="hidden" name="product_quantity[]" value="${data.product_quantity}"><input type="hidden" name="unit_id[]" value="${data.unit_id}"><input type="hidden" name="po_no[]" value="${data.reference_no}"><input type="hidden" name="line_item_no[]" value="${data.line_item_no}"><input type="hidden" name="po_date[]" value="${data.po_date}"></td>
                                 <td class="w-5">${product.hsn_sac_no}</td>
                                 <td class="w-10"><textarea class="form-control" name="dc_ref[]" placeholder="DC Reference" rows="3" cols="50" maxlength="50" style="min-width: 180px;">${data.dc_no}</textarea></td>
                                 <td class="w-5"><input type="text" name="dc_ref_date[]" class="form-control dc-ref-date" placeholder="Delivery Challan Reference Date" style="min-width: 110px;" value="${data.dc_date}"></td>

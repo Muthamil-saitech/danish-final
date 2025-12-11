@@ -100,7 +100,9 @@ class QuotationController extends Controller
             })
             ->pluck('customer_id')
             ->unique();
-        $lastChallan = Quotation::orderBy('challan_no', 'DESC')->value('challan_no');
+        $lastChallan = Quotation::select(DB::raw('CAST(challan_no AS UNSIGNED) AS challan_no'))
+        ->orderBy('challan_no', 'DESC')
+        ->value('challan_no');
         $challan_no = $lastChallan ? $lastChallan + 1 : 1;
         $customers = \App\Customer::whereIn('id', $customerIds)->get();
         $finishProducts = FinishedProduct::orderBy('name', 'ASC')->where('del_status', "Live")->get();

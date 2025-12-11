@@ -45,7 +45,7 @@ use App\Drawer;
 use App\Exports\POReportExport;
 use App\MaterialStock;
 use App\ProductionStage;
-use App\PartnerIo;
+use App\PartnerIO;
 use App\PartnerIoDetail;
 use App\Quotation;
 use Illuminate\Http\Request;
@@ -974,6 +974,7 @@ class ReportController extends Controller
                 'cio.date',
                 'cio.status',
                 'cio.line_item_no',
+                'cio.del_challan_no',
                 'c.name as customer_name',
                 'c.customer_id as customer_id',
                 'ciod.ins_name',
@@ -991,6 +992,7 @@ class ReportController extends Controller
                 'pio.id',
                 'pio.reference_no',
                 'pio.io_date',
+                'pio.del_challan_no',
                 'p.name as partner_name',
                 'p.partner_id as partner_id',
                 'piod.ins_name',
@@ -1028,6 +1030,7 @@ class ReportController extends Controller
                 'cio.date',
                 'cio.status',
                 'cio.line_item_no',
+                'cio.del_challan_no',
                 'c.name as customer_name',
                 'c.customer_id as customer_id',
                 'ciod.ins_name',
@@ -1057,6 +1060,7 @@ class ReportController extends Controller
                 'pio.id',
                 'pio.reference_no',
                 'pio.io_date',
+                'pio.del_challan_no',
                 'p.name as partner_name',
                 'p.partner_id as partner_id',
                 'piod.ins_name',

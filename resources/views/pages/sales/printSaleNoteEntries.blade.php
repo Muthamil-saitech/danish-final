@@ -13,7 +13,7 @@
             <div style="padding: 18px 0; border: 1px solid #000; background: #fff;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
                     <div style="flex: 1; text-align: center;">
-                        {{-- <h5 style="font-size: 18px; font-weight: 700; letter-spacing: 1px; margin: 0;">DELIVERY CHALLAN</h5> --}}
+                        <p><b>{{ $sale_note_entry->type=='Credit' ? 'CREDIT NOTE' : 'DEBIT NOTE' }}</b></p>
                         <img src="{!! getBaseURL() .
                         (isset(getWhiteLabelInfo()->logo) ? 'uploads/white_label/' . getWhiteLabelInfo()->logo : 'images/logo.png') !!}" alt="Logo Image" class="img-fluid my-2">
                         <!-- <h3 style="font-size: 25px; font-weight: 500; margin: 2px 0;">{{ strtoupper(getCompanyInfo()->company_name) }}</h3> -->
@@ -185,9 +185,9 @@
                     </div>
                 </div>
             </div>
-            <div style="text-align: end;">
+           {{--  <div style="text-align: end;">
                 <span style="font-size: 12px;">DAN/STR/SF/01</span>
-            </div>
+            </div> --}}
         </div>
     </section>
 </body>

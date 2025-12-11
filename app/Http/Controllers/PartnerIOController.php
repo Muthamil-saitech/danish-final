@@ -32,19 +32,19 @@ class PartnerIOController extends Controller
     }
     public function store(Request $request) {
         request()->validate([
-            'reference_no' => [
+            /* 'reference_no' => [
                 'required',
                 Rule::unique('tbl_partner_ios', 'reference_no')->where(function ($query) {
                     return $query->where('del_status', 'Live');
                 }),
-            ],
+            ], */
             'del_challan_no' => 'required',
             'partner_id' => 'required',
             'io_date' => 'required',
             'phn_no' => 'required',
             'd_address' => 'required'
         ],[
-            'reference_no.unique' => 'Reference No already exists',
+            // 'reference_no.unique' => 'Reference No already exists',
             'del_challan_no.required' => 'The delivery challan number field is required'
         ]);
         
@@ -65,12 +65,13 @@ class PartnerIOController extends Controller
         }
 
         $partner_io->del_challan_no = null_check(escape_output($request->get('del_challan_no')));
-        $partner_io->reference_no = null_check(escape_output($request->get('reference_no')));
+        // $partner_io->reference_no = null_check(escape_output($request->get('reference_no')));
         $partner_io->partner_id = null_check(escape_output($request->get('partner_id')));
         $partner_io->total_amount = null_check(escape_output($request->get('total_amount')));
         $partner_io->io_date =  date('Y-m-d', strtotime($request->get('io_date')));
         $partner_io->return_due_date =  date('Y-m-d', strtotime($request->get('return_due_date')));
         $partner_io->d_address = escape_output($request->get('d_address'));
+        $partner_io->inward_type = $request->get('inward_type');
         $partner_io->save();
 
         if(isset($_POST['type']) && is_array($_POST['type'])) {
@@ -122,12 +123,12 @@ class PartnerIOController extends Controller
     public function update(Request $request, PartnerIO $partner_io) {
         // dd($request->all());
         request()->validate([
-            'reference_no' => [
+            /* 'reference_no' => [
                 'required',
                 Rule::unique('tbl_partner_ios', 'reference_no')->ignore($partner_io->id, 'id')->where(function ($query) {
                     return $query->where('del_status', 'Live');
                 }),
-            ],
+            ], */
             'del_challan_no' => 'required',
             'partner_id' => 'required',
             'io_date' => 'required',
@@ -157,13 +158,14 @@ class PartnerIOController extends Controller
             $partner_io->file = json_encode($storedFiles);
         }
 
-        $partner_io->reference_no = null_check(escape_output($request->get('reference_no')));
+        // $partner_io->reference_no = null_check(escape_output($request->get('reference_no')));
         $partner_io->del_challan_no = null_check(escape_output($request->get('del_challan_no')));
         $partner_io->partner_id = null_check(escape_output($request->get('partner_id')));
         $partner_io->io_date =  date('Y-m-d', strtotime($request->get('io_date')));
         $partner_io->return_due_date =  date('Y-m-d', strtotime($request->get('return_due_date')));
         $partner_io->d_address = escape_output($request->get('d_address'));
         $partner_io->total_amount = null_check(escape_output($request->get('total_amount')));
+        $partner_io->inward_type = $request->get('inward_type');
         $partner_io->save();
 
         $last_id = $partner_io->id;

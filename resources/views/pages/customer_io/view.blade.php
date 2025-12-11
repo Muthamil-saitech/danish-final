@@ -34,7 +34,11 @@ if (isset($setting->base_color) && $setting->base_color) {
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #000;">
                     <div style="flex: 1; text-align: center; line-height: 1.6;">
                         <h5 style="font-size: 18px; font-weight: 600; letter-spacing: 1px; margin: 5px 0px 0px 0px;">
-                            {{ $customer_io->outward_type=="RGP" ? 'Returnable Gate Pass' : 'Non Returnable Gate Pass' }}
+                            @if(isset($status) && $status == "Inward")
+                               {{ $customer_io->inward_type=="RGP" ? 'Returnable Gate Pass' : 'Non Returnable Gate Pass' }}
+                            @else 
+                                {{ $customer_io->outward_type=="RGP" ? 'Returnable Gate Pass' : 'Non Returnable Gate Pass' }}
+                            @endif                            
                         </h5>
                         <p style="font-size: 15px; margin-bottom: 10px; font-weight: 600;">
                             (Rule 55 of CGST Rules 2017)
@@ -42,95 +46,95 @@ if (isset($setting->base_color) && $setting->base_color) {
                     </div>
                 </div>                
                 @if($status == 'Outward')
-                 <div style="display: flex; width: 100%;">
-                    <div style="width: 50%; border-right: 1px solid #000; border-bottom: 1px solid #000; padding: 8px 10px; font-size: 16px;
-                        display: grid; grid-template-columns: 40% 60%; grid-auto-rows: min-content; row-gap: 4px; align-items: start; word-break: break-word;">
-                        <span>GSTIN</span>
-                        <b>: {{ safe(getCompanyInfo()->gst_no) }}</b>
-                        <span>Name</span>
-                        <b>: {{ strtoupper(getCompanyInfo()->company_name) }}</b>
-                        <span>Address</span>
-                        <b>: {{ safe(getCompanyInfo()->address) }}</b>
+                    <div style="display: flex; width: 100%;">
+                        <div style="width: 50%; border-right: 1px solid #000; border-bottom: 1px solid #000; padding: 8px 10px; font-size: 16px;
+                            display: grid; grid-template-columns: 40% 60%; grid-auto-rows: min-content; row-gap: 4px; align-items: start; word-break: break-word;">
+                            <span>GSTIN</span>
+                            <b>: {{ safe(getCompanyInfo()->gst_no) }}</b>
+                            <span>Name</span>
+                            <b>: {{ strtoupper(getCompanyInfo()->company_name) }}</b>
+                            <span>Address</span>
+                            <b>: {{ safe(getCompanyInfo()->address) }}</b>
+                        </div>
+                        <div style="width: 50%; border-bottom: 1px solid #000; padding: 8px 10px; font-size: 16px; display: grid; grid-template-columns: 40% 60%; grid-auto-rows: min-content; row-gap: 4px; align-items: start; word-break: break-word;">
+                            <span>Customer DC Number</span>
+                            <b>: {{ $status=="Outward" ? $customer_io->del_challan_no : $customer_io->po_no . '/' . $customer_io->line_item_no }}</b>
+                            <span>Delivery Challan Number</span>
+                            <b>: {{ $status=="Outward" ? $customer_io->outward_challan_no : $customer_io->del_challan_no }}</b>
+                            <span>Delivery Challan Date</span>
+                            <b>: {{ date('d-m-Y', strtotime($customer_io->date)) }}</b>
+                            <span>Place of Supply</span>
+                            <b>: </b>
+                            <span>Region of Consignee</span>
+                            <b>: </b>
+                        </div>
                     </div>
-                    <div style="width: 50%; border-bottom: 1px solid #000; padding: 8px 10px; font-size: 16px; display: grid; grid-template-columns: 40% 60%; grid-auto-rows: min-content; row-gap: 4px; align-items: start; word-break: break-word;">
-                        <span>Reference PO Number</span>
-                        <b>: {{ $customer_io->po_no . '/' . $customer_io->line_item_no }}</b>
-                        <span>Delivery Challan Number</span>
-                        <b>: {{ $status=="Outward" ? $customer_io->outward_challan_no : $customer_io->del_challan_no }}</b>
-                        <span>Delivery Challan Date</span>
-                        <b>: {{ date('d-m-Y', strtotime($customer_io->date)) }}</b>
-                        <span>Place of Supply</span>
-                        <b>: </b>
-                        <span>Region of Consignee</span>
-                        <b>: </b>
+                    <div style="display: flex;">
+                        <div style="width: 50%; padding: 8px 10px; font-size: 16px;">
+                            <div style="display: flex; margin-bottom: 15px;">
+                                <span style="width: 40%;"><b>Consignee Address </b> </span>
+                            </div> 
+                            <div style="display: flex; margin-bottom: 0px;">
+                                <span style="width: 40%;">{{ $customer_io->customer->name }}</span>
+                            </div>  
+                            <div style="display: flex; margin-bottom: 0px;">
+                                <span style="width: 40%;">{{ $customer_io->d_address }}</span>
+                            </div>    
+                            <div style="display: flex; margin-bottom: 0px;">
+                                <span style="width: 60%;">GST Number: {{ $customer_io->customer->gst_no }}</span>
+                            </div>                    
+                        </div>
+                        <div style="width: 50%; padding: 8px 10px; font-size: 16px;">
+                            <div style="display: flex; justify-content:end; margin-bottom: 4px;">
+                                <span style="width: 50%;"> Return Due Date: {{ !empty($customer_io->return_due_date) ? date('d.m.Y', strtotime($customer_io->return_due_date)) : '' }} </span>
+                            </div>                        
+                        </div>
                     </div>
-                </div>
-                <div style="display: flex;">
-                    <div style="width: 50%; padding: 8px 10px; font-size: 16px;">
-                        <div style="display: flex; margin-bottom: 15px;">
-                            <span style="width: 40%;"><b>Consignee Address </b> </span>
-                        </div> 
-                        <div style="display: flex; margin-bottom: 0px;">
-                            <span style="width: 40%;">{{ $customer_io->customer->name }}</span>
-                        </div>  
-                        <div style="display: flex; margin-bottom: 0px;">
-                            <span style="width: 40%;">{{ $customer_io->d_address }}</span>
-                        </div>    
-                        <div style="display: flex; margin-bottom: 0px;">
-                            <span style="width: 60%;">GST Number: {{ $customer_io->customer->gst_no }}</span>
-                        </div>                    
-                    </div>
-                    <div style="width: 50%; padding: 8px 10px; font-size: 16px;">
-                        <div style="display: flex; justify-content:end; margin-bottom: 4px;">
-                            <span style="width: 50%;"> Return Due Date: {{ !empty($customer_io->return_due_date) ? date('d.m.Y', strtotime($customer_io->return_due_date)) : '' }} </span>
-                        </div>                        
-                    </div>
-                </div>
                 @else
-                <div style="display: flex; width: 100%;">
-                    <div style="width: 50%; border-right: 1px solid #000; border-bottom: 1px solid #000; padding: 8px 10px; font-size: 16px;
-                        display: grid; grid-template-columns: 40% 60%; grid-auto-rows: min-content; row-gap: 4px; align-items: start; word-break: break-word;">
-                        <span>GSTIN</span>
-                        <b>: {{ $customer_io->customer->gst_no }}</b>
-                        <span>Name</span>
-                        <b>: {{ $customer_io->customer->name }}</b>
-                        <span>Address</span>
-                        <b>: {{ $customer_io->d_address }}</b>
+                    <div style="display: flex; width: 100%;">
+                        <div style="width: 50%; border-right: 1px solid #000; border-bottom: 1px solid #000; padding: 8px 10px; font-size: 16px;
+                            display: grid; grid-template-columns: 40% 60%; grid-auto-rows: min-content; row-gap: 4px; align-items: start; word-break: break-word;">
+                            <span>GSTIN</span>
+                            <b>: {{ $customer_io->customer->gst_no }}</b>
+                            <span>Name</span>
+                            <b>: {{ $customer_io->customer->name }}</b>
+                            <span>Address</span>
+                            <b>: {{ $customer_io->d_address }}</b>
+                        </div>
+                        <div style="width: 50%; border-bottom: 1px solid #000; padding: 8px 10px; font-size: 16px; display: grid; grid-template-columns: 40% 60%; grid-auto-rows: min-content; row-gap: 4px; align-items: start; word-break: break-word;">
+                            <span>Reference PO Number</span>
+                            <b>: {{ $customer_io->po_no . '/' . $customer_io->line_item_no }}</b>
+                            <span>Delivery Challan Number</span>
+                            <b>: {{ $status=="Outward" ? $customer_io->outward_challan_no : $customer_io->del_challan_no }}</b>
+                            <span>Delivery Challan Date</span>
+                            <b>: {{ date('d-m-Y', strtotime($customer_io->date)) }}</b>
+                            <span>Place of Supply</span>
+                            <b>: </b>
+                            <span>Region of Consignee</span>
+                            <b>: </b>
+                        </div>
                     </div>
-                    <div style="width: 50%; border-bottom: 1px solid #000; padding: 8px 10px; font-size: 16px; display: grid; grid-template-columns: 40% 60%; grid-auto-rows: min-content; row-gap: 4px; align-items: start; word-break: break-word;">
-                        <span>Reference PO Number</span>
-                        <b>: {{ $customer_io->po_no . '/' . $customer_io->line_item_no }}</b>
-                        <span>Delivery Challan Number</span>
-                        <b>: {{ $status=="Outward" ? $customer_io->outward_challan_no : $customer_io->del_challan_no }}</b>
-                        <span>Delivery Challan Date</span>
-                        <b>: {{ date('d-m-Y', strtotime($customer_io->date)) }}</b>
-                        <span>Place of Supply</span>
-                        <b>: </b>
-                        <span>Region of Consignee</span>
-                        <b>: </b>
+                    <div style="display: flex;">
+                        <div style="width: 50%; padding: 8px 10px; font-size: 16px;">
+                            <div style="display: flex; margin-bottom: 15px;">
+                                <span style="width: 40%;"><b>Consignee Address </b> </span>
+                            </div> 
+                            <div style="display: flex; margin-bottom: 0px;">
+                                <span style="width: 40%;">{{ strtoupper(getCompanyInfo()->company_name) }}</span>
+                            </div>  
+                            <div style="display: flex; margin-bottom: 0px;">
+                                <span style="width: 40%;">{{ safe(getCompanyInfo()->address) }}</span>
+                            </div>    
+                            <div style="display: flex; margin-bottom: 0px;">
+                                <span style="width: 60%;">GST Number: {{ safe(getCompanyInfo()->gst_no) }}</span>
+                            </div>                    
+                        </div>
+                        <div style="width: 50%; padding: 8px 10px; font-size: 16px;">
+                            <div style="display: flex; justify-content:end; margin-bottom: 4px;">
+                                <span style="width: 50%;"> Return Due Date: {{ !empty($customer_io->return_due_date) ? date('d.m.Y', strtotime($customer_io->return_due_date)) : '' }} </span>
+                            </div>                        
+                        </div>
                     </div>
-                </div>
-                <div style="display: flex;">
-                    <div style="width: 50%; padding: 8px 10px; font-size: 16px;">
-                        <div style="display: flex; margin-bottom: 15px;">
-                            <span style="width: 40%;"><b>Consignee Address </b> </span>
-                        </div> 
-                        <div style="display: flex; margin-bottom: 0px;">
-                            <span style="width: 40%;">{{ strtoupper(getCompanyInfo()->company_name) }}</span>
-                        </div>  
-                        <div style="display: flex; margin-bottom: 0px;">
-                            <span style="width: 40%;">{{ safe(getCompanyInfo()->address) }}</span>
-                        </div>    
-                        <div style="display: flex; margin-bottom: 0px;">
-                            <span style="width: 60%;">GST Number: {{ safe(getCompanyInfo()->gst_no) }}</span>
-                        </div>                    
-                    </div>
-                    <div style="width: 50%; padding: 8px 10px; font-size: 16px;">
-                        <div style="display: flex; justify-content:end; margin-bottom: 4px;">
-                            <span style="width: 50%;"> Return Due Date: {{ !empty($customer_io->return_due_date) ? date('d.m.Y', strtotime($customer_io->return_due_date)) : '' }} </span>
-                        </div>                        
-                    </div>
-                </div>
                 @endif
                 <table style="width:100%; border-collapse:collapse; font-size:16px;">
                     <!-- Header Row 1: Main headings with CGST/SGST spanning 2 columns each -->
@@ -151,6 +155,7 @@ if (isset($setting->base_color) && $setting->base_color) {
                     <tr style="text-align: center;">
                         <th style="border:1px solid #000; padding:4px; border-left: none;" rowspan="2">Sr. No.</th>
                         <th style="border:1px solid #000; padding:4px;" rowspan="2">Description</th>
+                        <th style="border:1px solid #000; padding:4px;" rowspan="2">Line Item No</th>
                         <th style="border:1px solid #000; padding:4px;" rowspan="2">HSN Number</th>
                         <th style="border:1px solid #000; padding:4px;" rowspan="2">Quantity</th>
                         <th style="border:1px solid #000; padding:4px;" rowspan="2">Unit (UOM)</th>
@@ -198,6 +203,7 @@ if (isset($setting->base_color) && $setting->base_color) {
                     <tr>
                         <td style="border:1px solid #000; padding:4px; text-align:center; border-left: none;" >{{ $loop->iteration }}</td>
                         <td style="border:1px solid #000; padding:4px; text-align:center;">{{ $detail->instrument->code.'_'.$detail->instrument->instrument_name.'_'.$detail->instrument->range.'_'.getDMYDateFormat($detail->instrument->due_date) }}</td>
+                        <td style="border:1px solid #000; padding:4px;">{{ $detail->line_item_no }}</td>
                         <td style="border:1px solid #000; padding:4px;">&nbsp;&nbsp;</td>
                         <td style="border:1px solid #000; padding:4px; text-align:right;">{{ $detail->qty }}</td>
                         <td style="border:1px solid #000; padding:4px; text-align:right;">EA</td>
@@ -221,7 +227,7 @@ if (isset($setting->base_color) && $setting->base_color) {
                     </tr>
                     @endforeach
                     <tr style="font-weight:bold; text-align:right;">
-                        <td colspan="7" style="border:1px solid #000; border-left:none; padding:4px;">Total</td>
+                        <td colspan="8" style="border:1px solid #000; border-left:none; padding:4px;">Total</td>
                         <td style="border:1px solid #000; padding:4px;">{{ number_format($total, 2) }}</td>
                         @if($showCSColumns)
                             <td colspan="2" style="border:1px solid #000; padding:4px;">{{ number_format($totalCGST, 2) }}</td>

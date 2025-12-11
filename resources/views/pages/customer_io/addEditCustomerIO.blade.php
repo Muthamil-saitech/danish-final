@@ -163,6 +163,27 @@
                                 @enderror
                             </div>
                         </div>
+                        <div class="col-sm-12 col-md-4 mb-3">
+                            <div class="form-group">
+                                <label class="d-block mb-1">Inward Type <span class="required_star">*</span></label>
+                                <div class="d-flex align-items-center gap-4">
+                                    <div class="form-check form-check-inline m-0">
+                                        <input class="form-check-input" type="radio" name="inward_type" id="inward_type_nrgp" value="NRGP"
+                                            {{ old('inward_type', $order_io->inward_type ?? '') == 'NRGP' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="inward_type_nrgp">NRGP</label>
+                                    </div>
+                                    <div class="form-check form-check-inline m-0">
+                                        <input class="form-check-input" type="radio" name="inward_type" id="inward_type_rgp" value="RGP"
+                                            {{ old('inward_type', $order_io->inward_type ?? '') == 'RGP' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="inward_type_rgp">RGP</label>
+                                    </div>
+                                </div>
+                                <div class="text-danger" id="inward_type_error"></div>
+                                @error('inward_type')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12">
@@ -197,6 +218,7 @@
                                             <th class="w-100-p">Tax Amount (Rs.) </th>
                                             <th class="w-100-p">@lang('index.subtotal') (Rs.)</th>
                                             <th class="w-100-p">@lang('index.remarks')</th>
+                                            <th class="w-100-p">@lang('index.line_item_number') <span class="required_star">*</span></th>
                                             @if(!isset($customer_io_details))<th class="ir_txt_center">@lang('index.actions')</th>@endif
                                         </tr>
                                     </thead>
@@ -288,6 +310,9 @@
                                                     </td>
                                                     <td>
                                                         <textarea class="form-control" name="remarks[]" placeholder="Remarks" id="remarks" style="min-width: 150px;">{{ isset($io_details->remarks) ? $io_details->remarks : '' }}</textarea>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="ins_line_item_no[]" class="form-control" placeholder="Line Item No" value="{{ isset($io_details->line_item_no) ? $io_details->line_item_no : '' }}" style="min-width: 120px;" readonly/>
                                                     </td>
                                                     @if(!isset($io_details))
                                                     <td class="ir_txt_center"><a class="btn btn-xs del_row remove-tr dlt_button"><iconify-icon icon="solar:trash-bin-minimalistic-broken"></iconify-icon></a></td>

@@ -192,8 +192,8 @@
                                 <label>@lang('index.prod_quantity') <span class="required_star">*</span></label>
                                 <input type="hidden" name="customer_reorder_id" id="customer_reorder_id" class="form-control" value="{{ isset($obj) ? $obj->customer_reorder_id : '' }}" readonly>
                                 <input type="hidden" name="order_type" id="order_type" class="form-control" value="{{ isset($obj) && $obj->customer_reorder_id!=0 ? 'reorder' : '' }}" readonly>
-                                <input type="hidden" name="org_prod_qty" id="org_prod_qty" class="form-control" value="{{ isset($obj) ? $obj->org_prod_qty : '' }}" readonly>
-                                <input type="number" name="product_quantity" id="product_quantity" class="check_required form-control @error('product_quantity') is-invalid @enderror product_quantity" placeholder="@lang('index.prod_quantity')" value="{{ isset($obj->product_quantity) ? $obj->product_quantity : old('product_quantity') }}" onfocus="this.select();" {{ isset($obj) ? 'readonly' : '' }} max="{{ $obj->product_quantity ?? '' }}">
+                                <input type="hidden" name="org_prod_qty" id="org_prod_qty" class="form-control" value="{{ isset($obj->org_prod_qty) ? $obj->org_prod_qty : (isset($original_qty) ? $original_qty : '') }}" readonly>
+                                <input type="number" name="product_quantity" id="product_quantity" class="check_required form-control @error('product_quantity') is-invalid @enderror product_quantity" placeholder="@lang('index.prod_quantity')" value="{{ isset($obj->product_quantity) ? $obj->product_quantity : old('product_quantity') }}" onfocus="this.select();" max="{{ $obj->product_quantity ?? '' }}">
                                 <div class="text-danger d-none"></div>
                                 @error('product_quantity')
                                     <div class="text-danger">{{ $message }}</div>
@@ -302,9 +302,9 @@
                                                         <input type="hidden"
                                                             id="mat_stock" name="stock[]"
                                                             class="check_required form-control"
-                                                            value="{{ $value->stock }}"
+                                                            value="{{ isset($stock_return) ? $stock_return->float_stock : $value->stock }}"
                                                             placeholder="Stock">
-                                                        <p id="show_stock">{{ $value->stock }} <span
+                                                        <p id="show_stock">{{ isset($stock_return) ? $stock_return->float_stock : $value->stock }} <span
                                                             >{{ getStockUnitById($value->stock_id) }}</span></p>
                                                     </td>
                                                     {{-- <td>
@@ -324,8 +324,8 @@
                                                                 id="qty_1" name="quantity_amount[]"
                                                                 onfocus="this.select();"
                                                                 class="check_required form-control @error('title') is-invalid @enderror qty_c cal_row"
-                                                                value="{{ $value->consumption }}"
-                                                                placeholder="Consumption" readonly max="{{ $value->consumption }}">
+                                                                value="{{ isset($stock_return) ? $stock_return->float_stock : $value->consumption }}"
+                                                                placeholder="Consumption" readonly max="{{ isset($stock_return) ? $stock_return->float_stock : $value->consumption }}">
                                                             <span class="input-group-text">{{ getStockUnitById($value->stock_id) }}</span>
                                                         </div>
                                                     </td>

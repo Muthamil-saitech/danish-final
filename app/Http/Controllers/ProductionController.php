@@ -45,6 +45,7 @@ use App\QuotationDetail;
 use App\ProductionQCScheduling;
 use App\RouteCardEntry;
 use App\JobCardEntry;
+use App\StockReturnEntry;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -117,6 +118,7 @@ class ProductionController extends Controller
             $selected_st_method = $product->stock_method;
             $selected_drawer = $product->drawer_no;
             $customer_order_id = CustomerOrderDetails::where('id', $coid)->where('del_status', 'Live')->where('order_status', '1')->pluck('customer_order_id')->first();
+            $original_qty = CustomerOrderDetails::where('id', $coid)->where('del_status', 'Live')->where('order_status', '1')->pluck('quantity')->first();
             $selected_customer_id = CustomerOrder::where('id', $customer_order_id)->where('del_status', 'Live')->pluck('customer_id')->first();
             $selected_customer_order_id = CustomerOrder::where('id', $customer_order_id)->where('del_status', 'Live')->pluck('id')->first();
             $selected_po_date = CustomerOrder::where('id', $customer_order_id)->where('del_status', 'Live')->pluck('po_date')->first();
@@ -141,11 +143,12 @@ class ProductionController extends Controller
             $selected_drawer = null;
             $selected_po_date = null;
             $selected_complete_date = null;
+            $original_qty = 0;
             $customerOrderList = [];
             $manufactures = [];
         }
         // dd($p_stages);
-        return view('pages.manufacture.addEditManufacture', compact('title', 'ref_no', 'rmaterials', 'p_stages', 'nonitem', 'units', 'tax_items', 'lab_tax_items', 'sale_tax_items', 'manufactures', 'rm', 'accounts', 'customers', 'selected_customer_id', 'selected_customer_order_id', 'selected_customer_order_detail_id', 'selected_product_id', 'selected_st_method', 'selected_drawer', 'selected_po_date', 'selected_complete_date', 'customerOrderList', 'employees', 'drawers','material_types'));
+        return view('pages.manufacture.addEditManufacture', compact('title', 'ref_no', 'rmaterials', 'p_stages', 'nonitem', 'units', 'tax_items', 'lab_tax_items', 'sale_tax_items', 'manufactures', 'rm', 'accounts', 'customers', 'selected_customer_id', 'selected_customer_order_id', 'selected_customer_order_detail_id', 'selected_product_id', 'selected_st_method', 'selected_drawer', 'selected_po_date', 'selected_complete_date', 'customerOrderList', 'employees', 'drawers','material_types','original_qty'));
     }
 
     /**
@@ -456,7 +459,7 @@ class ProductionController extends Controller
         $m_nonitems = Mnonitem::orderBy('id', 'ASC')->where('manufacture_id', $manufacture->id)->where('del_status', "Live")->get();
         $m_stages = Mstages::orderBy('id', 'ASC')->where('manufacture_id', $manufacture->id)->where('del_status', "Live")->get();
         $obj = $manufacture;
-        // dd($obj->product_quantity);
+        $stock_return = StockReturnEntry::where('stock_id',$m_rmaterials[0]['stock_id'])->first();
         $obj2 = new Drawer();
         $finishProductStage = $obj2->getDrawerStages($manufacture->drawer_id,$manufacture->product_id);
         $customers = Customer::orderBy('id', 'DESC')->where('del_status', "Live")->get();
@@ -474,7 +477,7 @@ class ProductionController extends Controller
             ->get();
         $qc_statuses = QcStatus::orderBy('id', 'ASC')->get();
         $move_to_next = ProductionScheduling::where('manufacture_id', $manufacture->id)->where('del_status', 'Live')->orderBy('id', 'DESC')->pluck('move_to_next')->first();
-        return view('pages.manufacture.addEditManufacture', compact('title', 'obj', 'rmaterials', 'productionScheduling', 'p_stages', 'manufactures', 'nonitem', 'accounts', 'tax_fields', 'm_rmaterials', 'm_nonitems', 'm_stages', 'units', 'tax_items', 'finishProductStage', 'customers', 'selected_customer_id', 'selected_customer_order_id', 'selected_customer_order_detail_id', 'customerOrderList', 'employees', 'drawers', 'qc_employees', 'qc_statuses', 'move_to_next'));
+        return view('pages.manufacture.addEditManufacture', compact('title', 'obj', 'rmaterials', 'productionScheduling', 'p_stages', 'manufactures', 'nonitem', 'accounts', 'tax_fields', 'm_rmaterials', 'm_nonitems', 'm_stages', 'units', 'tax_items', 'finishProductStage', 'customers', 'selected_customer_id', 'selected_customer_order_id', 'selected_customer_order_detail_id', 'customerOrderList', 'employees', 'drawers', 'qc_employees', 'qc_statuses', 'move_to_next', 'stock_return'));
     }
 
     /**
@@ -495,6 +498,21 @@ class ProductionController extends Controller
             'product_quantity' => 'required|max:50',
             'drawer_no' => 'required',
         ]);
+        if($request->get('manufacture_status')=="done") {
+            $m_rmaterials = Mrmitem::orderBy('id', 'ASC')->where('manufacture_id', $manufacture->id)->where('del_status', "Live")->get();
+            $returnedQty = \App\StockReturnEntry::where('stock_id', $m_rmaterials[0]['stock_id'])->sum('qty');
+            if ($returnedQty > 0) {
+                $newProductQty = (float) $request->get('product_quantity');
+                $originalProductQty = (float) $request->get('org_prod_qty');
+                // dd($newProductQty,$originalProductQty);
+                if ($newProductQty == $originalProductQty) {
+                    return back()->withErrors([
+                        'product_quantity' => 
+                            "Adjust product quantity for returned qty"
+                    ])->withInput();
+                }
+            }
+        }        
         // $manufacture->reference_no = null_check(escape_output($request->get('reference_no')));
         // $manufacture->manufacture_type = escape_output($request->get('manufacture_type'));
         $drawer_no = $request->get('drawer_no');
@@ -1165,7 +1183,7 @@ class ProductionController extends Controller
         $order = CustomerOrder::join('tbl_customer_order_details as cod', 'cod.customer_order_id', '=', 'tbl_customer_orders.id')
         ->where('tbl_customer_orders.del_status', 'Live')
         ->where('cod.id', $manufacture->customer_order_id)
-        ->select('tbl_customer_orders.*', 'cod.id as order_detail_id', 'cod.line_item_no', 'cod.product_id')
+        ->select('tbl_customer_orders.*', 'cod.id as order_detail_id', 'cod.line_item_no', 'cod.product_id', 'cod.raw_qty', 'cod.quantity')
         ->first();
         // dd($order);
         $m_rmaterial = Mrmitem::with('materialStock')->where('manufacture_id', $manufacture->id)->where('del_status', "Live")->first();
@@ -1199,7 +1217,7 @@ class ProductionController extends Controller
         $order = CustomerOrder::join('tbl_customer_order_details as cod', 'cod.customer_order_id', '=', 'tbl_customer_orders.id')
         ->where('tbl_customer_orders.del_status', 'Live')
         ->where('cod.id', $manufacture->customer_order_id)
-        ->select('tbl_customer_orders.*', 'cod.id as order_detail_id', 'cod.line_item_no', 'cod.product_id')
+        ->select('tbl_customer_orders.*', 'cod.id as order_detail_id', 'cod.line_item_no', 'cod.product_id', 'cod.raw_qty', 'cod.quantity')
         ->first();
         $m_rmaterial = Mrmitem::where('manufacture_id', $manufacture->id)->where('del_status', "Live")->first();
         $rmaterial = RawMaterial::where('id', $m_rmaterial->rmaterials_id)->where('del_status', "Live")->first();

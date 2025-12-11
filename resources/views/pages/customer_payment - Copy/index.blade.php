@@ -14,11 +14,10 @@ if (isset($setting->base_color) && $setting->base_color) {
         <div class="row">
             <div class="col-md-6">
                 <h2 class="top-left-header">{{ isset($title) && $title ? $title : '' }}</h2>
-                <input type="hidden" class="datatable_name" data-filter="yes" data-title="{{ isset($title) && $title ? $title : '' }}"
-                    data-id_name="datatable">
+                <input type="hidden" class="datatable_name" data-filter="yes" data-title="{{ isset($title) && $title ? $title : '' }}" data-id_name="datatable">
             </div>
             <div class="col-md-6 text-end">
-                <h5 class="mb-0">Total Customer Receives: {{ isset($obj) ? count($obj) : '0' }} </h5>
+                <h5 class="mb-0">Total Customer Receives: {{ isset($total_orders) ? $total_orders : '0' }} </h5>
             </div>
         </div>
     </section>
@@ -30,17 +29,14 @@ if (isset($setting->base_color) && $setting->base_color) {
                     <thead>
                         <tr>
                             <th class="width_1_p">@lang('index.sn')</th>
-                            <th class="width_10_p">@lang('index.sale_date')</th>
-                            <th class="width_10_p">@lang('index.invoice_no')</th>
-                            <th class="width_10_p">@lang('index.challan_no')</th>
-                            <th class="width_10_p">Customer Name (Code)</th>
+                            <th class="width_10_p">@lang('index.po_no')</th>
+                            <th class="width_10_p">@lang('index.po_date')</th>
+                            <th class="width_10_p">@lang('index.customer')<br>(Code)</th>
                             <th class="width_10_p">@lang('index.total_amount')</th>
-                            <th class="width_10_p">Credit / Debit Amount</th>
                             <th class="width_10_p">@lang('index.paid_amount')</th>
                             <th class="width_10_p">@lang('index.due_amount')</th>
-                            {{-- <th class="width_10_p">@lang('index.discount')</th> --}}
-                            <th class="width_10_p">@lang('index.status')</th>
-                            <th class="width_3_p">@lang('index.actions')</th>
+                            <th class="width_10_p">@lang('index.payment_status')</th>
+                            <th class="width_3_p ir_txt_center">@lang('index.actions')</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -49,55 +45,31 @@ if (isset($setting->base_color) && $setting->base_color) {
                         $i = 1;
                         ?>
                         @endif
-                        @foreach ($obj as $sale)
-                        <tr>
-                            <td>{{ $i++ }}</td>
-                            <td>{{ getDateFormat($sale->sale_date) }}</td>
-                            <td><a href="{{ url('sales') }}/{{ encrypt_decrypt($sale->id, 'encrypt') }}" style="text-decoration:none;" data-bs-toggle="tooltip" data-bs-placement="top" title="@lang('index.view_details')">{{ $sale->reference_no }}</a>
-                            </td>
-                            <td>{{ $sale->challan_no }}</td>
-                            <td>{{ getCustomerNameById($sale->customer_id) }} ({{ getCustomerCodeById($sale->customer_id) }})</td>
-                            <td>{{ getAmtCustom($sale->grand_total) }}</td>
-                            <td>{{ getAmtCustom($sale->note_grand_total) }}<br>
-                            @if ($sale->type == 'Credit')
-                                <span class="text-success text-bold">
-                                    <small>(Credit)</small>
-                                </span>
-                            @elseif ($sale->type == 'Debit')
-                                <span class="text-danger text-bold">
-                                    <small>(Debit)</small>
-                                </span>
-                            @endif</td>
-                            <td>{{ getAmtCustom($sale->paid) }}</td>
-                            @php
-                            // $due = $sale->grand_total - $sale->note_grand_total - $sale->paid - $sale->tds_amount; 
-                            // dd($due);
-                            @endphp
-                            <td>{{ getAmtCustom($sale->due) }}</td>
-                            <td>
-                                @if($sale->due == 0)
-                                    <span class="badge bg-success">Paid</span>
-                                @elseif ($sale->due > 0 && $sale->paid > 0)
-                                    <span class="badge bg-info">Partially Paid</span>
-                                @else
-                                    <span class="badge bg-danger">Unpaid</span>
-                                @endif
-                            </td>
-                            <td class="text-end">
-                                <a class="button-success" id="customerDueModal" data-sale_id="{{ $sale->id }}" data-tot_amount="{{ $sale->grand_total }}" data-paid_amount="{{ $sale->paid }}" data-due_amount="{{ $sale->due }}" data-tds_amount="{{ $sale->tds_amount }}" style="text-decoration:none;" data-bs-toggle="modal" data-bs-target="#customerDue">
-                                    <i class="fa fa-money-bill"></i>
-                                </a>
-                                <a href="{{ route('customer-payment-view', encrypt_decrypt($sale->id, 'encrypt')) }}" 
-                                class="button-info">
-                                <i class="fa fa-eye"></i>
-                                </a>
-                            </td>
-                        </tr>
+                        @foreach ($obj as $value)
+                            @foreach ($value->orderPayment as $detail)
+                                <tr>
+                                    <td>{{ $i++ }}</td>
+                                    <td>{{ $value->reference_no.'/'.$detail->line_item_no  }}</td>
+                                    <td>{{ $value->po_date ? getDateFormat($value->po_date) : '-' }}</td>
+                                    <td>{{ getCustomerNameById($value->customer_id) }}<br><small>{{ '('.getCustomerCodeById($value->customer_id).')' }}</small></td>
+                                    <td>{{ getAmtCustom($detail->orderInvoice?->amount) }}</td>
+                                    <td>{{ getAmtCustom($detail->orderInvoice?->paid_amount) }}</td>
+                                    <td>{{ getAmtCustom($detail->orderInvoice?->due_amount) }}</td>
+                                    <td>
+                                        <h6>@if($detail->orderInvoice?->due_amount==0.00) <span class="badge bg-success">Paid</span> @elseif($detail->orderInvoice->paid_amount==0.00) <span class="badge bg-danger">Unpaid</span> @else <span class="badge bg-info">Partially Paid</span>@endif</h6>
+                                    </td>
+                                    <td class="text-end">
+                                        @if($detail->orderInvoice?->due_amount!=0.00)
+                                        <a class="button-success" id="customerDueModal" data-bs-toggle="modal" data-order_id="{{ $detail->id }}" data-tot_amount="{{ $detail->orderInvoice?->amount }}" data-paid_amount="{{ $detail->orderInvoice?->paid_amount }}" data-due_amount="{{ $detail->orderInvoice?->due_amount }}" data-tds_amount="{{ $detail->orderInvoice?->tds_amount }}" data-bs-target="#customerDue" data-bs-toggle="tooltip" data-bs-placement="top" title="Due Entry"><i class="fa fa-money-bill"></i></a>
+                                        @endif
+                                        <a href="{{ route('customer-payment-view', encrypt_decrypt($detail->id, 'encrypt')) }}" class="button-info" data-bs-toggle="tooltip" data-bs-placement="top" title="@lang('index.view_details')"><i class="fa fa-eye"></i></a>
+                                    </td>
+                                </tr>
+                            @endforeach
                         @endforeach
                     </tbody>
                 </table>
             </div>
-            <!-- /.box-body -->
         </div>
     </div>
     <div class="modal fade" id="customerDue" role="dialog" aria-labelledby="myModalLabel">
@@ -116,7 +88,7 @@ if (isset($setting->base_color) && $setting->base_color) {
                             <div class="col-sm-12 col-md-4 mb-2">
                                 <div class="form-group">
                                     <label class="control-label">@lang('index.total_amount')</label>
-                                    <input type="hidden" class="form-control" name="sale_id" id="sale_id">
+                                    <input type="hidden" class="form-control" name="order_id" id="order_id">
                                     <input type="text" class="form-control @error('total_amount') is-invalid @enderror" name="total_amount" id="total_amount" placeholder="@lang('index.total_amount')" readonly>
                                 </div>
                             </div>
@@ -246,12 +218,11 @@ if (isset($setting->base_color) && $setting->base_color) {
 <script src="{!! $baseURL . 'assets/dataTable/vfs_fonts.js' !!}"></script>
 <script src="{!! $baseURL . 'frequent_changing/newDesign/js/forTable.js' !!}"></script>
 <script src="{!! $baseURL . 'frequent_changing/js/custom_report.js' !!}"></script>
-<script src="{!! $baseURL . 'frequent_changing/js/sales.js' !!}"></script>
 <script>
     $(document).on("click", "#customerDueModal", function(e) {
         e.preventDefault();
-        var sale_id = $(this).data('sale_id');
-        $('#sale_id').val(sale_id);
+        var order_id = $(this).data('order_id');
+        $('#order_id').val(order_id);
         var tot_amount = $(this).data('tot_amount');
         $('#total_amount').val(tot_amount);
         var due_amount = $(this).data('due_amount');

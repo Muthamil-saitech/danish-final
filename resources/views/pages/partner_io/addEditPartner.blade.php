@@ -27,7 +27,7 @@
                 @csrf
                 <div>
                     <div class="row">
-                        <div class="col-sm-12 mb-2 col-md-4">
+                        {{-- <div class="col-sm-12 mb-2 col-md-4">
                             <div class="form-group">
                                 <label>@lang('index.reference_no') <span class="required_star">*</span></label>
                                 <input type="text" name="reference_no" id="reference_no" 
@@ -41,7 +41,7 @@
                                 </div>
                                 @enderror
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="col-sm-12 mb-2 col-md-4">
                             <div class="form-group">
                                <label>Delivery Challan Number  <span class="required_star">*</span></label>
@@ -146,6 +146,27 @@
                                 <div class="text-danger">
                                     {{ $message }}
                                 </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-4 mb-3">
+                            <div class="form-group">
+                                <label class="d-block mb-1">Inward Type <span class="required_star">*</span></label>
+                                <div class="d-flex align-items-center gap-4">
+                                    <div class="form-check form-check-inline m-0">
+                                        <input class="form-check-input" type="radio" name="inward_type" id="inward_type_nrgp" value="NRGP"
+                                            {{ old('inward_type', $partner_io->inward_type ?? '') == 'NRGP' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="inward_type_nrgp">NRGP</label>
+                                    </div>
+                                    <div class="form-check form-check-inline m-0">
+                                        <input class="form-check-input" type="radio" name="inward_type" id="inward_type_rgp" value="RGP"
+                                            {{ old('inward_type', $partner_io->inward_type ?? '') == 'RGP' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="inward_type_rgp">RGP</label>
+                                    </div>
+                                </div>
+                                <div class="text-danger" id="inward_type_error"></div>
+                                @error('inward_type')
+                                    <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>

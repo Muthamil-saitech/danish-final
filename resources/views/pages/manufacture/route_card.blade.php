@@ -123,13 +123,13 @@ $baseURL = getBaseURL();
                         {{-- <div style="display: flex; justify-content: space-between; align-items: center; "> <p>Size: </p> <p> Drg Location:<b> {{ isset($drawer) ? $drawer->drawer_loc : '-' }}</b></p> </div> --}}
                     </td>
                 </tr>
-
                 <tr>
                     <td style="width: 50%; padding: 7px 5px;">
                         Delivery Date : <b>{{ isset($obj) && $obj->complete_date!='' ? getDateFormat($obj->complete_date) : "-" }}</b>
                     </td>
                     <td style="width: 50%; padding: 7px 5px;">
-                        PO Quantity : <b>{{ isset($obj) ? $obj->product_quantity : "-" }} {{ getStockUnitById($m_rmaterial->stock_id) }}</b>
+                        Product Quantity : <b>{{ isset($obj) ? $obj->product_quantity : "-" }} </b>
+                        &nbsp;&nbsp; PO Quantity: <b> {{ isset($order) ? $order->quantity : '-' }}</b>
                     </td>
                 </tr>
             </table>
@@ -141,6 +141,7 @@ $baseURL = getBaseURL();
                     <th style="border: 1px solid #222; padding: 4px;">Your DC &amp; Challan No.</th>
                     <th style="border: 1px solid #222; padding: 4px;">H.No./R.No.</th>
                     <th style="border: 1px solid #222; padding: 4px;">Batch No</th>
+                    <th style="border: 1px solid #222; padding: 4px;">Consumption Quantity</th>
                     <th style="border: 1px solid #222; padding: 4px;">Material Quantity</th>
                     <th style="border: 1px solid #222; padding: 4px;">Checked By</th>
                     <th style="border: 1px solid #222; padding: 4px;  border-right: none;">Remarks</th>
@@ -153,7 +154,8 @@ $baseURL = getBaseURL();
                     <td style="border: 1px solid #222; padding: 4px;">{{ isset($m_rmaterial->materialStock)  ? $m_rmaterial->materialStock->dc_no.'/'.date('d-M-Y',strtotime($m_rmaterial->materialStock->dc_date)) : ' ' }}</td>
                     <td style="border: 1px solid #222; padding: 4px;">{{ isset($m_rmaterial->materialStock) ? $m_rmaterial->materialStock->heat_no : '&nbsp;' }}</td>
                     <td style="border: 1px solid #222; padding: 4px;">&nbsp;&nbsp;</td>
-                    <td style="border: 1px solid #222; padding: 4px;">{{ isset($m_rmaterial) ? $m_rmaterial->consumption : '' }}</td>
+                    <td style="border: 1px solid #222; padding: 4px;">{{ isset($m_rmaterial) ? $m_rmaterial->consumption : '' }} {{ getStockUnitById($m_rmaterial->stock_id) }}</td>
+                    <td style="border: 1px solid #222; padding: 4px;">{{ isset($order) ? $order->raw_qty : '' }} {{ getStockUnitById($m_rmaterial->stock_id) }}</td>
                     <td style="border: 1px solid #222; padding: 4px;"></td>
                     <td style="border: 1px solid #222; padding: 4px;  border-right: none;">
                     </td>

@@ -146,14 +146,14 @@ if (isset($setting->base_color) && $setting->base_color) {
                                     <div id="qty_msg"></div>
                                 </td>
                                 <td>{{ $value->close_qty }} {{ getRMUnitById($value->unit_id) }}</td>
-                                <td>{{ $value->float_stock }} {{ getRMUnitById($value->unit_id) }}</td>
+                                <td>{{ $value->float_stock -  $value->returned_qty }} {{ getRMUnitById($value->unit_id) }}<br><span class="text-danger"><small>{{ $value->returned_qty>0 ? '(Return Qty: '.$value->returned_qty.getRMUnitById($value->unit_id).')' : '' }}</small></span></td>
                                 <td>{{ getUserName($value->added_by) }}</td>
                                 <td>
                                     @if(getManufactureStatus($value->id)!="done")
                                     <a class="button-info" id="stockAdjBtn" data-bs-toggle="modal" data-id="{{ $value->id }}" data-mat_id="{{ $value->mat_id }}" data-stock_type="customer" data-ref_no="{{ $value->reference_no }}"  data-line_item_no="{{ $value->line_item_no }}" data-dc_no="{{ $value->dc_no }}" data-heat_no="{{ $value->heat_no }}" data-mat_doc_no="{{ $value->mat_doc_no }}"  data-customer_id="{{ $value->customer_id }}" data-material_price="{{ $value->material_price }}" data-hsn_no="{{ $value->hsn_no }}" data-material="{{ getRMName($value->mat_id) }}" data-bs-target="#stockAdjModal" title="Stock Adjustment"><i class="fa fa-pencil"></i></a>
                                     @endif
                                     <a href="{{ url('material_stocks') }}/{{ encrypt_decrypt($value->id, 'encrypt') }}/stock_adjustments" class="button-info" data-bs-toggle="tooltip" data-bs-placement="top" title="View Stock Adjustments"><i class="fa fa-list"></i></a>
-                                    @if($value->float_stock > 0)
+                                    @if($value->float_stock > 0 || $value->used_in_return > 0)
                                     <a href="{{ url('material_stock_return') }}/{{ encrypt_decrypt($value->id, 'encrypt') }}" class="button-info" data-bs-toggle="tooltip" data-bs-placement="top" title="Material Return"><i class="fa-solid fa-arrow-rotate-left"></i></a>
                                     @endif
                                     @if (routePermission('material_stocks.edit') && !$value->used_in_manufacture)

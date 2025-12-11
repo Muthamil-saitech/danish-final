@@ -1,4 +1,4 @@
-ALTER TABLE `tbl_manufactures` ADD `org_prod_qty` INT NULL DEFAULT NULL AFTER `stage_name`;
-ALTER TABLE `tbl_manufactures` ADD `remaining_qty` INT NULL DEFAULT NULL AFTER `product_quantity`;
-ALTER TABLE `tbl_manufactures_rmaterials` ADD `material_qty` FLOAT(10,2) NOT NULL AFTER `unit_price`;
-ALTER TABLE `tbl_manufactures_rmaterials` CHANGE `material_qty` `remain_qty` FLOAT(10,2) NOT NULL;
+ALTER TABLE `tbl_customer_due_receives` ADD `sale_id` INT NULL DEFAULT NULL AFTER `order_id`;
+ALTER TABLE `tbl_sales` ADD `tds_amount` FLOAT NULL AFTER `due`;
+ALTER TABLE `tbl_customer_due_receives` CHANGE `order_id` `order_id` INT(11) NULL DEFAULT NULL;
+ALTER TABLE `tbl_sale_note_entries` ADD `grand_total` FLOAT NULL DEFAULT NULL AFTER `price`;

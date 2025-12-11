@@ -30,14 +30,14 @@
                         data-id="{{ isset($partner_io_detail) ? $partner_io_detail->id : '' }}" data-status="{{ isset($status) ? $status : '' }}"><iconify-icon icon="solar:printer-broken"></iconify-icon>
                         @lang('index.print')</a>
                     @endif
-                    @if (routePermission('partner_io.download-partner-io'))
+                    {{-- @if (routePermission('partner_io.download-partner-io'))
                         @if(isset($status) && $status == 'Inward')
                             <a href="{{ route('partner-inward-io-download', encrypt_decrypt($partner_io_detail->id, 'encrypt')) }}" target="_blank" class="btn bg-second-btn print_btn"><iconify-icon icon="solar:cloud-download-broken"></iconify-icon>@lang('index.download')</a>
                         @endif
                         @if(isset($status) && $status == 'Outward')
                             <a href="{{ route('partner-outward-io-download', encrypt_decrypt($partner_io_detail->id, 'encrypt')) }}" target="_blank" class="btn bg-second-btn print_btn"><iconify-icon icon="solar:cloud-download-broken"></iconify-icon>@lang('index.download')</a>
                         @endif
-                    @endif
+                    @endif --}}
                     @if (routePermission('partner_io.index'))
                     <a class="btn bg-second-btn" href="{{ route('partner_io.index') }}"><iconify-icon
                             icon="solar:round-arrow-left-broken"></iconify-icon>@lang('index.back')</a>
@@ -54,7 +54,11 @@
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #000;">
                         <div style="flex: 1; text-align: center; line-height: 1.6;">
                             <h5 style="font-size: 18px; font-weight: 600; letter-spacing: 1px; margin: 5px 0px 0px 0px;">
-                                {{ $partner_io_detail->outward_type=="RGP" ? 'Returnable Gate Pass' : 'Non Returnable Gate Pass' }}
+                                @if(isset($status) && $status == "Inward")
+                                    {{ $partner_io->inward_type=="RGP" ? 'Returnable Gate Pass' : 'Non Returnable Gate Pass' }}
+                                @else 
+                                    {{ $partner_io_detail->outward_type=="RGP" ? 'Returnable Gate Pass' : 'Non Returnable Gate Pass' }}
+                                @endif
                             </h5>
                             <p style="font-size: 15px; margin-bottom: 10px; font-weight: 600;">
                                 (Rule 55 of CGST Rules 2017)
@@ -72,10 +76,15 @@
                             <b>: @if($status == 'Inward') {{ $partner_io->d_address }} @else {{ safe(getCompanyInfo()->address) }} @endif</b>
                         </div>
                         <div style="width: 50%; border-bottom: 1px solid #000; padding: 8px 10px; font-size: 16px; display: grid; grid-template-columns: 40% 60%; grid-auto-rows: min-content; row-gap: 4px; align-items: start; word-break: break-word;">
-                            <span>Reference PO Number</span>
-                            <b>: {{ $partner_io->reference_no . '/' . $partner_io_detail->line_item_no }}</b>
+                            {{-- <span>Reference PO Number</span>
+                            <b>: {{ $status=="Outward" ? $partner_io->del_challan_no : $partner_io->reference_no . '/' . $partner_io_detail->line_item_no  }}</b> --}}
+                            @if($status=="Outward")
+                            <span>Partner DC Number</span>
+                            <b>: {{ $partner_io->del_challan_no . '/' . $partner_io_detail->line_item_no }}</b>
+                            @else  
+                            @endif                            
                             <span>Delivery Challan Number</span>
-                            <b>: {{ $status=="Outward" ? $partner_io_detail->outward_challan_no : $partner_io->del_challan_no }}</b>
+                            <b>: {{ $status=="Outward" ? $partner_io_detail->outward_challan_no.'/'.$partner_io_detail->line_item_no : $partner_io->del_challan_no.'/'.$partner_io_detail->line_item_no }}</b>
                             <span>Delivery Challan Date</span>
                             <b>: {{ date('d-m-Y', strtotime($partner_io->io_date)) }}</b>
                             <span>Place of Supply</span>
@@ -101,7 +110,7 @@
                         </div>
                         <div style="width: 50%; padding: 8px 10px; font-size: 16px;">
                             <div style="display: flex; justify-content:end; margin-bottom: 4px;">
-                                <span style="width: 50%;"> Return Due Date: {{ !empty($customer_io->return_due_date) ? date('d.m.Y', strtotime($customer_io->return_due_date)) : '' }} </span>
+                                <span style="width: 50%;"> Return Due Date: {{ !empty($partner_io->return_due_date) ? date('d.m.Y', strtotime($partner_io->return_due_date)) : '' }} </span>
                             </div>                        
                         </div>
                     </div>

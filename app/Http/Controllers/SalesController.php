@@ -479,6 +479,19 @@ class SalesController extends Controller
         $sequence = str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
         $invoice_no = $prefix . $sequence . '/' . $yearRange;
         $sale_detail = SaleDetail::where('id',$sale_detail_id)->first();
+        $sum = $price;
+        $order = CustomerOrderDetails::find($sale_detail->order_id);
+        $otherState = ($order->inter_state == 'N');
+        $tax_row = getTaxItems($order->tax_type == 1 ? 'Labor' : 'Sales');
+        if ($otherState) {
+        // CGST + SGST
+        $taxAmount = ($sum * ($tax_row->tax_value / 2) / 100) * 2;
+        } else {
+        // IGST
+        $taxAmount = ($sum * $tax_row->tax_value) / 100;
+        }
+
+        $grandTotal = $sum + $taxAmount;
         $obj = new SaleNoteEntry();
         $obj->type = $type;
         $obj->sale_id = $sale_detail->id;
@@ -486,6 +499,7 @@ class SalesController extends Controller
         $obj->invoice_no = $invoice_no;
         $obj->qty = $sale_detail->product_quantity;
         $obj->price = $price;
+        $obj->grand_total = $grandTotal;
         $obj->invoice_date = date('Y-m-d');
         $obj->save();
         if($type == 'Credit') {

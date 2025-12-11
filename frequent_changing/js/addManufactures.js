@@ -213,26 +213,28 @@ $(document).ready(function () {
       }
     }
   });
-  // let product_id = $("#fproduct_id").val();
-  // let customer_order_id = $("#customer_order_id").val();
-  // let hidden_base_url = $("#hidden_base_url").val();
-  // let customer_reorder_id = $("#customer_reorder_id").val();
-  // let order_type = $("#order_type").val();
-  // cal_row();
-  /* $.ajax({
-    type: "POST",
-    url: hidden_base_url + "getProductQty",
-    data: { product_id: product_id, customer_order_id: customer_order_id, order_type: order_type, reorderid: customer_reorder_id },
-    success: function (data) {
-      let response = typeof data === "string" ? JSON.parse(data) : data;
-      $("#product_quantity").val(response.quantity);
-      $("#org_prod_qty").val(response.quantity);
-      $("#profit_margin").val(response.profit);
-      $("#mtax_type").val(response.tax_type);
-      $("#mtax_value").val(response.tax_value.toFixed(2));
-    },
-    error: function () {},
-  }); */
+  let product_id = $("#fproduct_id").val();
+  let customer_order_id = $("#customer_order_id").val();
+  let hidden_base_url = $("#hidden_base_url").val();
+  let customer_reorder_id = $("#customer_reorder_id").val();
+  let order_type = $("#order_type").val();
+  if (!$("#edit_mode").val()) {
+    cal_row();
+    $.ajax({
+      type: "POST",
+      url: hidden_base_url + "getProductQty",
+      data: { product_id: product_id, customer_order_id: customer_order_id, order_type: order_type, reorderid: customer_reorder_id },
+      success: function (data) {
+        let response = typeof data === "string" ? JSON.parse(data) : data;
+        $("#product_quantity").val(response.quantity);
+        $("#org_prod_qty").val(response.quantity);
+        $("#profit_margin").val(response.profit);
+        $("#mtax_type").val(response.tax_type);
+        $("#mtax_value").val(response.tax_value.toFixed(2));
+      },
+      error: function () {},
+    });
+  }
   /* $.ajax({
         type: "POST",
         url: hidden_base_url + "getCustomerOrderProducts",
@@ -1049,7 +1051,7 @@ $(document).ready(function () {
         .find(".text-danger")
         .addClass("d-none");
     }
-    if (statusField == "done" && completeDate == "") {
+    /* if (statusField == "done" && completeDate == "") {
       status = false;
       showErrorMessage("complete_date", "The Delivery Date field is Required");
     } else {
@@ -1065,9 +1067,9 @@ $(document).ready(function () {
       $(".stage_check_error").text("Please select minimum one stage");
     } else {
       $(".stage_check_error").addClass("d-none");
-    }
+    } */
     // check complete date not less than start date
-    if (start_date != "" && completeDate != "") {
+    /* if (start_date != "" && completeDate != "") {
       let sd = new Date(start_date);
       let cd = new Date(completeDate);
       if (cd < sd) {
@@ -1083,7 +1085,7 @@ $(document).ready(function () {
           .find(".text-danger")
           .addClass("d-none");
       }
-    }
+    } */
     // every quantity must be greater than 0
     $(".qty_c").each(function () {
       let quantity = Number($(this).val());

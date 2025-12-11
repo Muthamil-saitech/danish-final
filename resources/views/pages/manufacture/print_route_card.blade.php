@@ -100,7 +100,8 @@ $whiteLabelInfo = App\WhiteLabelSettings::first();
                         Delivery Date : <b>{{ isset($obj) && $obj->complete_date!='' ? getDateFormat($obj->complete_date) : "-" }}</b>
                     </td>
                     <td style="width: 50%; padding: 7px 5px;">
-                        PO Quantity : <b>{{ isset($obj) ? $obj->product_quantity : "-" }} {{ getStockUnitById($m_rmaterial->stock_id) }}</b>
+                        Product Quantity : <b>{{ isset($obj) ? $obj->product_quantity : "-" }} </b>
+                        &nbsp;&nbsp; PO Quantity: <b> {{ isset($order) ? $order->quantity : '-' }}</b>
                     </td>
                 </tr>
             </table>
@@ -112,6 +113,7 @@ $whiteLabelInfo = App\WhiteLabelSettings::first();
                     <th style="border: 1px solid #222; padding: 4px;">Your DC &amp; Challan No.</th>
                     <th style="border: 1px solid #222; padding: 4px;">H.No./R.No.</th>
                     <th style="border: 1px solid #222; padding: 4px;">Batch No</th>
+                    <th style="border: 1px solid #222; padding: 4px;">Consumption Quantity</th>
                     <th style="border: 1px solid #222; padding: 4px;">Material Quantity</th>
                     <th style="border: 1px solid #222; padding: 4px;">Checked By</th>
                     <th style="border: 1px solid #222; padding: 4px;">Remarks</th>
@@ -124,7 +126,8 @@ $whiteLabelInfo = App\WhiteLabelSettings::first();
                     <td style="border: 1px solid #222; padding: 4px;">{{ isset($m_rmaterial->materialStock)  ? $m_rmaterial->materialStock->dc_no.'/'.date('d-M-Y',strtotime($m_rmaterial->materialStock->dc_date)) : ' ' }}</td>
                     <td style="border: 1px solid #222; padding: 4px;">{{ isset($m_rmaterial->materialStock) ? $m_rmaterial->materialStock->heat_no : '&nbsp;' }}</td>
                     <td style="border: 1px solid #222; padding: 4px;">&nbsp;</td>
-                    <td style="border: 1px solid #222; padding: 4px;">{{ isset($m_rmaterial) ? $m_rmaterial->consumption : '' }}</td>
+                    <td style="border: 1px solid #222; padding: 4px;">{{ isset($m_rmaterial) ? $m_rmaterial->consumption : '' }} {{ getStockUnitById($m_rmaterial->stock_id) }}</td>
+                    <td style="border: 1px solid #222; padding: 4px;">{{ isset($order) ? $order->raw_qty : '' }} {{ getStockUnitById($m_rmaterial->stock_id) }}</td>
                     <td style="border: 1px solid #222; padding: 4px;"></td>
                     <td style="border: 1px solid #222; padding: 4px;">
                     </td>
@@ -154,8 +157,8 @@ $whiteLabelInfo = App\WhiteLabelSettings::first();
             </div>
         </div>
     </div>
-    <div style="display: flex; gap: 20px; width: 98%; max-width: 1100px; margin: 30px auto;">
-        <div style="width: 50%;">
+    <div style="display: flex; gap: 10px; width: 98%; max-width: 1100px; margin: 30px auto;">
+        <div style="width: 55%;">
             <h3 style="text-align: center; font-weight: bold; font-size: 22px; margin-bottom: 2px;">Production Process Route</h3>
             <p style="text-align: center;margin-bottom: 5px;"><small>(Filled By Operator)</small></p>
             <table style="border-collapse: collapse; font-size: 15px;">
@@ -203,7 +206,7 @@ $whiteLabelInfo = App\WhiteLabelSettings::first();
                 </tbody>
             </table>
         </div>
-        <div style="width: 50%;">
+        <div style="width: 45%;">
             <h3 style="text-align: center; font-weight: bold; font-size: 22px; margin-bottom: 2px;">Quality Control</h3>
             <p style="text-align: center;margin-bottom: 5px;"><small>(Filled By Quality Inspector)</small></p>
             <table style="text-align: center; border-collapse: collapse; font-size: 15px; width: 100%;">

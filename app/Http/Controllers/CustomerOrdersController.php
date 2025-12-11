@@ -364,6 +364,7 @@ class CustomerOrdersController extends Controller
                             ->where('mat_id', $existingDetail->raw_material_id)
                             ->where('customer_id', $customerOrder->customer_id)
                             ->where('del_status', 'Live')
+                            ->orderBy('id','DESC')
                             ->first();
 
                         if ($materialStock) {
@@ -390,6 +391,7 @@ class CustomerOrdersController extends Controller
                                 $log->added_by = auth()->user()->id;
                                 $log->save();
 
+                                $materialStock->mat_qty = $materialStock->current_stock + $stock_qty;
                                 $materialStock->current_stock = $materialStock->current_stock + $stock_qty;
                                 $materialStock->save();
                             }

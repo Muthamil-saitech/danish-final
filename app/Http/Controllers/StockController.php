@@ -296,11 +296,12 @@ class StockController extends Controller
                 ->where('mm.rmaterials_id', $rm_id)
                 ->sum('mm.consumption');
         }
-        $originalRequired = $customer_reorder_id ? $order_material->mat_qty : $order_material->raw_qty;
+        $originalRequired = $order_material->raw_qty;
         $remainingRequired = $originalRequired - ($totalConsumption ?? 0);
+        // dd($originalRequired, $totalConsumption, $remainingRequired);
         if ($owner_type == "1") {
             $ms = MaterialStock::where('mat_cat_id', $rm->category)
-                ->where('mat_id', $order_material->raw_material_id ?? $order_material->mat_id)
+                ->where('mat_id', $order_material->raw_material_id)
                 ->where('owner_type', $owner_type)
                 ->where('supplier_id', $supplier_id)
                 ->where('del_status', 'Live')
@@ -324,32 +325,39 @@ class StockController extends Controller
                     ->where('reference_no', $order->reference_no)
                     ->where('line_item_no', $order_material->line_item_no)
                     ->where('del_status', 'Live')
+                    ->orderBy('id','DESC')
                     ->first();
                 $logsQuery = DB::table('tbl_stock_adjust_logs as logs')
                     ->join('tbl_material_stocks as ms', 'logs.mat_stock_id', '=', 'ms.id')
                     ->where('logs.del_status', 'Live')
                     ->where('logs.stock_type', 'customer')
-                    ->where('ms.mat_id', $order_material->mat_id)
+                    ->where('ms.mat_id', $order_material->raw_material_id)
                     ->where('ms.customer_id', $selected_customer_id)
                     ->where('ms.owner_type', $owner_type)
                     ->select('logs.quantity')
                     ->first();
                 $adjustedQty = $logsQuery->quantity ?? 0;
+                // dd($ms, $adjustedQty);
                 if ($ms->float_stock > 0) {
                     $remainingStock = $adjustedQty;
                 } else {
                     $remainingStock = ($ms->current_stock ?? 0) - $adjustedQty;
                 }
             } else {
-                $ms = MaterialStock::where('mat_cat_id', $rm->category)
+                $stocks = MaterialStock::where('mat_cat_id', $rm->category)
                     ->where('mat_id', $order_material->raw_material_id)
                     ->where('owner_type', $owner_type)
                     ->where('customer_id', $selected_customer_id)
                     ->where('reference_no', $order->reference_no)
                     ->where('line_item_no', $order_material->line_item_no)
                     ->where('del_status', 'Live')
-                    ->first();
-                $remainingStock = $ms->current_stock;
+                    ->get();
+
+                $total_current_stock = $stocks->sum('current_stock');
+                $total_float_stock   = $stocks->sum('float_stock');
+
+                // same logic as your PO list fix
+                $remainingStock = $total_current_stock + $total_float_stock;
             }     
             $stock = [
                 'id'           => $rm->id,

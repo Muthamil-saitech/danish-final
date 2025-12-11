@@ -44,11 +44,15 @@ $baseURL = getBaseURL();
                     <h4 class="pb-7">{{ isset($title) ? $title : '' }}:</h4>
                     <p class="pb-7">
                         <span class="">@lang('index.reference_no'):</span>
-                        {{ $obj->reference_no }}
+                        {{ isset($obj) && isset($partnerDetails) ? $obj->del_challan_no.'/'.$partnerDetails->line_item_no : ''  }}
                     </p>
                     <p class="pb-7 rgb-71">
                         <span class="">@lang('index.date'):</span>
                         {{ getDateFormat($obj->io_date) }}
+                    </p>
+                    <p class="pb-7 rgb-71">
+                        <span class="">@lang('index.total_amount'):</span>
+                        {{ getAmtCustom($insInvoice->amount) }}
                     </p>
                 </td>
             </tr>

@@ -90,6 +90,7 @@ if (isset($setting->base_color) && $setting->base_color) {
                                 <thead>
                                     <tr>
                                         <th class="width_1_p">@lang('index.po_no')</th>
+                                        <th class="width_1_p">Delivery Challan Number</th>
                                         <th class="width_13_p">@lang('index.customer_name')(Code)</th>
                                         <th class="width_13_p">@lang('index.date')</th>
                                         <th class="width_13_p">@lang('index.status')</th>
@@ -101,6 +102,7 @@ if (isset($setting->base_color) && $setting->base_color) {
                                             {{-- @foreach ($value->details as $detail) --}}
                                                 <tr>
                                                     <td>{{ safe($value->po_no.'/'.$value->line_item_no) }}</td>
+                                                    <td>{{ safe($value->del_challan_no) }}</td>
                                                     <td>{{ safe($value->customer_name) }}({{ $value->customer_id }})</td>
                                                     <td>{{ safe(getDateFormat($value->date)) }}</td>
                                                     <td>
@@ -136,7 +138,7 @@ if (isset($setting->base_color) && $setting->base_color) {
                             <table id="datatable_3" class="table table-striped datatable_dashboard">
                                 <thead>
                                     <tr>
-                                        <th class="width_1_p">@lang('index.po_no')</th>
+                                        <th class="width_1_p">Delivery Challan Number</th>
                                         <th class="width_13_p">@lang('index.partner_name')(Code)</th>
                                         <th class="width_13_p">@lang('index.date')</th>
                                         <th class="width_13_p">@lang('index.status')</th>
@@ -147,7 +149,7 @@ if (isset($setting->base_color) && $setting->base_color) {
                                         @foreach ($partner_io as $value)
                                             {{-- @foreach ($value->details as $detail) --}}
                                                 <tr>
-                                                    <td>{{ safe($value->reference_no.'/'.$value->line_item_no) }}</td>
+                                                    <td>{{ safe($value->del_challan_no.'/'.$value->line_item_no) }}</td>
                                                     <td>{{ safe($value->partner_name) }}({{ $value->partner_id }})</td>
                                                     <td>{{ safe(getDateFormat($value->io_date)) }}</td>
                                                     <td>

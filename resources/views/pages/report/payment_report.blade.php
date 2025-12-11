@@ -253,7 +253,7 @@ if (isset($setting->base_color) && $setting->base_color) {
                                 <thead>
                                     <tr>
                                         <th class="width_1_p">@lang('index.sn')</th>
-                                        <th class="width_10_p">@lang('index.reference_no')</th>
+                                        <th class="width_10_p">Delivery Challan Number</th>
                                         <th class="width_10_p">@lang('index.date')</th>
                                         <th class="width_10_p">@lang('index.partner_name')<br>(Code)</th>
                                         <th class="width_10_p">@lang('index.total_amount')</th>
@@ -271,7 +271,7 @@ if (isset($setting->base_color) && $setting->base_color) {
                                             @foreach ($value->details as $detail)
                                                 <tr>
                                                     <td>{{ $k++ }}</td>
-                                                    <td>{{ $value->reference_no.'/'.$detail->line_item_no  }}</td>
+                                                    <td>{{ $value->del_challan_no.'/'.$detail->line_item_no  }}</td>
                                                     <td>{{ $value->io_date ? getDateFormat($value->io_date) : '-' }}</td>
                                                     <td>{{ $value->partner->name.'('.$value->partner->partner_id.')' }}</td>
                                                     <td>{{ getAmtCustom($detail->paymentInvoice->amount) }}</td>

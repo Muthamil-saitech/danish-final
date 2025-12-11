@@ -315,34 +315,37 @@ class AjaxController extends Controller
                 ->where('product_id', $fproduct_id)
                 ->where('del_status', 'Live')
                 ->first()->mat_qty;
+            $raw_material_id = CustomerPoReorder::where('id', $customer_reorder_id)
+                ->where('product_id', $fproduct_id)
+                ->where('del_status', 'Live')
+                ->first()->mat_id;
         } else {
             $original_mat_qty = CustomerOrderDetails::where('id', $customer_order_id)
                 ->where('product_id', $fproduct_id)
                 ->where('del_status', 'Live')
                 ->first()->raw_qty;
+            $raw_material_id = CustomerOrderDetails::where('id', $customer_order_id)
+                ->where('product_id', $fproduct_id)
+                ->where('del_status', 'Live')
+                ->first()->raw_material_id;
         }
+        $consumptionQuery = DB::table('tbl_manufactures_rmaterials as mm')
+            ->join('tbl_manufactures as m', 'm.id', '=', 'mm.manufacture_id')
+            ->where('mm.rmaterials_id', $raw_material_id) // ← Always filter by material
+            ->where('m.del_status', 'Live')
+            ->where('mm.del_status', 'Live');
         if($customer_reorder_id) {
-            $totalConsumption = DB::table('tbl_manufactures_rmaterials as mm')
-                ->join('tbl_manufactures as m', 'm.id', '=', 'mm.manufacture_id')
-                ->where('m.customer_reorder_id', $customer_reorder_id)
-                ->where('m.product_id', $fproduct_id)
-                ->where('m.del_status', 'Live')
-                ->where('mm.del_status', 'Live')
-                ->sum('mm.consumption');
+            $consumptionQuery->where('m.customer_reorder_id', $customer_reorder_id);
         } else {
-            $totalConsumption = DB::table('tbl_manufactures_rmaterials as mm')
-                ->join('tbl_manufactures as m', 'm.id', '=', 'mm.manufacture_id')
-                ->where('m.customer_order_id', $customer_order_id)
-                ->where('m.product_id', $fproduct_id)
-                ->where(function($q) {
-                    $q->whereNull('m.customer_reorder_id')
-                    ->orWhere('m.customer_reorder_id', 0);
-                })
-                ->where('m.del_status', 'Live')
-                ->where('mm.del_status', 'Live')
-                ->sum('mm.consumption');
+            $consumptionQuery->where('m.customer_order_id', $customer_order_id)
+            ->where(function ($q) {
+                $q->whereNull('m.customer_reorder_id')
+                ->orWhere('m.customer_reorder_id', 0);
+            });
         }
-        $material_qty = $original_mat_qty - ($totalConsumption ?? 0);
+        $totalConsumption = $consumptionQuery->sum('mm.consumption');
+        // dd($totalConsumption);
+        $material_qty = max(0, $original_mat_qty - $totalConsumption);
         $obj2 = new FPrmitem();
         $finishProductRM = $obj2->getOrderProductRM($fproduct_id, $selected_customer_id, $customer_order_id, $owner_type);
         $html = '';
@@ -395,8 +398,8 @@ class AjaxController extends Controller
                         <input type="text" data-countid="1" tabindex="51" id="qty_1" 
                             name="quantity_amount[]" onfocus="this.select();" 
                             class="check_required form-control integerchk input_aligning qty_c cal_row" 
-                            value="' . $material_qty . '" placeholder="Consumption" 
-                            onkeypress="return event.charCode >= 48 && event.charCode <= 57" max="' . $material_qty . '">
+                            value="' . $displayStock . '" placeholder="Consumption" 
+                            onkeypress="return event.charCode >= 48 && event.charCode <= 57" max="' . $displayStock . '">
                         <span class="input-group-text show_uom"><span>'.$uom.'</span></span>
                     </div>
                     <div class="text-danger quantityErr d-none"></div>
@@ -718,26 +721,30 @@ class AjaxController extends Controller
                 ->where('product_id', $product_id)
                 ->where('del_status', 'Live')
                 ->first();
-            if ($reorderDetail) {
+            $orderDetail = \App\CustomerOrderDetails::where('id', $customer_order_id)
+                ->where('product_id', $product_id)
+                ->where('del_status', "Live")
+                ->first();
+            if ($orderDetail) {
                 $manufacture = \App\Manufacture::where('customer_reorder_id', $reorderid)
                     ->where('product_id', $product_id)
                     ->where('del_status', 'Live')
                     ->orderBy('id','DESC')
                     ->first();
-                $data_arr['quantity'] = $manufacture ? $manufacture->remaining_qty : $reorderDetail->prod_qty;
+                $data_arr['quantity'] = $manufacture ? $manufacture->remaining_qty : $orderDetail->quantity;
                 $data_arr['customer_reorder_id'] = $reorderid;
                 $data_arr['profit'] = 0;
-                $data_arr['tax_type'] = \App\TaxItems::where('id', $reorderDetail->tax_type)
+                $data_arr['tax_type'] = \App\TaxItems::where('id', $orderDetail->tax_type)
                     ->where('collect_tax', 'Yes')
                     ->first()
                     ->tax_type ?? '';
                     
-                if ($reorderDetail->inter_state == 'Y') {
-                    $tax_percent = (float)$reorderDetail->igst;
+                if ($orderDetail->inter_state == 'Y') {
+                    $tax_percent = (float)$orderDetail->igst;
                 } else {
-                    $tax_percent = (float)$reorderDetail->cgst + (float)$reorderDetail->sgst;
+                    $tax_percent = (float)$orderDetail->cgst + (float)$orderDetail->sgst;
                 }
-                $sub_total = $reorderDetail->unit_price * $reorderDetail->prod_qty;
+                $sub_total = $orderDetail->unit_price * $orderDetail->quantity;
                 $data_arr['tax_value'] = $sub_total * ($tax_percent / 100);
             }
         } else {
@@ -834,6 +841,7 @@ class AjaxController extends Controller
             )
             ->orderBy('cod.id', 'DESC')
             ->get();
+        // dd($mainOrders);
         $reorders = \App\CustomerPoReorder::join('tbl_customer_orders as co', 'co.id', '=', 'tbl_customer_po_reorders.customer_order_id')
             ->join('tbl_customer_order_details as cod', 'cod.id', '=', 'tbl_customer_po_reorders.customer_order_detail_id')
             ->where('co.customer_id', $customer_id)
@@ -854,21 +862,21 @@ class AjaxController extends Controller
 
         /** 🔹 Combine **/
         $allOrders = $mainOrders->concat($reorders);
-        // dd($allOrders);
         /** 🔹 Prepare Dropdown **/
         $html = '<option value="">Select</option>';
         foreach ($allOrders as $order) {
             if ($order->source_type === 'main') {
                 $manufactExists = \App\Manufacture::where('customer_order_id', $order->codid)
-                    ->where('product_id', $order->product_id)
-                    ->where(function ($q) {
-                        $q->whereNull('customer_reorder_id')
-                        ->orWhere('customer_reorder_id', 0);
-                    })
-                    ->where('del_status', 'Live')
-                    ->orderBy('id','DESC')
-                    ->first();
-                $shouldShow = !$manufactExists || $manufactExists->remaining_qty > 0;
+                ->where('product_id', $order->product_id)
+                ->where(function ($q) {
+                    $q->whereNull('customer_reorder_id')
+                    ->orWhere('customer_reorder_id', 0);
+                })
+                ->where('del_status', 'Live')
+                ->orderBy('id','DESC')
+                ->first();
+                // dd($manufactExists);
+                $shouldShow = !$manufactExists || ($manufactExists->org_prod_qty > $manufactExists->product_quantity);
             } else {
 
                 /** REORDER → Check manufacture.customer_reorder_id **/
@@ -877,8 +885,9 @@ class AjaxController extends Controller
                     ->where('del_status', 'Live')
                     ->orderBy('id','DESC')
                     ->first();
-                $shouldShow = !$manufactExists || $manufactExists->remaining_qty > 0;
+                $shouldShow = !$manufactExists || ($manufactExists->org_prod_qty > $manufactExists->product_quantity);
             }
+            // dd($manufactExists);
             if ($shouldShow) {
                 $ref = $order->reference_no . '/' . $order->line_item_no;
                 $html .= '<option value="' . $order->codid . '" 
@@ -1257,20 +1266,20 @@ class AjaxController extends Controller
                     ->where('cod.order_status', 1)
                     ->where('tbl_customer_orders.customer_id', $customer_id)
                     ->where('tbl_customer_orders.del_status', 'Live')
-                    ->whereNotIn('cod.id', function ($q) {
-                        $q->select('customer_order_id')
-                            ->from('tbl_manufactures')
-                            ->where('del_status', 'Live');
-                    })
-                    ->whereNotExists(function ($q) use ($mat_id, $customer_id) {
-                        $q->selectRaw(1)
-                            ->from('tbl_material_stocks as ms')
-                            ->whereColumn('ms.reference_no', 'tbl_customer_orders.reference_no')
-                            ->whereColumn('ms.line_item_no', 'cod.line_item_no')
-                            ->where('ms.mat_id', $mat_id)
-                            ->where('ms.customer_id', $customer_id)
-                            ->where('ms.del_status', 'Live');
-                    })
+                    // ->whereNotIn('cod.id', function ($q) {
+                    //     $q->select('customer_order_id')
+                    //         ->from('tbl_manufactures')
+                    //         ->where('del_status', 'Live');
+                    // })
+                    // ->whereNotExists(function ($q) use ($mat_id, $customer_id) {
+                    //     $q->selectRaw(1)
+                    //         ->from('tbl_material_stocks as ms')
+                    //         ->whereColumn('ms.reference_no', 'tbl_customer_orders.reference_no')
+                    //         ->whereColumn('ms.line_item_no', 'cod.line_item_no')
+                    //         ->where('ms.mat_id', $mat_id)
+                    //         ->where('ms.customer_id', $customer_id)
+                    //         ->where('ms.del_status', 'Live');
+                    // })
                     ->select(
                         'tbl_customer_orders.id as order_id',
                         'tbl_customer_orders.reference_no',
@@ -1312,25 +1321,23 @@ class AjaxController extends Controller
                         $reference_no = $order->reference_no;
                         $line_item_no = $order->line_item_no;
                         $qty = $order->qty;
+                        $materialStocks = DB::table('tbl_material_stocks')
+                            ->where('reference_no', $reference_no)
+                            ->where('line_item_no', $line_item_no)
+                            ->where('mat_id', $mat_id)
+                            ->where('customer_id', $customer_id)
+                            ->where('del_status', 'Live')
+                            ->get();
 
-                        $in_adjust_logs = DB::table('tbl_stock_adjust_logs as logs')
-                            ->join('tbl_material_stocks as ms', 'logs.mat_stock_id', '=', 'ms.id')
-                            ->where('logs.stock_type', 'customer')
-                            ->where('logs.reference_no', $reference_no)
-                            ->where('logs.line_item_no', $line_item_no)
-                            ->where('logs.type', 'addition')
-                            ->where('logs.del_status', 'Live')
-                            ->where('ms.mat_id', $mat_id)
-                            ->where('ms.customer_id', $customer_id)
-                            ->where('ms.del_status', 'Live')
-                            ->exists();
-
-                        if (!$in_adjust_logs) {
-                            $html .= "<option value='{$reference_no}/{$line_item_no}|{$qty}'>{$reference_no}/{$line_item_no}</option>";
+                        $total_received = $materialStocks->sum(function($row) {
+                            return ($row->current_stock ?? 0) + ($row->float_stock ?? 0);
+                        });
+                        $bal_qty = max(0, $qty - $total_received);
+                        if ($total_received < $qty) {
+                            $html .= "<option value='{$reference_no}/{$line_item_no}|{$qty}|{$bal_qty}'>{$reference_no}/{$line_item_no}</option>";
                         }
                     }
                 }
-
                 return response()->json([
                     'type' => 'customer',
                     'html' => $html,

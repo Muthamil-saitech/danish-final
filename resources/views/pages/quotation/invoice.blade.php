@@ -122,7 +122,7 @@
                         <td style="border:1px solid #000; padding:4px; text-align:center;  border-left: none;" rowspan="4">{{ $i }}</td>
                         <td style="padding:4px; text-align: center;">{{ $productInfo->code }}</td>
                         <td style="border:1px solid #000; padding:4px; border-bottom: none;">{{ $productInfo->name }} </td>
-                        <td style="border:1px solid #000; padding:4px; border-bottom: none; text-align:center;">{{ $value->product_quantity }}<br>{{ getRMUnitById($value->unit_id) }}</td>
+                        <td style="border:1px solid #000; padding:4px; border-bottom: none; text-align:center;">{{ $value->product_quantity }}{{-- <br>{{ getRMUnitById($value->unit_id) }} --}}</td>
                         {{-- <td style="border:1px solid #000; padding:4px; border-bottom: none; text-align:start;">{{ getRMUnitById($value->unit_id) }}</td> --}}
                         <td style="border:1px solid #000; padding:4px; border-bottom: none; text-align:start;">{{ number_format($rate,2) }}</td>
                         <td style="border:1px solid #000; padding:4px; border-bottom: none; text-align:start;">{{ number_format($taxable_price,2) }}</td>

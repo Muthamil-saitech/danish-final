@@ -451,13 +451,33 @@ $baseURL = getBaseURL();
             },
             success: function(response) {
                 $('#checkedPersonModal').modal('hide');
-                alert("Updated Successfully!");
-                location.reload();
-
+                // alert("Updated Successfully!");
+                let hidden_alert = $("#hidden_alert").val();
+                let hidden_cancel = $("#hidden_cancel").val();
+                let hidden_ok = $("#hidden_ok").val();
+                swal({
+                    title: hidden_alert + "!",
+                    text: "Updated Successfully!",
+                    cancelButtonText: hidden_cancel,
+                    confirmButtonText: hidden_ok,
+                    confirmButtonColor: "#3c8dbc",
+                }, function() {
+                    location.reload();
+                });
             },
             error: function(xhr) {
                 let errMsg = xhr.responseJSON?.message || "Something went wrong.";
-                alert(errMsg);
+                // alert(errMsg);
+                let hidden_alert = $("#hidden_alert").val();
+                let hidden_cancel = $("#hidden_cancel").val();
+                let hidden_ok = $("#hidden_ok").val();
+                swal({
+                    title: hidden_alert + "!",
+                    text: errMsg,
+                    cancelButtonText: hidden_cancel,
+                    confirmButtonText: hidden_ok,
+                    confirmButtonColor: "#3c8dbc",
+                });
             }
         });
     });

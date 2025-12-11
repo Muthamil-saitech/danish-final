@@ -41,7 +41,7 @@ TRUNCATE TABLE tbl_instrument_payment_entries;
 TRUNCATE TABLE tbl_partners;
 TRUNCATE TABLE tbl_partner_contact_infos;
 TRUNCATE TABLE tbl_partner_instrument_payments;
-TRUNCATE TABLE tbl_stock_return_entries;
+
 TRUNCATE TABLE tbl_suppliers;
 TRUNCATE TABLE tbl_supplier_contact_info;
 TRUNCATE TABLE tbl_customers;

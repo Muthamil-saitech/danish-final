@@ -476,6 +476,30 @@
                         @endif
                     </ul>
                 </li>
+            @endif            
+            @if (menuPermission('Sales'))
+                <li
+                    class="parent-menu treeview menu__cidirp_10{{ request()->is('sales*') ? ' menu-open active_sub_menu' : '' }}">
+                    <a href="#">
+                        <iconify-icon icon="solar:cart-large-broken"></iconify-icon>
+                        <span class="match_bold">@lang('index.sales_invoice')</span>
+                    </a>
+                    
+                    <ul class="treeview-menu">
+                        
+                        @if (routePermission('sale.create'))
+                            <li class="menu_assign_class {{ request()->routeIs('sales.create') ? ' treeMenuActive' : '' }}" data-menu__cid="irp_10"><a
+                                    href="{{ route('sales.create') }}">@lang('index.add_sale')</a>
+                            </li>
+                        @endif
+                        @if (routePermission('sale.index'))
+                            <li class="menu_assign_class {{ request()->routeIs('sales.index') ? ' treeMenuActive' : '' }}" data-menu__cid="irp_10"><a
+                                    href="{{ route('sales.index') }}">@lang('index.sales_list')</a>
+                            </li>
+                        @endif
+                        
+                    </ul>
+                </li>
             @endif
             @if (menuPermission('Customer Receives'))
                 <li class="parent-menu treeview2 menu_assign_class menu__cidirp_1{{ request()->is('customer-payment*') ? ' menu-open active_sub_menu' : '' }}"
@@ -505,30 +529,6 @@
                         @endif
                     </ul>
                 </li> --}}
-            @endif
-            @if (menuPermission('Sales'))
-                <li
-                    class="parent-menu treeview menu__cidirp_10{{ request()->is('sales*') ? ' menu-open active_sub_menu' : '' }}">
-                    <a href="#">
-                        <iconify-icon icon="solar:cart-large-broken"></iconify-icon>
-                        <span class="match_bold">@lang('index.sales_invoice')</span>
-                    </a>
-                    
-                    <ul class="treeview-menu">
-                        
-                        @if (routePermission('sale.create'))
-                            <li class="menu_assign_class {{ request()->routeIs('sales.create') ? ' treeMenuActive' : '' }}" data-menu__cid="irp_10"><a
-                                    href="{{ route('sales.create') }}">@lang('index.add_sale')</a>
-                            </li>
-                        @endif
-                        @if (routePermission('sale.index'))
-                            <li class="menu_assign_class {{ request()->routeIs('sales.index') ? ' treeMenuActive' : '' }}" data-menu__cid="irp_10"><a
-                                    href="{{ route('sales.index') }}">@lang('index.sales_list')</a>
-                            </li>
-                        @endif
-                        
-                    </ul>
-                </li>
             @endif
             @if (menuPermission('Supplier Payment'))
                 @if (routePermission('supplier-payment.index'))

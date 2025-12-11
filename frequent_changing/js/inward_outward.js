@@ -108,6 +108,7 @@ $(document).on("click", "#customer_io", function (e) {
       i +
       '" readonly style="min-width: 120px;" value="0.00"></td>' +
       '<td><textarea class="form-control" name="remarks[]" placeholder="Remarks" id="remarks" style="min-width: 150px;"></textarea></td>' +
+      '<td><input type="text" name="ins_line_item_no[]" class="form-control" placeholder="Line Item No" style="min-width: 130px;"/></td>' +
       '<td class="ir_txt_center"><a class="btn btn-xs del_row remove-tr dlt_button"><iconify-icon icon="solar:trash-bin-minimalistic-broken"></iconify-icon></a></td>' +
       "</tr>"
     );
@@ -207,10 +208,18 @@ $(document).on("click", ".order_io_submit_button", function () {
   let d_address = $("#d_address").val();
   let del_challan_no = $("#del_challan_no").val();
   let return_due_date = $("#return_due_date").val();
+  let outwardType = $('input[name="inward_type"]:checked').val();
   // let type = $(".type").val();
   // let ins_category = $(".ins_category").val();
   // let instrument_name = $(".instrument_name").val();
-
+  $('#inward_type_error').text('');
+  if (!outwardType) {
+    $('#inward_type_error').text('The Inward Type field is required.');
+    status = false;
+  } else {
+    $("#inward_type_error").removeClass("is-invalid");
+    $("#inward_type_error").closest("div").find(".text-danger").addClass("d-none");
+  }
   if (po_no == "" || po_no === null) {
     $("#po_no").addClass("is-invalid");
     $("#po_no").closest(".form-group").find(".text-danger").remove();
@@ -310,6 +319,21 @@ $(document).on("click", ".order_io_submit_button", function () {
         );
       }
       status = false;
+    } else {
+      $(this).removeClass("is-invalid");
+      $(this).next(".text-danger").remove();
+    }
+  });
+  $("input[name='ins_line_item_no[]']").each(function () {
+    let value = $(this).val();
+    if (!value || value.trim() === "") {
+      if (!$(this).next(".text-danger").length) {
+        $(this).addClass("is-invalid");
+        $(this).after(
+          '<div class="text-danger">The line item number field is required</div>'
+        );
+      }
+      hasError = true;
     } else {
       $(this).removeClass("is-invalid");
       $(this).next(".text-danger").remove();
@@ -520,14 +544,26 @@ $(document).on("click",".partner_io_submit_button", function() {
   let del_challan_no = $("#del_challan_no").val();
   let return_due_date = $("#return_due_date").val();
   let d_address = $("#d_address").val();
+  let inwardType = $('input[name="inward_type"]:checked').val();
+  // let type = $(".type").val();
+  // let ins_category = $(".ins_category").val();
+  // let instrument_name = $(".instrument_name").val();
+  $('#inward_type_error').text('');
+  if (!inwardType) {
+    $('#inward_type_error').text('The Inward Type field is required.');
+    status = false;
+  } else {
+    $("#inward_type_error").removeClass("is-invalid");
+    $("#inward_type_error").closest("div").find(".text-danger").addClass("d-none");
+  }
 
-  if (reference_no == "") {
+  /* if (reference_no == "") {
     showErrorMessage("reference_no", "The reference number field is required");
     status = false;
   } else {
     $("#reference_no").removeClass("is-invalid");
     $("#reference_no").closest("div").find(".text-danger").addClass("d-none");
-  }
+  } */
   if (partner_id == "") {
     showErrorMessage("partner_id", "The partners(code) field is required");
     status = false;

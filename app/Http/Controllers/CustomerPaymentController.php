@@ -17,18 +17,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
 use App\Customer;
 use App\CustomerDueReceive;
-use App\User;
-use App\Account;
-use Barryvdh\DomPDF\Facade\Pdf;
-use App\AdminSettings;
-use App\CustomerOrder;
-use App\CustomerOrderInvoice;
-use App\CustomerOrderDetails;
-use App\FinishedProduct;
+use App\SaleNoteEntry;
+use App\Sales;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 
 class CustomerPaymentController extends Controller
@@ -44,226 +38,47 @@ class CustomerPaymentController extends Controller
         $endDate = '';
         $customer_id = escape_output($request->get('customer_id'));
         unset($request->_token);
-        $order = CustomerOrder::where('del_status', 'Live')
-        ->whereHas('orderPayment', function ($q) {
-            $q->where('order_status', 1)
-            ->where('del_status', 'Live');
-        });
+        $salesQuery = DB::table('tbl_sales as s')
+            ->leftJoin('tbl_quotations as q', 'q.id', '=', 's.challan_id')
+            ->leftJoin('tbl_customer_due_receives as cp', 'cp.sale_id', '=', 's.id')
+            ->leftJoin('tbl_sale_note_entries as sn', 'sn.sale_id', '=', 's.id')
+            ->where('s.del_status', 'Live');
+            // ->leftJoin('tbl_sale_details as sd', 's.id', '=', 'sd.sale_id')
+            // ->where('sd.del_status', 'Live');
+        if (!empty($customer_id)) {
+            $salesQuery->where('s.customer_id', $customer_id);
+        }
         if (isset($request->startDate) && $request->startDate != '') {
-            $startDate = date('Y-m-d 00:00:00', strtotime($request->startDate));
-            $order->where('created_at', '>=', $startDate);
+            $startDate = $request->startDate;
+            $salesQuery->where('sale_date', '>=', date('Y-m-d', strtotime($request->startDate)));
         }
         if (isset($request->endDate) && $request->endDate != '') {
-            $endDate = date('Y-m-d 23:59:59', strtotime($request->endDate));
-            $order->where('created_at', '<=', $endDate);
+            $endDate = $request->endDate;
+            $salesQuery->where('sale_date', '<=', date('Y-m-d', strtotime($request->endDate)));
         }
-        if (isset($customer_id) && $customer_id != '') {
-            $order->where('customer_id', $customer_id);
-        }
-        $obj = $order->orderBy('id', 'DESC')->get();
-        $total_orders = CustomerOrderDetails::where('del_status', 'Live')->where('order_status',1)->count();
-        $title =  __('index.customer_due_receives');
-        $customers = Customer::where('del_status','Live')->orderBy('id','DESC')->get();
+        $obj = $salesQuery
+            ->select('s.*', 'q.challan_no', 'sn.invoice_no as sale_entry_inv_no','sn.type','sn.price','sn.grand_total as note_grand_total')
+            ->orderBy('s.id', 'DESC')
+            ->get()
+            ->unique();
         // dd($obj);
-        return view('pages.customer_payment.index',compact('title','obj','customers','customer_id', 'total_orders', 'startDate', 'endDate'));
+        $title = __('index.customer_due_receives');
+        $customers = Customer::where('del_status', 'Live')->orderBy('id', 'DESC')->get();
+        return view('pages.customer_payment.index', compact('title', 'obj', 'customers', 'startDate', 'endDate', 'customer_id'));
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        $title =  __('index.add_customer_receive');
-
-        $total_customerdue = CustomerDueReceive::count();
-        $ref_no = str_pad($total_customerdue + 1, 6, '0', STR_PAD_LEFT);
-
-        $company_id = auth()->user()->company_id;
-
-        $customers = Customer::where('del_status',"Live")->get();
-        $accountList = Account::where('del_status',"Live")->get();
-
-        return view('pages.customer_payment.create',compact('title', 'ref_no', 'customers', 'accountList'));
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        
-        request()->validate([
-            'reference_no' => 'required',
-            'only_date' => 'required|date',
-            'customer_id' => 'required|numeric',
-            'amount' => 'required|numeric',
-            'account_id' => 'required'
-        ],
-            [
-                'reference_no.required' => __('index.reference_no_required'),
-                'only_date.required' => __('index.date_required'),
-                'customer_id.required' => __('index.customer_required'),
-                'amount.required' => __('index.amount_required'),
-                'account_id.required' => __('index.account_required')
-            ]
-        );
-
-        $obj = new \App\CustomerDueReceive;
-        $obj->reference_no = escape_output($request->reference_no);
-        $obj->only_date = escape_output($request->only_date);
-        $obj->customer_id = escape_output($request->customer_id);
-        $obj->amount = escape_output($request->amount);
-        $obj->account_id = escape_output($request->account_id);
-        $obj->note = escape_output($request->note);
-        $obj->user_id = auth()->user()->id;
-        $obj->company_id = auth()->user()->company_id;
-        $obj->save();
-
-        return redirect('customer-payment')->with(saveMessage());
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Expense  $customer_payment
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        $customer_payment = CustomerDueReceive::find(encrypt_decrypt($id, 'decrypt'));
-        $title =  __('index.edit_customer_due_receive');
-        $obj = $customer_payment;
-
-        $company_id = auth()->user()->company_id;
-
-        $customers = Customer::where('del_status',"Live")->get();
-        $accountList = Account::where('del_status',"Live")->get();
-
-        return view('pages.customer_payment.edit',compact('title','obj', 'customers', 'accountList'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Expense  $customer_payment
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, CustomerDueReceive $customer_payment)
-    {
-        request()->validate([
-            'reference_no' => 'required',
-            'only_date' => 'required|date',
-            'customer_id' => 'required|numeric',
-            'amount' => 'required|numeric',
-            'account_id' => 'required'
-        ],
-            [
-                'reference_no.required' => __('index.reference_no_required'),
-                'only_date.required' => __('index.date_required'),
-                'customer_id.required' => __('index.customer_required'),
-                'amount.required' => __('index.amount_required'),
-                'account_id.required' => __('index.account_required')
-            ]
-        );
-
-        $customer_payment->reference_no = escape_output($request->reference_no);
-        $customer_payment->only_date = escape_output($request->only_date);
-        $customer_payment->customer_id = escape_output($request->customer_id);
-        $customer_payment->amount = escape_output($request->amount);
-        $customer_payment->account_id = escape_output($request->account_id);
-        $customer_payment->note = escape_output($request->note);
-        $customer_payment->save();
-
-        return redirect('customer-payment')->with(updateMessage());
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Expense  $customer_payment
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(CustomerDueReceive $customer_payment)
-    {
-        $customer_payment->del_status = "Deleted";
-        $customer_payment->save();
-        return redirect('customer-payment')->with(deleteMessage());
-    }
-	
-	public function download($id)
-    {
-        $id = encrypt_decrypt($id, 'decrypt');
-        $title = __('index.customer_payment_invoice');
-
-        $company = AdminSettings::orderBy('name_company_name', 'ASC')->where('del_status', "Live")->get();
-
-        $customers = Customer::orderBy('name', 'ASC')->where('del_status', "Live")->get();
-        $finishProducts = FinishedProduct::orderBy('name', 'ASC')->where('del_status', "Live")->get();
-        $fifoProducts = FinishedProduct::orderBy('name', 'ASC')->where('del_status', "Live")->where('stock_method', "fifo")->get();
-        $accounts = Account::orderBy('name', 'ASC')->where('del_status', "Live")->get();
-
-        $obj = CustomerDueReceive::findOrFail($id);
-        
-        return view('pages.customer_payment.invoice', compact('title', 'obj', 'customers', 'accounts', 'company'));
-    }
-
-    /* public function print($id)
-    {
-        $title = __('index.customer_payment_invoice');
-        $obj = CustomerDueReceive::findOrFail($id);
-
-        $customers = Customer::orderBy('name', 'ASC')->where('del_status', "Live")->get();
-        $accounts = Account::orderBy('name', 'ASC')->where('del_status', "Live")->get();
-        $company = AdminSettings::orderBy('name_company_name', 'ASC')->where('del_status', "Live")->get();
-
-        return view('pages.customer_payment.print_invoice', compact('title', 'obj', 'customers', 'accounts', 'company'));
-    } */
-   public function print($id)
-    {
-        $title = __('index.customer_payment_invoice');
-        $order_details = CustomerOrderDetails::find($id);
-        $customer_order = CustomerOrder::find($order_details->customer_order_id);
-        $customer_inv = CustomerOrderInvoice::where('customer_order_id',$order_details->id)->first();
-        $customer_due_entries = CustomerDueReceive::where('order_id',$id)->orderBy('id','DESC')->get();
-        $obj = $customer_order;
-        $company = AdminSettings::orderBy('name_company_name', 'ASC')->where('del_status', "Live")->get();
-        return view('pages.customer_payment.print_invoice', compact('title', 'obj', 'customer_inv', 'customer_due_entries', 'company','order_details'));
-    }
-    /* public function updatePayType(Request $request) {
-        $payment_type = $request->payment_type;
-        $order_id = $request->order_id;
-        $order_details = CustomerOrder::with('orderInvoice')->where('id',$order_id)->where('del_status',"Live")->orderBy('id','DESC')->first();
-        if ($order_details) {
-            dd($order_details);
-            // $qc_log->qc_status = $status;
-            // $qc_log->save();
-            return response()->json(['status' => true, 'message' => 'Status Updated Successfully']);
-        } else {
-            return response()->json(['status' => false, 'message' => 'QC not found.']);
-        }
-    } */
     public function customerDueEntry(Request $request) {
         // dd($request->all());
-        $order_id = $request->order_id;
+        $sale_id = $request->sale_id;
         $total_amount = $request->total_amount;
         $balance_amount = $request->balance_amount;
         $pay_amount = $request->pay_amount;
         $tds_amount = $request->tds_amount ?? 0.00;
         $payment_type = $request->payment_type;
         $note = $request->note;
-        $orderDetails = CustomerOrderDetails::where('id',$order_id)->where('order_status',1)->where('del_status','Live')->first();
-        $customer_order = CustomerOrder::where('id',$orderDetails->customer_order_id)->where('del_status','Live')->first();
+        $sale = Sales::find($sale_id);
         $customer_due = new CustomerDueReceive();
-        $customer_due->order_id = $order_id;
-        $customer_due->reference_no = $customer_order->reference_no.'/'.$orderDetails->line_item_no;
-        $customer_due->order_date = date('Y-m-d', strtotime($customer_order->created_at));
-        $customer_due->customer_id = $customer_order->customer_id;
+        $customer_due->sale_id = $sale_id;
+        $customer_due->customer_id = $sale->customer_id;
         $customer_due->total_amount = $total_amount;
         $customer_due->pay_amount = $pay_amount;
         $customer_due->balance_amount = $balance_amount - $pay_amount;
@@ -281,22 +96,19 @@ class CustomerPaymentController extends Controller
         }
         $customer_due->user_id = auth()->user()->id;
         $customer_due->save();
-        $order_invoice = CustomerOrderInvoice::where('customer_order_id',$order_id)->where('del_status','Live')->first();
-        $order_invoice->paid_amount = $order_invoice->paid_amount + $pay_amount;
-        $order_invoice->due_amount = (float) $order_invoice->amount - (float) $order_invoice->paid_amount - (float) $tds_amount;
-        // dd($tds_amount);
-        // $order_invoice->due_amount = $balance_amount - $order_invoice->paid_amount;
-        $order_invoice->tds_amount = $tds_amount === "" ? 0 : $tds_amount;
-        $order_invoice->save();
+        $sale->paid = $sale->paid + $pay_amount;
+        // $sale->due = (float) $sale->grand_total - (float) $sale->paid - (float) $tds_amount;
+        $sale->due = $balance_amount - $pay_amount;
+        $sale->tds_amount = $tds_amount === "" ? 0 : $tds_amount;
+        $sale->save();
         return redirect('customer-payment')->with(saveMessage());
     }
     public function dueEntry($id) {
-        $order_details = CustomerOrderDetails::find(encrypt_decrypt($id, 'decrypt'));
-        $customer_order = CustomerOrder::find($order_details->customer_order_id);
-        $customer_inv = CustomerOrderInvoice::where('customer_order_id',$order_details->id)->first();
+        $sale = Sales::find(encrypt_decrypt($id, 'decrypt'));
         $title = __('index.customer_payment_invoice');
-        $obj = $customer_order;
-        $customer_due_entries = CustomerDueReceive::where('order_id',$order_details->id)->orderBy('id','DESC')->get();
-        return view('pages.customer_payment.invoice', compact('title', 'obj', 'customer_due_entries','customer_inv','order_details'));
+        $obj = $sale;
+        $customer_due_entries = CustomerDueReceive::where('sale_id',$sale->id)->get();
+        $sale_note_entry = SaleNoteEntry::where('sale_id',$sale->id)->first();
+        return view('pages.customer_payment.invoice', compact('title', 'obj', 'customer_due_entries', 'sale_note_entry'));
     }
 }
